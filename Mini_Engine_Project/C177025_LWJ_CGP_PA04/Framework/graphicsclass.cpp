@@ -35,6 +35,9 @@ GraphicsClass::GraphicsClass()
 	m_ShowTitleScene = true;
 
 	m_hwnd = 0;
+
+	// Guardian Lion GameObject
+	m_GuardianLionObject = nullptr;
 }
 
 
@@ -387,6 +390,20 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	// Guardian Lion GameObject 생성
+	m_GuardianLionObject = new GameObject("GuardianLion");
+
+	if (!m_GuardianLionObject)
+	{
+		return false;
+	}
+
+	// Guardian Lion에 Rotator Component 추가
+	Rotator* lionRotator =
+		new Rotator(m_GuardianLionObject, 1.0f);
+
+	m_GuardianLionObject->AddComponent(lionRotator);
+
 	return true;
 }
 
@@ -477,6 +494,12 @@ void GraphicsClass::Shutdown()
 		m_Billboard->Shutdown();
 		delete m_Billboard;
 		m_Billboard = 0;
+	}
+
+	if (m_GuardianLionObject)
+	{
+		delete m_GuardianLionObject;
+		m_GuardianLionObject = nullptr;
 	}
 	///////////////////////////////////////////////////////////////////////////
 
@@ -623,6 +646,9 @@ bool GraphicsClass::Frame(int fps, int cpu)
 	{
 		return false;
 	}
+
+	// Guardian Lion의 Component들을 업데이트
+	m_GuardianLionObject->Update(0.016f);
 
 	// Render the graphics scene.
 	result = Render(rotation);
@@ -1015,6 +1041,9 @@ bool GraphicsClass::Render(float rotation)
 	//Render Guardian Lion
 	worldMatrix =
 		XMMatrixScaling(80.0f, 80.0f, 80.0f) *
+		XMMatrixRotationY(
+			m_GuardianLionObject->transform.rotation.y
+		) *
 		XMMatrixTranslation(0.0f, 0.0f, 60.0f);
 
 	m_GuardianLion->Render(m_D3D->GetDeviceContext());

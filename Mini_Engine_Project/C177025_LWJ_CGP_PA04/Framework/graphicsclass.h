@@ -16,6 +16,9 @@
 #include "bitmapclass.h"
 #include "textclass.h"
 
+#include "GameObject.h"
+#include "Rotator.h"
+
 /////////////
 // GLOBALS //
 /////////////
@@ -73,6 +76,9 @@ private:
 	HWND m_hwnd;
 
 	bool m_ShowTitleScene;
+
+	// Guardian Lion의 Transform과 Component를 관리할 GameObject
+	GameObject* m_GuardianLionObject;
 };
 
 #endif

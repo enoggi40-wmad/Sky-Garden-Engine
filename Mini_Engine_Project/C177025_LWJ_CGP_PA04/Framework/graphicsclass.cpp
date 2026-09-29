@@ -38,11 +38,14 @@ GraphicsClass::GraphicsClass()
 
 	// Guardian Lion GameObject
 	m_GuardianLionObject = nullptr;
+	m_GuardianLionRenderer = nullptr;
 }
 
 
 GraphicsClass::GraphicsClass(const GraphicsClass& other)
 {
+	m_GuardianLionObject = nullptr;
+	m_GuardianLionRenderer = nullptr;
 }
 
 
@@ -206,6 +209,46 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		m_D3D->GetDevice(),
 		L"./data/Guardian_Lion.obj",
 		L"./data/Guardian_Lion.dds"
+	);
+
+	//// Guardian Lion GameObject 생성
+	m_GuardianLionObject = new GameObject("GuardianLion");
+
+	if (!m_GuardianLionObject)
+	{
+		return false;
+	}
+
+	// Guardian Lion의 Transform 설정
+	// 기존 GraphicsClass::Render()에서 사용하던
+	// 크기와 위치 값을 GameObject의 Transform으로 옮긴다.
+	m_GuardianLionObject->transform.scale =
+	{ 80.0f, 80.0f, 80.0f };
+
+	m_GuardianLionObject->transform.position =
+	{ 0.0f, 0.0f, 60.0f };
+
+
+	// Guardian Lion에 Rotator Component 추가
+	Rotator* lionRotator =
+		new Rotator(m_GuardianLionObject, 1.0f);
+
+	m_GuardianLionObject->AddComponent(lionRotator);
+
+
+	// Guardian Lion에 ModelRenderer Component 생성
+	//
+	// GraphicsClass의 멤버 변수에 저장한다.
+	// 그래야 Render()에서도 같은 ModelRenderer를 사용할 수 있다.
+	m_GuardianLionRenderer =
+		new ModelRenderer(
+			m_GuardianLionObject,
+			m_GuardianLion
+		);
+
+	// GuardianLion GameObject의 Component 목록에도 등록
+	m_GuardianLionObject->AddComponent(
+		m_GuardianLionRenderer
 	);
 
 	if (!result)
@@ -390,20 +433,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	// Guardian Lion GameObject 생성
-	m_GuardianLionObject = new GameObject("GuardianLion");
-
-	if (!m_GuardianLionObject)
-	{
-		return false;
-	}
-
-	// Guardian Lion에 Rotator Component 추가
-	Rotator* lionRotator =
-		new Rotator(m_GuardianLionObject, 1.0f);
-
-	m_GuardianLionObject->AddComponent(lionRotator);
-
 	return true;
 }
 
@@ -499,7 +528,11 @@ void GraphicsClass::Shutdown()
 	if (m_GuardianLionObject)
 	{
 		delete m_GuardianLionObject;
+
+		// GameObject가 가지고 있던 Component들도
+		// GameObject 삭제 후 더 이상 가리키지 않도록 한다.
 		m_GuardianLionObject = nullptr;
+		m_GuardianLionRenderer = nullptr;
 	}
 	///////////////////////////////////////////////////////////////////////////
 
@@ -542,40 +575,6 @@ void GraphicsClass::Shutdown()
 	}
 
 	return;
-}
-
-bool GraphicsClass::Frame()
-{
-	bool result;
-
-	static float rotation = 0.0f;
-
-	if (m_ShowTitleScene)
-	{
-		if (GetAsyncKeyState(VK_RETURN) & 0x8000)
-		{
-			m_ShowTitleScene = false;
-		}
-	}
-	else
-	{
-		m_Camera->UpdateFreeCamera(m_hwnd);
-	}
-
-	// Update the rotation variable each frame.
-	rotation += XM_PI * 0.005f;
-	if (rotation > 360.0f)
-	{
-		rotation -= 360.0f;
-	}
-
-	result = Render(rotation);
-	if (!result)
-	{
-		return false;
-	}
-
-	return true;
 }
 
 bool GraphicsClass::Frame(int fps, int cpu)
@@ -1038,27 +1037,24 @@ bool GraphicsClass::Render(float rotation)
 		return false;
 	}
 
-	//Render Guardian Lion
-	worldMatrix =
-		XMMatrixScaling(80.0f, 80.0f, 80.0f) *
-		XMMatrixRotationY(
-			m_GuardianLionObject->transform.rotation.y
-		) *
-		XMMatrixTranslation(0.0f, 0.0f, 60.0f);
-
-	m_GuardianLion->Render(m_D3D->GetDeviceContext());
-
-	result = m_TextureShader->Render(
+	// Guardian Lion Render
+	// 실제 모델 렌더링은 ModelRenderer Component가 담당한다.
+	result = m_GuardianLionRenderer->Render(
 		m_D3D->GetDeviceContext(),
-		m_GuardianLion->GetIndexCount(),
-		worldMatrix,
+		m_TextureShader,
 		viewMatrix,
-		projectionMatrix,
-		m_GuardianLion->GetTexture());
+		projectionMatrix
+	);
 
 	if (!result)
 	{
-		MessageBox(NULL, L"GuardianLion Render Failed", L"Render Error", MB_OK);
+		MessageBox(
+			NULL,
+			L"GuardianLion Render Failed",
+			L"Render Error",
+			MB_OK
+		);
+
 		return false;
 	}
 

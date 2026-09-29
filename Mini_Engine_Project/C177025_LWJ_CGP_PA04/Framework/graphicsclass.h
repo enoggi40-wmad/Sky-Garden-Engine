@@ -19,6 +19,7 @@
 #include "GameObject.h"
 #include "Rotator.h"
 
+#include "ModelRenderer.h"
 /////////////
 // GLOBALS //
 /////////////
@@ -40,7 +41,6 @@ public:
 
 	bool Initialize(int, int, HWND);
 	void Shutdown();
-	bool Frame();
 	bool Frame(int, int);
 
 private:
@@ -79,6 +79,8 @@ private:
 
 	// Guardian Lion의 Transform과 Component를 관리할 GameObject
 	GameObject* m_GuardianLionObject;
+
+	ModelRenderer* m_GuardianLionRenderer;
 };
 
 #endif

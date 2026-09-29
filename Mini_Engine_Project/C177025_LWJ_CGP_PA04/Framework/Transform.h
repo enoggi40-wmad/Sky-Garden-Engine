@@ -22,4 +22,8 @@ public:
     // 오브젝트의 크기
     // 기본값은 원래 크기인 (1, 1, 1)
     XMFLOAT3 scale = { 1.0f, 1.0f, 1.0f };
+
+    // 현재 Transform 정보를 이용해
+   // World Matrix를 생성해서 반환한다.
+    XMMATRIX GetWorldMatrix() const;
 };

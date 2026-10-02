@@ -39,6 +39,9 @@ GraphicsClass::GraphicsClass()
 	// Guardian Lion GameObject
 	m_GuardianLionObject = nullptr;
 	m_GuardianLionRenderer = nullptr;
+
+	// Scene
+	m_Scene = nullptr;
 }
 
 
@@ -46,6 +49,8 @@ GraphicsClass::GraphicsClass(const GraphicsClass& other)
 {
 	m_GuardianLionObject = nullptr;
 	m_GuardianLionRenderer = nullptr;
+	m_SakuraTreeObject = nullptr;
+	m_SakuraTreeRenderer = nullptr;
 }
 
 
@@ -87,13 +92,150 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Set the initial position of the camera.
 	m_Camera->SetPosition(0.0f, 100.0f, 0.0f);
 	m_Camera->SetRotation(5.0f, 0.0f, 0.0f);
-		
-	
-	
 
-	///////////////////////////////////////////////////////////////////////////
+	// Intialize the scene object.
+	m_Scene = new Scene;
+
+	if (!m_Scene)
+	{
+		return false;
+	}
+	
 	// Initialize the model object.
 	// Create the model object.
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Guardian Lion
+	m_GuardianLion = new ModelClass;
+	if (!m_GuardianLion)
+	{
+		return false;
+	}
+
+	result = m_GuardianLion->Initialize(
+		m_D3D->GetDevice(),
+		L"./data/Guardian_Lion.obj",
+		L"./data/Guardian_Lion.dds"
+	);
+
+	//// Guardian Lion GameObject 생성
+	m_GuardianLionObject = new GameObject("GuardianLion");
+
+	if (!m_GuardianLionObject)
+	{
+		return false;
+	}
+
+	// Guardian Lion의 Transform 설정
+	// 기존 GraphicsClass::Render()에서 사용하던
+	// 크기와 위치 값을 GameObject의 Transform으로 옮긴다.
+	m_GuardianLionObject->transform.scale =
+	{ 80.0f, 80.0f, 80.0f };
+
+	m_GuardianLionObject->transform.position =
+	{ 0.0f, 0.0f, 60.0f };
+
+
+	// Guardian Lion에 Rotator Component 추가
+	Rotator* lionRotator =
+		new Rotator(m_GuardianLionObject, 1.0f);
+
+	m_GuardianLionObject->AddComponent(lionRotator);
+
+
+	// Guardian Lion에 ModelRenderer Component 생성
+	// GraphicsClass의 멤버 변수에 저장한다.
+	// 그래야 Render()에서도 같은 ModelRenderer를 사용할 수 있다.
+	m_GuardianLionRenderer =
+		new ModelRenderer(
+			m_GuardianLionObject,
+			m_GuardianLion
+		);
+
+	// GuardianLion GameObject의 Component 목록에도 등록
+	m_GuardianLionObject->AddComponent(
+		m_GuardianLionRenderer
+	);
+
+	// 마지막에 Scene에 등록
+	m_Scene->AddGameObject(m_GuardianLionObject);
+
+	// Guardian Lion 초기화 실패 시 에러 메시지 출력
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the guardian lion object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Sakura Tree
+	m_SakuraTree = new ModelClass;
+	if (!m_SakuraTree)
+	{
+		return false;
+	}
+
+	result = m_SakuraTree->Initialize(
+		m_D3D->GetDevice(),
+		L"./data/Sakura_Tree.obj",
+		L"./data/Sakura_Tree.dds"
+	);
+
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the m_SakuraTree object.", L"Error", MB_OK);
+		return false;
+	}
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// SakuraTree GameObject 생성
+	m_SakuraTreeObject = new GameObject("SakuraTree");
+
+	if (!m_SakuraTreeObject)
+	{
+		return false;
+	}
+
+	// SakuraTree의 Transform 설정
+	m_SakuraTreeObject->transform.scale =
+	{ 150.0f, 150.0f, 150.0f };
+
+	m_SakuraTreeObject->transform.position =
+	{ -160.0f, 50.0f, 180.0f };
+
+	// SakuraTree에 ModelRenderer Component 붙이기
+	m_SakuraTreeRenderer =
+		new ModelRenderer(
+			m_SakuraTreeObject,
+			m_SakuraTree
+		);
+
+	m_SakuraTreeObject->AddComponent(
+		m_SakuraTreeRenderer
+	);
+
+	m_Scene->AddGameObject(m_SakuraTreeObject);
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// Crystal Prism2
+	m_CrystalPrism2 = new ModelClass;
+	if (!m_CrystalPrism2)
+	{
+		return false;
+	}
+
+	result = m_CrystalPrism2->Initialize(
+		m_D3D->GetDevice(),
+		L"./data/Crystal_Prism2.obj",
+		L"./data/Crystal_Prism2.dds"
+	);
+
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the crystal prism2 object.", L"Error", MB_OK);
+		return false;
+	}
+
 
 	// Water Plane
 	m_WaterPlane = new ModelClass;
@@ -197,66 +339,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-
-	// Guardian Lion
-	m_GuardianLion = new ModelClass;
-	if (!m_GuardianLion)
-	{
-		return false;
-	}
-
-	result = m_GuardianLion->Initialize(
-		m_D3D->GetDevice(),
-		L"./data/Guardian_Lion.obj",
-		L"./data/Guardian_Lion.dds"
-	);
-
-	//// Guardian Lion GameObject 생성
-	m_GuardianLionObject = new GameObject("GuardianLion");
-
-	if (!m_GuardianLionObject)
-	{
-		return false;
-	}
-
-	// Guardian Lion의 Transform 설정
-	// 기존 GraphicsClass::Render()에서 사용하던
-	// 크기와 위치 값을 GameObject의 Transform으로 옮긴다.
-	m_GuardianLionObject->transform.scale =
-	{ 80.0f, 80.0f, 80.0f };
-
-	m_GuardianLionObject->transform.position =
-	{ 0.0f, 0.0f, 60.0f };
-
-
-	// Guardian Lion에 Rotator Component 추가
-	Rotator* lionRotator =
-		new Rotator(m_GuardianLionObject, 1.0f);
-
-	m_GuardianLionObject->AddComponent(lionRotator);
-
-
-	// Guardian Lion에 ModelRenderer Component 생성
-	//
-	// GraphicsClass의 멤버 변수에 저장한다.
-	// 그래야 Render()에서도 같은 ModelRenderer를 사용할 수 있다.
-	m_GuardianLionRenderer =
-		new ModelRenderer(
-			m_GuardianLionObject,
-			m_GuardianLion
-		);
-
-	// GuardianLion GameObject의 Component 목록에도 등록
-	m_GuardianLionObject->AddComponent(
-		m_GuardianLionRenderer
-	);
-
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the guardian lion object.", L"Error", MB_OK);
-		return false;
-	}
-
 	// Crystal Prism
 	m_CrystalPrism = new ModelClass;
 	if (!m_CrystalPrism)
@@ -276,6 +358,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	
 	// Cloud
 	m_Cloud = new ModelClass;
 	if (!m_Cloud)
@@ -294,44 +377,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the Cloud object.", L"Error", MB_OK);
 		return false;
 	}
-
-	// Sakura Tree
-	m_SakuraTree = new ModelClass;
-	if (!m_SakuraTree)
-	{
-		return false;
-	}
-
-	result = m_SakuraTree->Initialize(
-		m_D3D->GetDevice(),
-		L"./data/Sakura_Tree.obj",
-		L"./data/Sakura_Tree.dds"
-	);
-
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the m_SakuraTree object.", L"Error", MB_OK);
-		return false;
-	}
-
-	// Crystal Prism2
-	m_CrystalPrism2 = new ModelClass;
-	if (!m_CrystalPrism2)
-	{
-		return false;
-	}
-
-	result = m_CrystalPrism2->Initialize(
-		m_D3D->GetDevice(),
-		L"./data/Crystal_Prism2.obj",
-		L"./data/Crystal_Prism2.dds"
-	);
-
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the crystal prism2 object.", L"Error", MB_OK);
-		return false;
-	}
+	
 
 	// Billboard
 	m_Billboard = new ModelClass;
@@ -351,6 +397,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the billboard object.", L"Error", MB_OK);
 		return false;
 	}
+
+	
 	/////////////////////////////////////////////////////////////////////////////
 
 	// Create the texture shader object.
@@ -441,6 +489,35 @@ void GraphicsClass::Shutdown()
 {
 	/////////////////////////////////////////////////////////////////////////
 	// Release the model object.
+
+	// Scene 삭제
+	if (m_Scene)
+	{
+		delete m_Scene;
+		m_Scene = nullptr;
+
+		m_GuardianLionObject = nullptr;
+		m_GuardianLionRenderer = nullptr;
+		m_SakuraTreeObject = nullptr;
+		m_SakuraTreeRenderer = nullptr;
+	}
+
+	// 그 다음 실제 Model 리소스 삭제 (추후 ResourceManager로 옮길 예정)
+	if (m_GuardianLion)
+	{
+		m_GuardianLion->Shutdown();
+		delete m_GuardianLion;
+		m_GuardianLion = nullptr;
+	}
+
+	if (m_SakuraTree)
+	{
+		m_SakuraTree->Shutdown();
+		delete m_SakuraTree;
+		m_SakuraTree = nullptr;
+	}
+	/////////////////////////////////////////////////////////////////////////
+
 	if (m_WaterPlane)
 	{
 		m_WaterPlane->Shutdown();
@@ -525,15 +602,7 @@ void GraphicsClass::Shutdown()
 		m_Billboard = 0;
 	}
 
-	if (m_GuardianLionObject)
-	{
-		delete m_GuardianLionObject;
-
-		// GameObject가 가지고 있던 Component들도
-		// GameObject 삭제 후 더 이상 가리키지 않도록 한다.
-		m_GuardianLionObject = nullptr;
-		m_GuardianLionRenderer = nullptr;
-	}
+	
 	///////////////////////////////////////////////////////////////////////////
 
 	// Release the camera object.
@@ -646,8 +715,8 @@ bool GraphicsClass::Frame(int fps, int cpu)
 		return false;
 	}
 
-	// Guardian Lion의 Component들을 업데이트
-	m_GuardianLionObject->Update(0.016f);
+	// Scene Update
+	m_Scene->Update(0.016f);
 
 	// Render the graphics scene.
 	result = Render(rotation);
@@ -712,6 +781,46 @@ bool GraphicsClass::Render(float rotation)
 		return true;
 	}
 
+	// Guardian Lion Render
+	// 실제 모델 렌더링은 ModelRenderer Component가 담당한다.
+	result = m_GuardianLionRenderer->Render(
+		m_D3D->GetDeviceContext(),
+		m_TextureShader,
+		viewMatrix,
+		projectionMatrix
+	);
+
+	if (!result)
+	{
+		MessageBox(
+			NULL,
+			L"GuardianLion Render Failed",
+			L"Render Error",
+			MB_OK
+		);
+
+		return false;
+	}
+
+	// SakuraTree Render
+	result = m_SakuraTreeRenderer->Render(
+		m_D3D->GetDeviceContext(),
+		m_TextureShader,
+		viewMatrix,
+		projectionMatrix
+	);
+
+	if (!result)
+	{
+		MessageBox(
+			NULL,
+			L"SakuraTree Render Failed",
+			L"Render Error",
+			MB_OK
+		);
+
+		return false;
+	}
 
 	//Render WaterPlane
 	worldMatrix =
@@ -1037,47 +1146,9 @@ bool GraphicsClass::Render(float rotation)
 		return false;
 	}
 
-	// Guardian Lion Render
-	// 실제 모델 렌더링은 ModelRenderer Component가 담당한다.
-	result = m_GuardianLionRenderer->Render(
-		m_D3D->GetDeviceContext(),
-		m_TextureShader,
-		viewMatrix,
-		projectionMatrix
-	);
+	
 
-	if (!result)
-	{
-		MessageBox(
-			NULL,
-			L"GuardianLion Render Failed",
-			L"Render Error",
-			MB_OK
-		);
-
-		return false;
-	}
-
-	// Render sakura tree
-	worldMatrix =
-		XMMatrixScaling(150.0f, 150.0f, 150.0f) *
-		XMMatrixTranslation(-160.0f, 50.0f, 180.0f);
-
-	m_SakuraTree->Render(m_D3D->GetDeviceContext());
-
-	result = m_TextureShader->Render(
-		m_D3D->GetDeviceContext(),
-		m_SakuraTree->GetIndexCount(),
-		worldMatrix,
-		viewMatrix,
-		projectionMatrix,
-		m_SakuraTree->GetTexture());
-
-	if (!result)
-	{
-		MessageBox(NULL, L"m_SakuraTree Render Failed", L"Render Error", MB_OK);
-		return false;
-	}
+	
 
 	// Render billboard with alpha blending.
 	m_D3D->TurnOnAlphaBlending();

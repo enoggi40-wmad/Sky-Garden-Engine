@@ -154,6 +154,7 @@
     <ClCompile Include="modelclass.cpp" />
     <ClCompile Include="ModelRenderer.cpp" />
     <ClCompile Include="Rotator.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="systemclass.cpp" />
     <ClCompile Include="textclass.cpp" />
     <ClCompile Include="textureclass.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="modelclass.h" />
     <ClInclude Include="ModelRenderer.h" />
     <ClInclude Include="Rotator.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="systemclass.h" />
     <ClInclude Include="textclass.h" />
     <ClInclude Include="textureclass.h" />

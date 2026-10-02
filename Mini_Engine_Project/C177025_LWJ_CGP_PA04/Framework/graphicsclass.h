@@ -18,8 +18,8 @@
 
 #include "GameObject.h"
 #include "Rotator.h"
-
 #include "ModelRenderer.h"
+#include "Scene.h"
 /////////////
 // GLOBALS //
 /////////////
@@ -77,10 +77,15 @@ private:
 
 	bool m_ShowTitleScene;
 
-	// Guardian Lion의 Transform과 Component를 관리할 GameObject
+	// 각 오브젝트 필요한 멤버변수 추가
 	GameObject* m_GuardianLionObject;
-
 	ModelRenderer* m_GuardianLionRenderer;
+
+	GameObject* m_SakuraTreeObject;
+	ModelRenderer* m_SakuraTreeRenderer;
+
+	// Scene
+	Scene* m_Scene;
 };
 
 #endif

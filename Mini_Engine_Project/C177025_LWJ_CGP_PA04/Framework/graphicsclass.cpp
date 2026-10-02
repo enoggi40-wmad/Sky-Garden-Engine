@@ -36,8 +36,7 @@ GraphicsClass::GraphicsClass()
 
 	m_hwnd = 0;
 
-	// Guardian Lion GameObject
-	m_GuardianLionObject = nullptr;
+	
 	
 
 	// Scene
@@ -47,9 +46,7 @@ GraphicsClass::GraphicsClass()
 
 GraphicsClass::GraphicsClass(const GraphicsClass& other)
 {
-	m_GuardianLionObject = nullptr;
 	
-	m_SakuraTreeObject = nullptr;
 	
 }
 
@@ -93,13 +90,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Camera->SetPosition(0.0f, 100.0f, 0.0f);
 	m_Camera->SetRotation(5.0f, 0.0f, 0.0f);
 
-	// Intialize the scene object.
-	m_Scene = new Scene;
-
-	if (!m_Scene)
-	{
-		return false;
-	}
+	
 	
 	// Initialize the model object.
 	// Create the model object.
@@ -118,50 +109,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		L"./data/Guardian_Lion.dds"
 	);
 
-	//// Guardian Lion GameObject 생성
-	m_GuardianLionObject = new GameObject("GuardianLion");
-
-	if (!m_GuardianLionObject)
-	{
-		return false;
-	}
-
-	// Guardian Lion의 Transform 설정
-	// 기존 GraphicsClass::Render()에서 사용하던
-	// 크기와 위치 값을 GameObject의 Transform으로 옮긴다.
-	m_GuardianLionObject->transform.scale =
-	{ 80.0f, 80.0f, 80.0f };
-
-	m_GuardianLionObject->transform.position =
-	{ 0.0f, 0.0f, 60.0f };
-
-
-	// Guardian Lion에 Rotator Component 추가
-	Rotator* lionRotator =
-		new Rotator(m_GuardianLionObject, 1.0f);
-
-	m_GuardianLionObject->AddComponent(lionRotator);
-
-	Rotator* rotator =
-		m_GuardianLionObject->GetComponent<Rotator>();
-
-	if (rotator)
-	{
-		rotator->SetSpeed(15.0f);
-	}
-
-
-	// Guardian Lion에 ModelRenderer Component 생성
-	ModelRenderer* lionRenderer =
-		new ModelRenderer(
-			m_GuardianLionObject,
-			m_GuardianLion
-		);
-
-	m_GuardianLionObject->AddComponent(lionRenderer);
-
-	// 마지막에 Scene에 등록
-	m_Scene->AddGameObject(m_GuardianLionObject);
 
 	// Guardian Lion 초기화 실패 시 에러 메시지 출력
 	if (!result)
@@ -188,36 +135,21 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the m_SakuraTree object.", L"Error", MB_OK);
 		return false;
 	}
-	////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// SakuraTree GameObject 생성
-	m_SakuraTreeObject = new GameObject("SakuraTree");
 
-	if (!m_SakuraTreeObject)
+	// Intialize the scene object.
+	m_Scene = new Scene;
+
+	m_Scene->Initialize(
+		m_GuardianLion,
+		m_SakuraTree
+	);
+
+	if (!m_Scene)
 	{
 		return false;
 	}
-
-	// SakuraTree의 Transform 설정
-	m_SakuraTreeObject->transform.scale =
-	{ 150.0f, 150.0f, 150.0f };
-
-	m_SakuraTreeObject->transform.position =
-	{ -160.0f, 50.0f, 180.0f };
-
-	// SakuraTree에 ModelRenderer Component 붙이기
-	ModelRenderer* sakuraRenderer =
-		new ModelRenderer(
-			m_SakuraTreeObject,
-			m_SakuraTree
-		);
-
-	m_SakuraTreeObject->AddComponent(sakuraRenderer);
-
-	m_Scene->AddGameObject(m_SakuraTreeObject);
-
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 
 	// Crystal Prism2
 	m_CrystalPrism2 = new ModelClass;
@@ -496,12 +428,7 @@ void GraphicsClass::Shutdown()
 	if (m_Scene)
 	{
 		delete m_Scene;
-		m_Scene = nullptr;
-
-		m_GuardianLionObject = nullptr;
-		
-		m_SakuraTreeObject = nullptr;
-		
+		m_Scene = nullptr;	
 	}
 
 	// 그 다음 실제 Model 리소스 삭제 (추후 ResourceManager로 옮길 예정)
@@ -574,20 +501,6 @@ void GraphicsClass::Shutdown()
 		m_FloatingIsland->Shutdown();
 		delete m_FloatingIsland;
 		m_FloatingIsland = 0;
-	}
-
-	if (m_GuardianLion)
-	{
-		m_GuardianLion->Shutdown();
-		delete m_GuardianLion;
-		m_GuardianLion = 0;
-	}
-
-	if (m_SakuraTree)
-	{
-		m_SakuraTree->Shutdown();
-		delete m_SakuraTree;
-		m_SakuraTree = 0;
 	}
 
 	if (m_CrystalPrism2)

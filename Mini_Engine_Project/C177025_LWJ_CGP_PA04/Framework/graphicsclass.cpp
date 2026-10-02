@@ -56,366 +56,687 @@ GraphicsClass::~GraphicsClass()
 }
 
 
-bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
+bool GraphicsClass::Initialize(
+    int screenWidth,
+    int screenHeight,
+    HWND hwnd)
 {
-	bool result;
+    bool result;
 
-	XMMATRIX baseViewMatrix;
-
-	m_hwnd = hwnd;
-
-	// Create the Direct3D object.
-	m_D3D = new D3DClass;
-	if(!m_D3D)
-	{
-		return false;
-	}
-
-	// Initialize the Direct3D object.
-	result = m_D3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR);
-	if(!result)
-	{
-		MessageBox(hwnd, L"Could not initialize Direct3D.", L"Error", MB_OK);
-		return false;
-	}
-
-	// Create the camera object.
-	m_Camera = new CameraClass;
-	if(!m_Camera)
-	{
-		return false;
-	}
-
-	// Set the initial position of the camera.
-	m_Camera->SetPosition(0.0f, 100.0f, 0.0f);
-	m_Camera->SetRotation(5.0f, 0.0f, 0.0f);
-
-	
-	
-	// Initialize the model object.
-	// Create the model object.
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Guardian Lion
-	m_GuardianLion = new ModelClass;
-	if (!m_GuardianLion)
-	{
-		return false;
-	}
-
-	result = m_GuardianLion->Initialize(
-		m_D3D->GetDevice(),
-		L"./data/Guardian_Lion.obj",
-		L"./data/Guardian_Lion.dds"
-	);
+    m_hwnd = hwnd;
 
 
-	// Guardian Lion 초기화 실패 시 에러 메시지 출력
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the guardian lion object.", L"Error", MB_OK);
-		return false;
-	}
+    // =====================================================
+    // Direct3D
+    // =====================================================
 
-	// Sakura Tree
-	m_SakuraTree = new ModelClass;
-	if (!m_SakuraTree)
-	{
-		return false;
-	}
+    // Direct3D 객체 생성
+    m_D3D = new D3DClass;
 
-	result = m_SakuraTree->Initialize(
-		m_D3D->GetDevice(),
-		L"./data/Sakura_Tree.obj",
-		L"./data/Sakura_Tree.dds"
-	);
-
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the m_SakuraTree object.", L"Error", MB_OK);
-		return false;
-	}
-
-	// Intialize the scene object.
-	m_Scene = new Scene;
-
-	m_Scene->Initialize(
-		m_GuardianLion,
-		m_SakuraTree
-	);
-
-	if (!m_Scene)
-	{
-		return false;
-	}
-	////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-
-	// Crystal Prism2
-	m_CrystalPrism2 = new ModelClass;
-	if (!m_CrystalPrism2)
-	{
-		return false;
-	}
-
-	result = m_CrystalPrism2->Initialize(
-		m_D3D->GetDevice(),
-		L"./data/Crystal_Prism2.obj",
-		L"./data/Crystal_Prism2.dds"
-	);
-
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the crystal prism2 object.", L"Error", MB_OK);
-		return false;
-	}
+    if (!m_D3D)
+    {
+        return false;
+    }
 
 
-	// Water Plane
-	m_WaterPlane = new ModelClass;
-	if (!m_WaterPlane)
-	{
-		return false;
-	}
+    // Direct3D 초기화
+    result = m_D3D->Initialize(
+        screenWidth,
+        screenHeight,
+        VSYNC_ENABLED,
+        hwnd,
+        FULL_SCREEN,
+        SCREEN_DEPTH,
+        SCREEN_NEAR
+    );
 
-	result = m_WaterPlane->Initialize(
-		m_D3D->GetDevice(),
-		L"./data/WaterPlane.obj",
-		L"./data/WaterPlane.dds"
-	);
+    if (!result)
+    {
+        MessageBox(
+            hwnd,
+            L"Could not initialize Direct3D.",
+            L"Error",
+            MB_OK
+        );
 
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the water plane object.", L"Error", MB_OK);
-		return false;
-	}
-
-	// Floating Island
-	m_FloatingIsland = new ModelClass;
-	if (!m_FloatingIsland)
-	{
-		return false;
-	}
-
-	result = m_FloatingIsland->Initialize(
-		m_D3D->GetDevice(),
-		L"./data/Floating_Island.obj",
-		L"./data/Floating_Island.dds"
-	);
-
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the floating island object.", L"Error", MB_OK);
-		return false;
-	}
-
-	// Floating Alter
-	m_FloatingAlter = new ModelClass;
-	if (!m_FloatingAlter)
-	{
-		return false;
-	}
-
-	result = m_FloatingAlter->Initialize(
-		m_D3D->GetDevice(),
-		L"./data/Floating_Alter.obj",
-		L"./data/Floating_Alter.dds"
-	);
-
-	// Lantern
-	m_Lantern = new ModelClass;
-	if (!m_Lantern)
-	{
-		return false;
-	}
-
-	result = m_Lantern->Initialize(
-		m_D3D->GetDevice(),
-		L"./data/Lantern.obj",
-		L"./data/Lantern.dds"
-	);
-
-	// Golden Spire
-	m_GoldenSpire = new ModelClass;
-	if (!m_GoldenSpire)
-	{
-		return false;
-	}
-
-	result = m_GoldenSpire->Initialize(
-		m_D3D->GetDevice(),
-		L"./data/Golden_Spire.obj",
-		L"./data/Golden_Spire.dds"
-	);
-
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the m_GoldenSpire object.", L"Error", MB_OK);
-		return false;
-	}
-
-	// Circle Stone
-	m_CircleStone = new ModelClass;
-	if (!m_CircleStone)
-	{
-		return false;
-	}
-
-	result = m_CircleStone->Initialize(
-		m_D3D->GetDevice(),
-		L"./data/Circle_Stone.obj",
-		L"./data/Circle_Stone.dds"
-	);
-
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the m_CircleStone object.", L"Error", MB_OK);
-		return false;
-	}
-
-	// Crystal Prism
-	m_CrystalPrism = new ModelClass;
-	if (!m_CrystalPrism)
-	{
-		return false;
-	}
-
-	result = m_CrystalPrism->Initialize(
-		m_D3D->GetDevice(),
-		L"./data/Crystal_Prism.obj",
-		L"./data/Crystal_Prism.dds"
-	);
-
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the crystal prism object.", L"Error", MB_OK);
-		return false;
-	}
-
-	
-	// Cloud
-	m_Cloud = new ModelClass;
-	if (!m_Cloud)
-	{
-		return false;
-	}
-
-	result = m_Cloud->Initialize(
-		m_D3D->GetDevice(),
-		L"./data/Cloud.obj",
-		L"./data/Cloud.dds"
-	);
-
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the Cloud object.", L"Error", MB_OK);
-		return false;
-	}
-	
-
-	// Billboard
-	m_Billboard = new ModelClass;
-	if (!m_Billboard)
-	{
-		return false;
-	}
-
-	result = m_Billboard->Initialize(
-		m_D3D->GetDevice(),
-		L"./data/Magic_Billboard.obj",
-		L"./data/Magic_Billboard.dds"
-	);
-
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the billboard object.", L"Error", MB_OK);
-		return false;
-	}
-
-	
-	/////////////////////////////////////////////////////////////////////////////
-
-	// Create the texture shader object.
-	m_TextureShader = new TextureShaderClass;
-	if (!m_TextureShader)
-	{
-		return false;
-	}
-
-	// Initialize the texture shader object.
-	result = m_TextureShader->Initialize(m_D3D->GetDevice(), hwnd);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
-		return false;
-	}
+        return false;
+    }
 
 
-	// Create the bitmap object.
-	m_Bitmap = new BitmapClass;
-	if (!m_Bitmap)
-	{
-		return false;
-	}
-	
-	// Initialize the bitmap object.
-	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"./data/Title.dds", 800,600);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
-		return false;
-	}
 
-	// Info bitmap
-	m_InfoBitmap = new BitmapClass;
-	if (!m_InfoBitmap)
-	{
-		return false;
-	}
+    // =====================================================
+    // Camera
+    // =====================================================
 
-	result = m_InfoBitmap->Initialize(
-		m_D3D->GetDevice(),
-		screenWidth,
-		screenHeight,
-		L"./data/Panel.dds",
-		380,
-		32
-	);
+    // Camera 객체 생성
+    m_Camera = new CameraClass;
 
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the info bitmap object.", L"Error", MB_OK);
-		return false;
-	}
+    if (!m_Camera)
+    {
+        return false;
+    }
 
-	// 1. 2D UI용 카메라 위치로 잠깐 이동
-	m_Camera->SetPosition(0.0f, 0.0f, -1.0f);
-	m_Camera->SetRotation(0.0f, 0.0f, 0.0f);
 
-	// 2. 그 상태의 viewMatrix를 저장
-	m_Camera->Render();
-	m_Camera->GetViewMatrix(m_BaseViewMatrix);
+    // 초기 카메라 위치 / 회전
+    m_Camera->SetPosition(
+        0.0f,
+        100.0f,
+        0.0f
+    );
 
-	// 3. 다시 3D 메인 장면 시작 카메라 위치로 복구
-	m_Camera->SetPosition(500.0f, 500.0f, 500.0f);
-	m_Camera->SetRotation(45.0f, -135.0f, 0.0f);
+    m_Camera->SetRotation(
+        5.0f,
+        0.0f,
+        0.0f
+    );
 
-	// Create the text object.
-	m_Text = new TextClass;
-	if (!m_Text)
-	{
-		return false;
-	}
 
-	// Initialize the text object.
-	result = m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), hwnd, screenWidth, screenHeight, m_BaseViewMatrix);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the text object.", L"Error", MB_OK);
-		return false;
-	}
 
-	return true;
+    // =====================================================
+    // Model Resources
+    // =====================================================
+    //
+    // GraphicsClass는 아직 ModelClass 리소스의
+    // 생성과 초기화를 담당한다.
+    //
+    // 모든 ModelClass 초기화가 끝난 뒤
+    // Scene::Initialize()를 호출한다.
+    // =====================================================
+
+
+
+    // =====================================================
+    // Guardian Lion
+    // =====================================================
+
+    m_GuardianLion = new ModelClass;
+
+    if (!m_GuardianLion)
+    {
+        return false;
+    }
+
+
+    result = m_GuardianLion->Initialize(
+        m_D3D->GetDevice(),
+        L"./data/Guardian_Lion.obj",
+        L"./data/Guardian_Lion.dds"
+    );
+
+    if (!result)
+    {
+        MessageBox(
+            hwnd,
+            L"Could not initialize the guardian lion object.",
+            L"Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+
+    // =====================================================
+    // Sakura Tree
+    // =====================================================
+
+    m_SakuraTree = new ModelClass;
+
+    if (!m_SakuraTree)
+    {
+        return false;
+    }
+
+
+    result = m_SakuraTree->Initialize(
+        m_D3D->GetDevice(),
+        L"./data/Sakura_Tree.obj",
+        L"./data/Sakura_Tree.dds"
+    );
+
+    if (!result)
+    {
+        MessageBox(
+            hwnd,
+            L"Could not initialize the SakuraTree object.",
+            L"Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+
+    // =====================================================
+    // Crystal Prism2
+    // =====================================================
+
+    m_CrystalPrism2 = new ModelClass;
+
+    if (!m_CrystalPrism2)
+    {
+        return false;
+    }
+
+
+    result = m_CrystalPrism2->Initialize(
+        m_D3D->GetDevice(),
+        L"./data/Crystal_Prism2.obj",
+        L"./data/Crystal_Prism2.dds"
+    );
+
+    if (!result)
+    {
+        MessageBox(
+            hwnd,
+            L"Could not initialize the crystal prism2 object.",
+            L"Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+
+    // =====================================================
+    // Water Plane
+    // =====================================================
+
+    m_WaterPlane = new ModelClass;
+
+    if (!m_WaterPlane)
+    {
+        return false;
+    }
+
+
+    result = m_WaterPlane->Initialize(
+        m_D3D->GetDevice(),
+        L"./data/WaterPlane.obj",
+        L"./data/WaterPlane.dds"
+    );
+
+    if (!result)
+    {
+        MessageBox(
+            hwnd,
+            L"Could not initialize the water plane object.",
+            L"Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+
+    // =====================================================
+    // Floating Island
+    // =====================================================
+
+    m_FloatingIsland = new ModelClass;
+
+    if (!m_FloatingIsland)
+    {
+        return false;
+    }
+
+
+    result = m_FloatingIsland->Initialize(
+        m_D3D->GetDevice(),
+        L"./data/Floating_Island.obj",
+        L"./data/Floating_Island.dds"
+    );
+
+    if (!result)
+    {
+        MessageBox(
+            hwnd,
+            L"Could not initialize the floating island object.",
+            L"Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+
+    // =====================================================
+    // Floating Alter
+    // =====================================================
+
+    m_FloatingAlter = new ModelClass;
+
+    if (!m_FloatingAlter)
+    {
+        return false;
+    }
+
+
+    result = m_FloatingAlter->Initialize(
+        m_D3D->GetDevice(),
+        L"./data/Floating_Alter.obj",
+        L"./data/Floating_Alter.dds"
+    );
+
+    if (!result)
+    {
+        MessageBox(
+            hwnd,
+            L"Could not initialize the floating alter object.",
+            L"Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+
+    // =====================================================
+    // Lantern
+    // =====================================================
+
+    m_Lantern = new ModelClass;
+
+    if (!m_Lantern)
+    {
+        return false;
+    }
+
+
+    result = m_Lantern->Initialize(
+        m_D3D->GetDevice(),
+        L"./data/Lantern.obj",
+        L"./data/Lantern.dds"
+    );
+
+    if (!result)
+    {
+        MessageBox(
+            hwnd,
+            L"Could not initialize the lantern object.",
+            L"Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+
+    // =====================================================
+    // Golden Spire
+    // =====================================================
+
+    m_GoldenSpire = new ModelClass;
+
+    if (!m_GoldenSpire)
+    {
+        return false;
+    }
+
+
+    result = m_GoldenSpire->Initialize(
+        m_D3D->GetDevice(),
+        L"./data/Golden_Spire.obj",
+        L"./data/Golden_Spire.dds"
+    );
+
+    if (!result)
+    {
+        MessageBox(
+            hwnd,
+            L"Could not initialize the GoldenSpire object.",
+            L"Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+
+    // =====================================================
+    // Circle Stone
+    // =====================================================
+
+    m_CircleStone = new ModelClass;
+
+    if (!m_CircleStone)
+    {
+        return false;
+    }
+
+
+    result = m_CircleStone->Initialize(
+        m_D3D->GetDevice(),
+        L"./data/Circle_Stone.obj",
+        L"./data/Circle_Stone.dds"
+    );
+
+    if (!result)
+    {
+        MessageBox(
+            hwnd,
+            L"Could not initialize the CircleStone object.",
+            L"Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+
+    // =====================================================
+    // Crystal Prism
+    // =====================================================
+
+    m_CrystalPrism = new ModelClass;
+
+    if (!m_CrystalPrism)
+    {
+        return false;
+    }
+
+
+    result = m_CrystalPrism->Initialize(
+        m_D3D->GetDevice(),
+        L"./data/Crystal_Prism.obj",
+        L"./data/Crystal_Prism.dds"
+    );
+
+    if (!result)
+    {
+        MessageBox(
+            hwnd,
+            L"Could not initialize the crystal prism object.",
+            L"Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+
+    // =====================================================
+    // Cloud
+    // =====================================================
+
+    m_Cloud = new ModelClass;
+
+    if (!m_Cloud)
+    {
+        return false;
+    }
+
+
+    result = m_Cloud->Initialize(
+        m_D3D->GetDevice(),
+        L"./data/Cloud.obj",
+        L"./data/Cloud.dds"
+    );
+
+    if (!result)
+    {
+        MessageBox(
+            hwnd,
+            L"Could not initialize the Cloud object.",
+            L"Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+
+    // =====================================================
+    // Billboard
+    // =====================================================
+
+    m_Billboard = new ModelClass;
+
+    if (!m_Billboard)
+    {
+        return false;
+    }
+
+
+    result = m_Billboard->Initialize(
+        m_D3D->GetDevice(),
+        L"./data/Magic_Billboard.obj",
+        L"./data/Magic_Billboard.dds"
+    );
+
+    if (!result)
+    {
+        MessageBox(
+            hwnd,
+            L"Could not initialize the billboard object.",
+            L"Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+
+    // =====================================================
+    // Scene
+    // =====================================================
+    //
+    // Scene이 사용할 ModelClass들이 모두 초기화된 뒤
+    // Scene과 GameObject들을 생성한다.
+    //
+    // ModelRenderer가 초기화되지 않은 ModelClass를
+    // 참조하지 않도록 반드시 모델 로딩 이후에 실행한다.
+    // =====================================================
+
+    m_Scene = new Scene;
+
+    if (!m_Scene)
+    {
+        return false;
+    }
+
+
+    // Scene 내부에서 GameObject 생성,
+    // Transform 설정, Component 부착을 수행한다.
+    m_Scene->Initialize(
+        m_GuardianLion,
+        m_SakuraTree,
+        m_WaterPlane,
+        m_FloatingAlter,
+        m_GoldenSpire,
+        m_CircleStone
+    );
+
+
+
+    // =====================================================
+    // Texture Shader
+    // =====================================================
+
+    m_TextureShader = new TextureShaderClass;
+
+    if (!m_TextureShader)
+    {
+        return false;
+    }
+
+
+    result = m_TextureShader->Initialize(
+        m_D3D->GetDevice(),
+        hwnd
+    );
+
+    if (!result)
+    {
+        MessageBox(
+            hwnd,
+            L"Could not initialize the texture shader object.",
+            L"Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+
+    // =====================================================
+    // Title Bitmap
+    // =====================================================
+
+    m_Bitmap = new BitmapClass;
+
+    if (!m_Bitmap)
+    {
+        return false;
+    }
+
+
+    result = m_Bitmap->Initialize(
+        m_D3D->GetDevice(),
+        screenWidth,
+        screenHeight,
+        L"./data/Title.dds",
+        800,
+        600
+    );
+
+    if (!result)
+    {
+        MessageBox(
+            hwnd,
+            L"Could not initialize the bitmap object.",
+            L"Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+
+    // =====================================================
+    // Info Bitmap
+    // =====================================================
+
+    m_InfoBitmap = new BitmapClass;
+
+    if (!m_InfoBitmap)
+    {
+        return false;
+    }
+
+
+    result = m_InfoBitmap->Initialize(
+        m_D3D->GetDevice(),
+        screenWidth,
+        screenHeight,
+        L"./data/Panel.dds",
+        380,
+        32
+    );
+
+    if (!result)
+    {
+        MessageBox(
+            hwnd,
+            L"Could not initialize the info bitmap object.",
+            L"Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+
+    // =====================================================
+    // 2D UI Base View Matrix
+    // =====================================================
+
+    // 2D UI용 카메라 위치로 잠시 이동
+    m_Camera->SetPosition(
+        0.0f,
+        0.0f,
+        -1.0f
+    );
+
+    m_Camera->SetRotation(
+        0.0f,
+        0.0f,
+        0.0f
+    );
+
+
+    // UI 렌더링에 사용할 View Matrix 저장
+    m_Camera->Render();
+    m_Camera->GetViewMatrix(
+        m_BaseViewMatrix
+    );
+
+
+    // 메인 3D Scene의 시작 카메라 위치로 복구
+    m_Camera->SetPosition(
+        500.0f,
+        500.0f,
+        500.0f
+    );
+
+    m_Camera->SetRotation(
+        45.0f,
+        -135.0f,
+        0.0f
+    );
+
+
+
+    // =====================================================
+    // Text
+    // =====================================================
+
+    m_Text = new TextClass;
+
+    if (!m_Text)
+    {
+        return false;
+    }
+
+
+    result = m_Text->Initialize(
+        m_D3D->GetDevice(),
+        m_D3D->GetDeviceContext(),
+        hwnd,
+        screenWidth,
+        screenHeight,
+        m_BaseViewMatrix
+    );
+
+    if (!result)
+    {
+        MessageBox(
+            hwnd,
+            L"Could not initialize the text object.",
+            L"Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+    return true;
 }
 
 
@@ -645,479 +966,732 @@ bool GraphicsClass::Frame(int fps, int cpu)
 
 bool GraphicsClass::Render(float rotation)
 {
-	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
-	bool result;
-	
-	// Clear the buffers to begin the scene.
-	m_D3D->BeginScene(0.60f, 0.82f, 1.0f, 1.0f);
-
-	// Generate the view matrix based on the camera's position.
-	m_Camera->Render();
-
-	// Get the world, view, and projection matrices from the camera and d3d objects.
-	m_Camera->GetViewMatrix(viewMatrix);
-	m_D3D->GetWorldMatrix(worldMatrix);
-	m_D3D->GetProjectionMatrix(projectionMatrix);
-
-	m_D3D->GetOrthoMatrix(orthoMatrix);
-
-	// Render title scene.
-	if (m_ShowTitleScene)
-	{
-		m_D3D->TurnZBufferOff();
-
-		worldMatrix = XMMatrixIdentity();
-
-		result = m_Bitmap->Render(m_D3D->GetDeviceContext(), 0, 0);
-		if (!result)
-		{
-			MessageBox(NULL, L"Title Bitmap Render Failed", L"Render Error", MB_OK);
-			return false;
-		}
-
-		result = m_TextureShader->Render(
-			m_D3D->GetDeviceContext(),
-			m_Bitmap->GetIndexCount(),
-			worldMatrix,
-			m_BaseViewMatrix,
-			orthoMatrix,
-			m_Bitmap->GetTexture());
-
-		if (!result)
-		{
-			MessageBox(NULL, L"Title Texture Render Failed", L"Render Error", MB_OK);
-			return false;
-		}
-
-		m_D3D->TurnZBufferOn();
-
-		m_D3D->EndScene();
-
-		return true;
-	}
-
-	result = m_Scene->Render(
-		m_D3D->GetDeviceContext(),
-		m_TextureShader,
-		viewMatrix,
-		projectionMatrix
-	);
-
-	if (!result)
-	{
-		MessageBox(
-			NULL,
-			L"Scene Render Failed",
-			L"Render Error",
-			MB_OK
-		);
-
-		return false;
-	}
-
-	//Render WaterPlane
-	worldMatrix =
-		XMMatrixScaling(5.0f, 1.0f, 5.0f) *
-		XMMatrixTranslation(0.0f, -100.0f, 0.0f);
-
-	m_WaterPlane->Render(m_D3D->GetDeviceContext());
-
-	result = m_TextureShader->Render(
-		m_D3D->GetDeviceContext(),
-		m_WaterPlane->GetIndexCount(),
-		worldMatrix,
-		viewMatrix,
-		projectionMatrix,
-		m_WaterPlane->GetTexture());
-
-	if (!result)
-	{
-		MessageBox(NULL, L"WaterPlane Failed", L"Render Error", MB_OK);
-		return false;
-	}
-
-
-	// Render duplicated floating islands around the start position.
-	const int iscrystalCount = 10;
-	const float radius = 700.0f;
-
-	const float centerX = 0.0f;
-	const float centerY = -300.0f;
-	const float centerZ = 0.0f;
-
-	const float orbitSpeed = 0.03f;   // 공전 속도
-	const float selfSpeed = 1.0f;    // 자전 속도
-
-	for (int i = 0; i < iscrystalCount; i++)
-	{
-		float baseAngle = (XM_2PI / iscrystalCount) * i;
-
-		// 공전 각도
-		float orbitAngle = baseAngle + rotation * orbitSpeed;
-
-		float x = centerX + cosf(orbitAngle) * radius;
-		float z = centerZ + sinf(orbitAngle) * radius;
-
-		worldMatrix =
-			XMMatrixScaling(50.0f, 50.0f, 50.0f) *
-
-			// 기본 방향 + 자전
-			XMMatrixRotationY(-orbitAngle + XM_PIDIV2 + rotation * selfSpeed) *
-
-			XMMatrixTranslation(x, centerY, z);
-
-		m_CrystalPrism->Render(m_D3D->GetDeviceContext());
-
-		result = m_TextureShader->Render(
-			m_D3D->GetDeviceContext(),
-			m_CrystalPrism->GetIndexCount(),
-			worldMatrix,
-			viewMatrix,
-			projectionMatrix,
-			m_CrystalPrism->GetTexture());
-
-		if (!result)
-		{
-			MessageBox(NULL, L"CrystalPrism Instance Failed", L"Render Error", MB_OK);
-			return false;
-		}
-	}
-
-	// Render 3 fixed floating yellow crystals.
-	const int yellowCrystalCount = 4;
-
-	// 맵에 고정된 노란 수정 위치
-	XMFLOAT3 yellowCrystalPositions[yellowCrystalCount] =
-	{
-		XMFLOAT3(-550.0f, 120.0f,  550.0f),
-		XMFLOAT3(550.0f, 120.0f,  550.0f),
-		XMFLOAT3(-550.0f, 120.0f,  -550.0f),
-		XMFLOAT3(550.0f, 120.0f,  -550.0f)
-	};
-
-	for (int i = 0; i < yellowCrystalCount; i++)
-	{
-		float floatOffsetY = sinf(rotation * 0.5f + i * 2.0f) * 10.0f;
-
-		worldMatrix =
-			XMMatrixScaling(50.0f, 50.0f, 50.0f) *
-			XMMatrixRotationY(rotation * 0.5f + i) *
-			XMMatrixTranslation(
-				yellowCrystalPositions[i].x,
-				yellowCrystalPositions[i].y + floatOffsetY,
-				yellowCrystalPositions[i].z
-			);
-
-		m_CrystalPrism2->Render(m_D3D->GetDeviceContext());
-
-		result = m_TextureShader->Render(
-			m_D3D->GetDeviceContext(),
-			m_CrystalPrism2->GetIndexCount(),
-			worldMatrix,
-			viewMatrix,
-			projectionMatrix,
-			m_CrystalPrism2->GetTexture());
-
-		if (!result)
-		{
-			MessageBox(NULL, L"Yellow Crystal Render Failed", L"Render Error", MB_OK);
-			return false;
-		}
-	}
-
-	// 맵에 랜턴
-	const int LanternCount = 4;
-
-	XMFLOAT3 LanternPositions[LanternCount] =
-	{
-		XMFLOAT3(-150.0f, -300.0f,  150.0f),
-		XMFLOAT3(150.0f, -300.0f,  150.0f),
-		XMFLOAT3(-150.0f, -300.0f,  -150.0f),
-		XMFLOAT3(150.0f, -300.0f,  -150.0f)
-	};
-
-	for (int i = 0; i < LanternCount; i++)
-	{
-		float floatOffsetY = sinf(rotation * 0.5f + i * 2.0f) * 10.0f;
-
-		worldMatrix =
-			XMMatrixScaling(50.0f, 50.0f, 50.0f) *
-			XMMatrixRotationY(rotation * 0.5f + i) *
-			XMMatrixTranslation(
-				LanternPositions[i].x,
-				LanternPositions[i].y + floatOffsetY,
-				LanternPositions[i].z
-			);
-
-		m_Lantern->Render(m_D3D->GetDeviceContext());
-
-		result = m_TextureShader->Render(
-			m_D3D->GetDeviceContext(),
-			m_Lantern ->GetIndexCount(),
-			worldMatrix,
-			viewMatrix,
-			projectionMatrix,
-			m_Lantern ->GetTexture());
-
-		if (!result)
-		{
-			MessageBox(NULL, L"Lantern Render Failed", L"Render Error", MB_OK);
-			return false;
-		}
-	}
-
-	// Render far floating islands.
-	const int farIslandCount = 12;
-
-	XMFLOAT3 farIslandPositions[farIslandCount] =
-	{
-		XMFLOAT3(-2200.0f, -330.0f, -1400.0f),
-		XMFLOAT3(-2100.0f, -280.0f,   800.0f),
-		XMFLOAT3(-1400.0f, -360.0f,  2100.0f),
-		XMFLOAT3(-600.0f, -300.0f, -2300.0f),
-
-		XMFLOAT3(800.0f, -270.0f,  2200.0f),
-		XMFLOAT3(1500.0f, -340.0f, -2000.0f),
-		XMFLOAT3(2200.0f, -290.0f,  1100.0f),
-		XMFLOAT3(2400.0f, -320.0f,  -600.0f),
-
-		XMFLOAT3(-2500.0f, -370.0f,   100.0f),
-		XMFLOAT3(2500.0f, -300.0f,   300.0f),
-		XMFLOAT3(1100.0f, -390.0f,  2400.0f),
-		XMFLOAT3(-1100.0f, -310.0f, -2500.0f)
-	};
-
-	for (int i = 0; i < farIslandCount; i++)
-	{
-		worldMatrix =
-			XMMatrixScaling(45.0f, 45.0f, 45.0f) *
-			XMMatrixRotationY(i * 0.6f) *
-			XMMatrixTranslation(
-				farIslandPositions[i].x,
-				farIslandPositions[i].y,
-				farIslandPositions[i].z
-			);
-
-		m_FloatingIsland->Render(m_D3D->GetDeviceContext());
-
-		result = m_TextureShader->Render(
-			m_D3D->GetDeviceContext(),
-			m_FloatingIsland->GetIndexCount(),
-			worldMatrix,
-			viewMatrix,
-			projectionMatrix,
-			m_FloatingIsland->GetTexture());
-
-		if (!result)
-		{
-			MessageBox(NULL, L"Far FloatingIsland Render Failed", L"Render Error", MB_OK);
-			return false;
-		}
-	}
-
-		
-
-	
-
-	// Render orbiting lower clouds.
-	const int cloudCount = 8;
-
-	XMFLOAT3 cloudBasePositions[cloudCount] =
-	{
-		XMFLOAT3(-1800.0f, -650.0f, -1200.0f),
-		XMFLOAT3(-1200.0f, -580.0f,  1600.0f),
-		XMFLOAT3(-500.0f,  -700.0f, -2100.0f),
-		XMFLOAT3(700.0f,   -620.0f,  1900.0f),
-
-		XMFLOAT3(1500.0f,  -680.0f, -1500.0f),
-		XMFLOAT3(2100.0f,  -600.0f,   500.0f),
-		XMFLOAT3(-2300.0f, -720.0f,   300.0f),
-		XMFLOAT3(300.0f,   -640.0f,  2400.0f)
-	};
-
-	const float cloudOrbitSpeed = 0.01f;   // 공전 속도
-	const float cloudSelfSpeed = 0.1f;     // 자전 속도
-
-	for (int i = 0; i < cloudCount; i++)
-	{
-		float baseX = cloudBasePositions[i].x;
-		float baseZ = cloudBasePositions[i].z;
-
-		// 원점 기준 거리와 기본 각도 계산
-		float cloudRadius = sqrtf(baseX * baseX + baseZ * baseZ);
-		float baseAngle = atan2f(baseZ, baseX);
-
-		// 공전 각도
-		float orbitAngle = baseAngle + rotation * cloudOrbitSpeed;
-
-		float x = cosf(orbitAngle) * cloudRadius;
-		float z = sinf(orbitAngle) * cloudRadius;
-		float y = cloudBasePositions[i].y;
-
-		worldMatrix =
-			XMMatrixScaling(100.0f, 100.0f, 100.0f) *
-			//XMMatrixRotationX(XM_PIDIV2 + rotation * cloudSelfSpeed + i *0.0f) *
-			XMMatrixTranslation(x, y, z);
-
-		m_Cloud->Render(m_D3D->GetDeviceContext());
-
-		result = m_TextureShader->Render(
-			m_D3D->GetDeviceContext(),
-			m_Cloud->GetIndexCount(),
-			worldMatrix,
-			viewMatrix,
-			projectionMatrix,
-			m_Cloud->GetTexture());
-
-		if (!result)
-		{
-			MessageBox(NULL, L"Cloud Render Failed", L"Render Error", MB_OK);
-			return false;
-		}
-	}
-
-	// Render floating alter.
-	worldMatrix =
-		XMMatrixScaling(320.0f, 120.0f, 320.0f) *
-		XMMatrixTranslation(0.0f, -80.0f, 0.0f);
-
-	m_FloatingAlter->Render(m_D3D->GetDeviceContext());
-
-	result = m_TextureShader->Render(
-		m_D3D->GetDeviceContext(),
-		m_FloatingAlter->GetIndexCount(),
-		worldMatrix,
-		viewMatrix,
-		projectionMatrix,
-		m_FloatingAlter->GetTexture());
-
-	if (!result)
-	{
-		MessageBox(NULL, L"Floating_Alter Render Failed", L"Render Error", MB_OK);
-		return false;
-	}
-
-	// Render golden spire
-	worldMatrix =
-		XMMatrixScaling(100.0f, 100.0f, 100.0f) *
-		XMMatrixTranslation(0.0f, -300.0f, 0.0f);
-
-	m_GoldenSpire->Render(m_D3D->GetDeviceContext());
-
-	result = m_TextureShader->Render(
-		m_D3D->GetDeviceContext(),
-		m_GoldenSpire->GetIndexCount(),
-		worldMatrix,
-		viewMatrix,
-		projectionMatrix,
-		m_GoldenSpire->GetTexture());
-
-	if (!result)
-	{
-		MessageBox(NULL, L"m_GoldenSpire Render Failed", L"Render Error", MB_OK);
-		return false;
-	}
-
-	// Render CircleStone.
-	worldMatrix =
-		XMMatrixScaling(1000.0f, 120.0f, 1000.0f) *
-		XMMatrixTranslation(0.0f, -500.0f, 0.0f);
-
-	m_CircleStone->Render(m_D3D->GetDeviceContext());
-
-	result = m_TextureShader->Render(
-		m_D3D->GetDeviceContext(),
-		m_CircleStone->GetIndexCount(),
-		worldMatrix,
-		viewMatrix,
-		projectionMatrix,
-		m_CircleStone->GetTexture());
-
-	if (!result)
-	{
-		MessageBox(NULL, L"m_CircleStone Render Failed", L"Render Error", MB_OK);
-		return false;
-	}
-
-	
-
-	
-
-	// Render billboard with alpha blending.
-	m_D3D->TurnOnAlphaBlending();
-
-	float cameraYaw = m_Camera->GetRotationY();
-
-	worldMatrix =
-		XMMatrixScaling(50.0f, 50.0f, 50.0f) *
-		XMMatrixRotationY(XMConvertToRadians(cameraYaw) + XM_PI) *
-		XMMatrixTranslation(195.0f, 30.0f, 145.0f);
-
-	m_Billboard->Render(m_D3D->GetDeviceContext());
-
-	result = m_TextureShader->Render(
-		m_D3D->GetDeviceContext(),
-		m_Billboard->GetIndexCount(),
-		worldMatrix,
-		viewMatrix,
-		projectionMatrix,
-		m_Billboard->GetTexture());
-
-	if (!result)
-	{
-		MessageBox(NULL, L"Billboard Render Failed", L"Render Error", MB_OK);
-		return false;
-	}
-
-	m_D3D->TurnOffAlphaBlending();
-	
-
-	// Render 2D UI.
-	m_D3D->TurnZBufferOff();
-	m_D3D->TurnOnAlphaBlending();
-
-	worldMatrix = XMMatrixIdentity();
-
-	// Panel first.
-	result = m_InfoBitmap->Render(m_D3D->GetDeviceContext(), 0, 15);
-	if (!result)
-	{
-		MessageBox(NULL, L"Info Bitmap Render Failed", L"Render Error", MB_OK);
-		return false;
-	}
-
-	result = m_TextureShader->Render(
-		m_D3D->GetDeviceContext(),
-		m_InfoBitmap->GetIndexCount(),
-		worldMatrix,
-		m_BaseViewMatrix,
-		orthoMatrix,
-		m_InfoBitmap->GetTexture());
-
-	if (!result)
-	{
-		MessageBox(NULL, L"Info Bitmap Texture Render Failed", L"Render Error", MB_OK);
-		return false;
-	}
-
-	// Text second.
-	worldMatrix = XMMatrixIdentity();
-
-	result = m_Text->Render(
-		m_D3D->GetDeviceContext(),
-		worldMatrix,
-		orthoMatrix);
-
-	if (!result)
-	{
-		MessageBox(NULL, L"Text Render Failed", L"Render Error", MB_OK);
-		return false;
-	}
-
-	m_D3D->TurnOffAlphaBlending();
-	m_D3D->TurnZBufferOn();
-
-	m_D3D->EndScene();
-
-	return true;
+    XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
+    bool result;
+
+
+    // =====================================================
+    // Scene 렌더링 준비
+    // =====================================================
+
+    // 화면 초기화
+    m_D3D->BeginScene(0.60f, 0.82f, 1.0f, 1.0f);
+
+
+    // 현재 카메라 위치와 회전을 이용해 View Matrix 생성
+    m_Camera->Render();
+
+
+    // 렌더링에 필요한 Matrix 가져오기
+    m_Camera->GetViewMatrix(viewMatrix);
+    m_D3D->GetWorldMatrix(worldMatrix);
+    m_D3D->GetProjectionMatrix(projectionMatrix);
+    m_D3D->GetOrthoMatrix(orthoMatrix);
+
+
+
+    // =====================================================
+    // Title Scene
+    // =====================================================
+
+    if (m_ShowTitleScene)
+    {
+        // 2D 이미지이므로 ZBuffer 비활성화
+        m_D3D->TurnZBufferOff();
+
+        worldMatrix = XMMatrixIdentity();
+
+
+        // Title Bitmap 렌더링 준비
+        result = m_Bitmap->Render(
+            m_D3D->GetDeviceContext(),
+            0,
+            0
+        );
+
+        if (!result)
+        {
+            MessageBox(
+                NULL,
+                L"Title Bitmap Render Failed",
+                L"Render Error",
+                MB_OK
+            );
+
+            return false;
+        }
+
+
+        // Title Texture 렌더링
+        result = m_TextureShader->Render(
+            m_D3D->GetDeviceContext(),
+            m_Bitmap->GetIndexCount(),
+            worldMatrix,
+            m_BaseViewMatrix,
+            orthoMatrix,
+            m_Bitmap->GetTexture()
+        );
+
+        if (!result)
+        {
+            MessageBox(
+                NULL,
+                L"Title Texture Render Failed",
+                L"Render Error",
+                MB_OK
+            );
+
+            return false;
+        }
+
+
+        m_D3D->TurnZBufferOn();
+
+        m_D3D->EndScene();
+
+        return true;
+    }
+
+
+
+    // =====================================================
+    // Scene GameObject 렌더링
+    // =====================================================
+    //
+    // Scene에 등록된 GameObject들의 ModelRenderer를 찾아 렌더링한다.
+    //
+    // 현재 Scene에서 관리하는 오브젝트:
+    // - GuardianLion
+    // - SakuraTree
+    // - WaterPlane
+    // - FloatingAlter
+    // - GoldenSpire
+    // - CircleStone
+    //
+    // 위 오브젝트들은 GraphicsClass에서 직접 렌더링하지 않는다.
+    // =====================================================
+
+    result = m_Scene->Render(
+        m_D3D->GetDeviceContext(),
+        m_TextureShader,
+        viewMatrix,
+        projectionMatrix
+    );
+
+    if (!result)
+    {
+        MessageBox(
+            NULL,
+            L"Scene Render Failed",
+            L"Render Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+
+    // =====================================================
+    // Crystal Prism
+    // =====================================================
+    //
+    // 아직 움직임 로직이 GraphicsClass에 있으므로
+    // Scene으로 이동하지 않고 기존 방식 유지
+    // =====================================================
+
+    const int iscrystalCount = 10;
+    const float radius = 700.0f;
+
+    const float centerX = 0.0f;
+    const float centerY = -300.0f;
+    const float centerZ = 0.0f;
+
+    const float orbitSpeed = 0.03f;  // 공전 속도
+    const float selfSpeed = 1.0f;    // 자전 속도
+
+
+    for (int i = 0; i < iscrystalCount; i++)
+    {
+        // 각 Crystal의 기본 배치 각도
+        float baseAngle =
+            (XM_2PI / iscrystalCount) * i;
+
+
+        // 시간에 따라 공전
+        float orbitAngle =
+            baseAngle + rotation * orbitSpeed;
+
+
+        // 원형 위치 계산
+        float x =
+            centerX + cosf(orbitAngle) * radius;
+
+        float z =
+            centerZ + sinf(orbitAngle) * radius;
+
+
+        worldMatrix =
+            XMMatrixScaling(
+                50.0f,
+                50.0f,
+                50.0f
+            )
+            *
+
+            // 공전 방향에 맞춘 회전 + 자전
+            XMMatrixRotationY(
+                -orbitAngle
+                + XM_PIDIV2
+                + rotation * selfSpeed
+            )
+            *
+
+            XMMatrixTranslation(
+                x,
+                centerY,
+                z
+            );
+
+
+        m_CrystalPrism->Render(
+            m_D3D->GetDeviceContext()
+        );
+
+
+        result = m_TextureShader->Render(
+            m_D3D->GetDeviceContext(),
+            m_CrystalPrism->GetIndexCount(),
+            worldMatrix,
+            viewMatrix,
+            projectionMatrix,
+            m_CrystalPrism->GetTexture()
+        );
+
+
+        if (!result)
+        {
+            MessageBox(
+                NULL,
+                L"CrystalPrism Instance Failed",
+                L"Render Error",
+                MB_OK
+            );
+
+            return false;
+        }
+    }
+
+
+
+    // =====================================================
+    // Crystal Prism2
+    // =====================================================
+    //
+    // 4개의 수정이 각 위치에서 상하 이동 및 회전
+    // =====================================================
+
+    const int yellowCrystalCount = 4;
+
+
+    XMFLOAT3 yellowCrystalPositions[yellowCrystalCount] =
+    {
+        XMFLOAT3(-550.0f, 120.0f,  550.0f),
+        XMFLOAT3(550.0f, 120.0f,  550.0f),
+        XMFLOAT3(-550.0f, 120.0f, -550.0f),
+        XMFLOAT3(550.0f, 120.0f, -550.0f)
+    };
+
+
+    for (int i = 0; i < yellowCrystalCount; i++)
+    {
+        // Sin 값을 이용한 상하 이동
+        float floatOffsetY =
+            sinf(rotation * 0.5f + i * 2.0f)
+            * 10.0f;
+
+
+        worldMatrix =
+            XMMatrixScaling(
+                50.0f,
+                50.0f,
+                50.0f
+            )
+            *
+            XMMatrixRotationY(
+                rotation * 0.5f + i
+            )
+            *
+            XMMatrixTranslation(
+                yellowCrystalPositions[i].x,
+                yellowCrystalPositions[i].y + floatOffsetY,
+                yellowCrystalPositions[i].z
+            );
+
+
+        m_CrystalPrism2->Render(
+            m_D3D->GetDeviceContext()
+        );
+
+
+        result = m_TextureShader->Render(
+            m_D3D->GetDeviceContext(),
+            m_CrystalPrism2->GetIndexCount(),
+            worldMatrix,
+            viewMatrix,
+            projectionMatrix,
+            m_CrystalPrism2->GetTexture()
+        );
+
+
+        if (!result)
+        {
+            MessageBox(
+                NULL,
+                L"Yellow Crystal Render Failed",
+                L"Render Error",
+                MB_OK
+            );
+
+            return false;
+        }
+    }
+
+
+
+    // =====================================================
+    // Lantern
+    // =====================================================
+    //
+    // 4개의 랜턴이 상하 이동 및 회전
+    // =====================================================
+
+    const int LanternCount = 4;
+
+
+    XMFLOAT3 LanternPositions[LanternCount] =
+    {
+        XMFLOAT3(-150.0f, -300.0f,  150.0f),
+        XMFLOAT3(150.0f, -300.0f,  150.0f),
+        XMFLOAT3(-150.0f, -300.0f, -150.0f),
+        XMFLOAT3(150.0f, -300.0f, -150.0f)
+    };
+
+
+    for (int i = 0; i < LanternCount; i++)
+    {
+        // 상하 움직임
+        float floatOffsetY =
+            sinf(rotation * 0.5f + i * 2.0f)
+            * 10.0f;
+
+
+        worldMatrix =
+            XMMatrixScaling(
+                50.0f,
+                50.0f,
+                50.0f
+            )
+            *
+            XMMatrixRotationY(
+                rotation * 0.5f + i
+            )
+            *
+            XMMatrixTranslation(
+                LanternPositions[i].x,
+                LanternPositions[i].y + floatOffsetY,
+                LanternPositions[i].z
+            );
+
+
+        m_Lantern->Render(
+            m_D3D->GetDeviceContext()
+        );
+
+
+        result = m_TextureShader->Render(
+            m_D3D->GetDeviceContext(),
+            m_Lantern->GetIndexCount(),
+            worldMatrix,
+            viewMatrix,
+            projectionMatrix,
+            m_Lantern->GetTexture()
+        );
+
+
+        if (!result)
+        {
+            MessageBox(
+                NULL,
+                L"Lantern Render Failed",
+                L"Render Error",
+                MB_OK
+            );
+
+            return false;
+        }
+    }
+
+
+
+    // =====================================================
+    // Floating Island
+    // =====================================================
+    //
+    // 멀리 배치된 12개의 Floating Island
+    // 현재는 동일한 ModelClass를 여러 위치에 직접 렌더링
+    // =====================================================
+
+    const int farIslandCount = 12;
+
+
+    XMFLOAT3 farIslandPositions[farIslandCount] =
+    {
+        XMFLOAT3(-2200.0f, -330.0f, -1400.0f),
+        XMFLOAT3(-2100.0f, -280.0f,   800.0f),
+        XMFLOAT3(-1400.0f, -360.0f,  2100.0f),
+        XMFLOAT3(-600.0f,  -300.0f, -2300.0f),
+
+        XMFLOAT3(800.0f,   -270.0f,  2200.0f),
+        XMFLOAT3(1500.0f,  -340.0f, -2000.0f),
+        XMFLOAT3(2200.0f,  -290.0f,  1100.0f),
+        XMFLOAT3(2400.0f,  -320.0f,  -600.0f),
+
+        XMFLOAT3(-2500.0f, -370.0f,   100.0f),
+        XMFLOAT3(2500.0f,  -300.0f,   300.0f),
+        XMFLOAT3(1100.0f,  -390.0f,  2400.0f),
+        XMFLOAT3(-1100.0f, -310.0f, -2500.0f)
+    };
+
+
+    for (int i = 0; i < farIslandCount; i++)
+    {
+        worldMatrix =
+            XMMatrixScaling(
+                45.0f,
+                45.0f,
+                45.0f
+            )
+            *
+            XMMatrixRotationY(
+                i * 0.6f
+            )
+            *
+            XMMatrixTranslation(
+                farIslandPositions[i].x,
+                farIslandPositions[i].y,
+                farIslandPositions[i].z
+            );
+
+
+        m_FloatingIsland->Render(
+            m_D3D->GetDeviceContext()
+        );
+
+
+        result = m_TextureShader->Render(
+            m_D3D->GetDeviceContext(),
+            m_FloatingIsland->GetIndexCount(),
+            worldMatrix,
+            viewMatrix,
+            projectionMatrix,
+            m_FloatingIsland->GetTexture()
+        );
+
+
+        if (!result)
+        {
+            MessageBox(
+                NULL,
+                L"Far FloatingIsland Render Failed",
+                L"Render Error",
+                MB_OK
+            );
+
+            return false;
+        }
+    }
+
+
+
+    // =====================================================
+    // Cloud
+    // =====================================================
+    //
+    // 구름들은 원점을 중심으로 천천히 공전
+    // =====================================================
+
+    const int cloudCount = 8;
+
+
+    XMFLOAT3 cloudBasePositions[cloudCount] =
+    {
+        XMFLOAT3(-1800.0f, -650.0f, -1200.0f),
+        XMFLOAT3(-1200.0f, -580.0f,  1600.0f),
+        XMFLOAT3(-500.0f,  -700.0f, -2100.0f),
+        XMFLOAT3(700.0f,   -620.0f,  1900.0f),
+
+        XMFLOAT3(1500.0f,  -680.0f, -1500.0f),
+        XMFLOAT3(2100.0f,  -600.0f,   500.0f),
+        XMFLOAT3(-2300.0f, -720.0f,   300.0f),
+        XMFLOAT3(300.0f,   -640.0f,  2400.0f)
+    };
+
+
+    const float cloudOrbitSpeed = 0.01f;
+
+
+    for (int i = 0; i < cloudCount; i++)
+    {
+        float baseX =
+            cloudBasePositions[i].x;
+
+        float baseZ =
+            cloudBasePositions[i].z;
+
+
+        // 원점 기준 거리 계산
+        float cloudRadius =
+            sqrtf(
+                baseX * baseX
+                + baseZ * baseZ
+            );
+
+
+        // 현재 위치의 기본 각도
+        float baseAngle =
+            atan2f(
+                baseZ,
+                baseX
+            );
+
+
+        // 시간에 따라 공전
+        float orbitAngle =
+            baseAngle
+            + rotation * cloudOrbitSpeed;
+
+
+        float x =
+            cosf(orbitAngle) * cloudRadius;
+
+        float z =
+            sinf(orbitAngle) * cloudRadius;
+
+        float y =
+            cloudBasePositions[i].y;
+
+
+        worldMatrix =
+            XMMatrixScaling(
+                100.0f,
+                100.0f,
+                100.0f
+            )
+            *
+            XMMatrixTranslation(
+                x,
+                y,
+                z
+            );
+
+
+        m_Cloud->Render(
+            m_D3D->GetDeviceContext()
+        );
+
+
+        result = m_TextureShader->Render(
+            m_D3D->GetDeviceContext(),
+            m_Cloud->GetIndexCount(),
+            worldMatrix,
+            viewMatrix,
+            projectionMatrix,
+            m_Cloud->GetTexture()
+        );
+
+
+        if (!result)
+        {
+            MessageBox(
+                NULL,
+                L"Cloud Render Failed",
+                L"Render Error",
+                MB_OK
+            );
+
+            return false;
+        }
+    }
+
+
+
+    // =====================================================
+    // Billboard
+    // =====================================================
+    //
+    // Billboard는 항상 카메라 방향을 바라봐야 하므로
+    // 아직 GraphicsClass에서 직접 처리
+    // =====================================================
+
+    m_D3D->TurnOnAlphaBlending();
+
+
+    // 현재 카메라의 Y축 회전값
+    float cameraYaw =
+        m_Camera->GetRotationY();
+
+
+    worldMatrix =
+        XMMatrixScaling(
+            50.0f,
+            50.0f,
+            50.0f
+        )
+        *
+
+        // 카메라를 바라보도록 회전
+        XMMatrixRotationY(
+            XMConvertToRadians(cameraYaw)
+            + XM_PI
+        )
+        *
+
+        XMMatrixTranslation(
+            195.0f,
+            30.0f,
+            145.0f
+        );
+
+
+    m_Billboard->Render(
+        m_D3D->GetDeviceContext()
+    );
+
+
+    result = m_TextureShader->Render(
+        m_D3D->GetDeviceContext(),
+        m_Billboard->GetIndexCount(),
+        worldMatrix,
+        viewMatrix,
+        projectionMatrix,
+        m_Billboard->GetTexture()
+    );
+
+
+    if (!result)
+    {
+        MessageBox(
+            NULL,
+            L"Billboard Render Failed",
+            L"Render Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+    m_D3D->TurnOffAlphaBlending();
+
+
+
+    // =====================================================
+    // 2D UI
+    // =====================================================
+
+    // UI는 깊이 검사를 사용하지 않음
+    m_D3D->TurnZBufferOff();
+
+    // Panel의 투명도 처리를 위해 Alpha Blending 활성화
+    m_D3D->TurnOnAlphaBlending();
+
+
+    worldMatrix = XMMatrixIdentity();
+
+
+    // -----------------------------------------------------
+    // Info Panel
+    // -----------------------------------------------------
+
+    result = m_InfoBitmap->Render(
+        m_D3D->GetDeviceContext(),
+        0,
+        15
+    );
+
+    if (!result)
+    {
+        MessageBox(
+            NULL,
+            L"Info Bitmap Render Failed",
+            L"Render Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+    result = m_TextureShader->Render(
+        m_D3D->GetDeviceContext(),
+        m_InfoBitmap->GetIndexCount(),
+        worldMatrix,
+        m_BaseViewMatrix,
+        orthoMatrix,
+        m_InfoBitmap->GetTexture()
+    );
+
+
+    if (!result)
+    {
+        MessageBox(
+            NULL,
+            L"Info Bitmap Texture Render Failed",
+            L"Render Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+
+    // -----------------------------------------------------
+    // Performance Text
+    // -----------------------------------------------------
+
+    worldMatrix = XMMatrixIdentity();
+
+
+    result = m_Text->Render(
+        m_D3D->GetDeviceContext(),
+        worldMatrix,
+        orthoMatrix
+    );
+
+
+    if (!result)
+    {
+        MessageBox(
+            NULL,
+            L"Text Render Failed",
+            L"Render Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+
+    // 렌더링 상태 복구
+    m_D3D->TurnOffAlphaBlending();
+    m_D3D->TurnZBufferOn();
+
+
+    // 한 프레임 렌더링 종료
+    m_D3D->EndScene();
+
+
+    return true;
 }

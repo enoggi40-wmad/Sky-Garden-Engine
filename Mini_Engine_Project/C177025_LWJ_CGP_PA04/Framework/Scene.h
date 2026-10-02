@@ -17,7 +17,11 @@ public:
     // Scene에 필요한 GameObject들을 생성하고 구성
     void Initialize(
         ModelClass* guardianLionModel,
-        ModelClass* sakuraTreeModel
+        ModelClass* sakuraTreeModel,
+        ModelClass* waterPlaneModel,
+        ModelClass* floatingAlterModel,
+        ModelClass* goldenSpireModel,
+        ModelClass* circleStoneModel
     );
 
     // Scene 안에 GameObject를 추가

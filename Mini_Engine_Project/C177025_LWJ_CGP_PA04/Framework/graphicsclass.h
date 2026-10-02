@@ -79,10 +79,7 @@ private:
 
 	// 각 오브젝트 필요한 멤버변수 추가
 	GameObject* m_GuardianLionObject;
-	ModelRenderer* m_GuardianLionRenderer;
-
 	GameObject* m_SakuraTreeObject;
-	ModelRenderer* m_SakuraTreeRenderer;
 
 	// Scene
 	Scene* m_Scene;

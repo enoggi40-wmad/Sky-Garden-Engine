@@ -38,7 +38,7 @@ GraphicsClass::GraphicsClass()
 
 	// Guardian Lion GameObject
 	m_GuardianLionObject = nullptr;
-	m_GuardianLionRenderer = nullptr;
+	
 
 	// Scene
 	m_Scene = nullptr;
@@ -48,9 +48,9 @@ GraphicsClass::GraphicsClass()
 GraphicsClass::GraphicsClass(const GraphicsClass& other)
 {
 	m_GuardianLionObject = nullptr;
-	m_GuardianLionRenderer = nullptr;
+	
 	m_SakuraTreeObject = nullptr;
-	m_SakuraTreeRenderer = nullptr;
+	
 }
 
 
@@ -142,20 +142,23 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	m_GuardianLionObject->AddComponent(lionRotator);
 
+	Rotator* rotator =
+		m_GuardianLionObject->GetComponent<Rotator>();
+
+	if (rotator)
+	{
+		rotator->SetSpeed(15.0f);
+	}
+
 
 	// Guardian Lion에 ModelRenderer Component 생성
-	// GraphicsClass의 멤버 변수에 저장한다.
-	// 그래야 Render()에서도 같은 ModelRenderer를 사용할 수 있다.
-	m_GuardianLionRenderer =
+	ModelRenderer* lionRenderer =
 		new ModelRenderer(
 			m_GuardianLionObject,
 			m_GuardianLion
 		);
 
-	// GuardianLion GameObject의 Component 목록에도 등록
-	m_GuardianLionObject->AddComponent(
-		m_GuardianLionRenderer
-	);
+	m_GuardianLionObject->AddComponent(lionRenderer);
 
 	// 마지막에 Scene에 등록
 	m_Scene->AddGameObject(m_GuardianLionObject);
@@ -204,17 +207,16 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	{ -160.0f, 50.0f, 180.0f };
 
 	// SakuraTree에 ModelRenderer Component 붙이기
-	m_SakuraTreeRenderer =
+	ModelRenderer* sakuraRenderer =
 		new ModelRenderer(
 			m_SakuraTreeObject,
 			m_SakuraTree
 		);
 
-	m_SakuraTreeObject->AddComponent(
-		m_SakuraTreeRenderer
-	);
+	m_SakuraTreeObject->AddComponent(sakuraRenderer);
 
 	m_Scene->AddGameObject(m_SakuraTreeObject);
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	// Crystal Prism2
@@ -497,9 +499,9 @@ void GraphicsClass::Shutdown()
 		m_Scene = nullptr;
 
 		m_GuardianLionObject = nullptr;
-		m_GuardianLionRenderer = nullptr;
+		
 		m_SakuraTreeObject = nullptr;
-		m_SakuraTreeRenderer = nullptr;
+		
 	}
 
 	// 그 다음 실제 Model 리소스 삭제 (추후 ResourceManager로 옮길 예정)
@@ -781,9 +783,7 @@ bool GraphicsClass::Render(float rotation)
 		return true;
 	}
 
-	// Guardian Lion Render
-	// 실제 모델 렌더링은 ModelRenderer Component가 담당한다.
-	result = m_GuardianLionRenderer->Render(
+	result = m_Scene->Render(
 		m_D3D->GetDeviceContext(),
 		m_TextureShader,
 		viewMatrix,
@@ -794,27 +794,7 @@ bool GraphicsClass::Render(float rotation)
 	{
 		MessageBox(
 			NULL,
-			L"GuardianLion Render Failed",
-			L"Render Error",
-			MB_OK
-		);
-
-		return false;
-	}
-
-	// SakuraTree Render
-	result = m_SakuraTreeRenderer->Render(
-		m_D3D->GetDeviceContext(),
-		m_TextureShader,
-		viewMatrix,
-		projectionMatrix
-	);
-
-	if (!result)
-	{
-		MessageBox(
-			NULL,
-			L"SakuraTree Render Failed",
+			L"Scene Render Failed",
 			L"Render Error",
 			MB_OK
 		);

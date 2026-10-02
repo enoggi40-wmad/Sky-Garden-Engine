@@ -25,6 +25,28 @@ public:
     // 이름 반환
     std::string GetName() const;
 
+    // 원하는 타입의 Component를 찾아서 반환
+    template<typename T>
+    T* GetComponent()
+    {
+        // GameObject가 가지고 있는 모든 Component를 확인
+        for (Component* component : components)
+        {
+            // 현재 Component가 T 타입인지 검사
+            T* targetComponent =
+                dynamic_cast<T*>(component);
+
+            // 원하는 타입이면 반환
+            if (targetComponent)
+            {
+                return targetComponent;
+            }
+        }
+
+        // 찾지 못했으면 nullptr 반환
+        return nullptr;
+    }
+
 public:
     // 모든 GameObject가 기본으로 가지는 Transform
     Transform transform;

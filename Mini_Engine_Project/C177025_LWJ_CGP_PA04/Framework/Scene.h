@@ -6,6 +6,7 @@
 class GameObject;
 class ModelClass;
 class TextureShaderClass;
+class ResourceManager;
 struct ID3D11DeviceContext;
 
 class Scene
@@ -15,14 +16,7 @@ public:
     ~Scene();
 
     // Scene에 필요한 GameObject들을 생성하고 구성
-    void Initialize(
-        ModelClass* guardianLionModel,
-        ModelClass* sakuraTreeModel,
-        ModelClass* waterPlaneModel,
-        ModelClass* floatingAlterModel,
-        ModelClass* goldenSpireModel,
-        ModelClass* circleStoneModel
-    );
+    void Initialize(ResourceManager* resourceManager);
 
     // Scene 안에 GameObject를 추가
     void AddGameObject(GameObject* gameObject);

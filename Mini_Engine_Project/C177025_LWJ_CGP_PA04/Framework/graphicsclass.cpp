@@ -4,24 +4,11 @@
 #include "graphicsclass.h"
 
 
+
 GraphicsClass::GraphicsClass()
 {
 	m_D3D = 0;
 	m_Camera = 0;
-
-	// Models
-	m_WaterPlane = 0;
-
-	m_FloatingIsland = 0;
-	m_FloatingAlter = 0;
-	m_GuardianLion = 0;
-	m_CrystalPrism = 0;
-	m_Cloud = 0;
-	m_SakuraTree = 0;
-	m_CrystalPrism2 = 0;
-	m_CircleStone = 0;
-	m_GoldenSpire = 0;
-	m_Lantern = 0;
 
 	m_Billboard = 0;
 
@@ -41,6 +28,9 @@ GraphicsClass::GraphicsClass()
 
 	// Scene
 	m_Scene = nullptr;
+
+    //Resource Manager
+    m_ResourceManager = nullptr;
 }
 
 
@@ -103,7 +93,6 @@ bool GraphicsClass::Initialize(
     }
 
 
-
     // =====================================================
     // Camera
     // =====================================================
@@ -133,369 +122,151 @@ bool GraphicsClass::Initialize(
 
 
     // =====================================================
-    // Model Resources
+	// Resource Manager 생성
     // =====================================================
-    //
-    // GraphicsClass는 아직 ModelClass 리소스의
-    // 생성과 초기화를 담당한다.
-    //
-    // 모든 ModelClass 초기화가 끝난 뒤
-    // Scene::Initialize()를 호출한다.
-    // =====================================================
+    m_ResourceManager = new ResourceManager;
 
-
-
-    // =====================================================
-    // Guardian Lion
-    // =====================================================
-
-    m_GuardianLion = new ModelClass;
-
-    if (!m_GuardianLion)
+    if (!m_ResourceManager)
     {
         return false;
     }
 
 
-    result = m_GuardianLion->Initialize(
+
+    // =====================================================
+    // Model Resources
+    // =====================================================
+
+    // Guardian Lion
+    if (!m_ResourceManager->LoadModel(
+        "GuardianLion",
         m_D3D->GetDevice(),
         L"./data/Guardian_Lion.obj",
         L"./data/Guardian_Lion.dds"
-    );
-
-    if (!result)
+    ))
     {
-        MessageBox(
-            hwnd,
-            L"Could not initialize the guardian lion object.",
-            L"Error",
-            MB_OK
-        );
-
         return false;
     }
 
 
-
-    // =====================================================
     // Sakura Tree
-    // =====================================================
-
-    m_SakuraTree = new ModelClass;
-
-    if (!m_SakuraTree)
-    {
-        return false;
-    }
-
-
-    result = m_SakuraTree->Initialize(
+    if (!m_ResourceManager->LoadModel(
+        "SakuraTree",
         m_D3D->GetDevice(),
         L"./data/Sakura_Tree.obj",
         L"./data/Sakura_Tree.dds"
-    );
-
-    if (!result)
+    ))
     {
-        MessageBox(
-            hwnd,
-            L"Could not initialize the SakuraTree object.",
-            L"Error",
-            MB_OK
-        );
-
         return false;
     }
 
 
-
-    // =====================================================
     // Crystal Prism2
-    // =====================================================
-
-    m_CrystalPrism2 = new ModelClass;
-
-    if (!m_CrystalPrism2)
-    {
-        return false;
-    }
-
-
-    result = m_CrystalPrism2->Initialize(
+    if (!m_ResourceManager->LoadModel(
+        "CrystalPrism2",
         m_D3D->GetDevice(),
         L"./data/Crystal_Prism2.obj",
         L"./data/Crystal_Prism2.dds"
-    );
-
-    if (!result)
+    ))
     {
-        MessageBox(
-            hwnd,
-            L"Could not initialize the crystal prism2 object.",
-            L"Error",
-            MB_OK
-        );
-
         return false;
     }
 
 
-
-    // =====================================================
     // Water Plane
-    // =====================================================
-
-    m_WaterPlane = new ModelClass;
-
-    if (!m_WaterPlane)
-    {
-        return false;
-    }
-
-
-    result = m_WaterPlane->Initialize(
+    if (!m_ResourceManager->LoadModel(
+        "WaterPlane",
         m_D3D->GetDevice(),
         L"./data/WaterPlane.obj",
         L"./data/WaterPlane.dds"
-    );
-
-    if (!result)
+    ))
     {
-        MessageBox(
-            hwnd,
-            L"Could not initialize the water plane object.",
-            L"Error",
-            MB_OK
-        );
-
         return false;
     }
 
 
-
-    // =====================================================
     // Floating Island
-    // =====================================================
-
-    m_FloatingIsland = new ModelClass;
-
-    if (!m_FloatingIsland)
-    {
-        return false;
-    }
-
-
-    result = m_FloatingIsland->Initialize(
+    if (!m_ResourceManager->LoadModel(
+        "FloatingIsland",
         m_D3D->GetDevice(),
         L"./data/Floating_Island.obj",
         L"./data/Floating_Island.dds"
-    );
-
-    if (!result)
+    ))
     {
-        MessageBox(
-            hwnd,
-            L"Could not initialize the floating island object.",
-            L"Error",
-            MB_OK
-        );
-
         return false;
     }
 
 
-
-    // =====================================================
     // Floating Alter
-    // =====================================================
-
-    m_FloatingAlter = new ModelClass;
-
-    if (!m_FloatingAlter)
-    {
-        return false;
-    }
-
-
-    result = m_FloatingAlter->Initialize(
+    if (!m_ResourceManager->LoadModel(
+        "FloatingAlter",
         m_D3D->GetDevice(),
         L"./data/Floating_Alter.obj",
         L"./data/Floating_Alter.dds"
-    );
-
-    if (!result)
+    ))
     {
-        MessageBox(
-            hwnd,
-            L"Could not initialize the floating alter object.",
-            L"Error",
-            MB_OK
-        );
-
         return false;
     }
 
 
-
-    // =====================================================
     // Lantern
-    // =====================================================
-
-    m_Lantern = new ModelClass;
-
-    if (!m_Lantern)
-    {
-        return false;
-    }
-
-
-    result = m_Lantern->Initialize(
+    if (!m_ResourceManager->LoadModel(
+        "Lantern",
         m_D3D->GetDevice(),
         L"./data/Lantern.obj",
         L"./data/Lantern.dds"
-    );
-
-    if (!result)
+    ))
     {
-        MessageBox(
-            hwnd,
-            L"Could not initialize the lantern object.",
-            L"Error",
-            MB_OK
-        );
-
         return false;
     }
 
 
-
-    // =====================================================
     // Golden Spire
-    // =====================================================
-
-    m_GoldenSpire = new ModelClass;
-
-    if (!m_GoldenSpire)
-    {
-        return false;
-    }
-
-
-    result = m_GoldenSpire->Initialize(
+    if (!m_ResourceManager->LoadModel(
+        "GoldenSpire",
         m_D3D->GetDevice(),
         L"./data/Golden_Spire.obj",
         L"./data/Golden_Spire.dds"
-    );
-
-    if (!result)
+    ))
     {
-        MessageBox(
-            hwnd,
-            L"Could not initialize the GoldenSpire object.",
-            L"Error",
-            MB_OK
-        );
-
         return false;
     }
 
 
-
-    // =====================================================
     // Circle Stone
-    // =====================================================
-
-    m_CircleStone = new ModelClass;
-
-    if (!m_CircleStone)
-    {
-        return false;
-    }
-
-
-    result = m_CircleStone->Initialize(
+    if (!m_ResourceManager->LoadModel(
+        "CircleStone",
         m_D3D->GetDevice(),
         L"./data/Circle_Stone.obj",
         L"./data/Circle_Stone.dds"
-    );
-
-    if (!result)
+    ))
     {
-        MessageBox(
-            hwnd,
-            L"Could not initialize the CircleStone object.",
-            L"Error",
-            MB_OK
-        );
-
         return false;
     }
 
 
-
-    // =====================================================
     // Crystal Prism
-    // =====================================================
-
-    m_CrystalPrism = new ModelClass;
-
-    if (!m_CrystalPrism)
-    {
-        return false;
-    }
-
-
-    result = m_CrystalPrism->Initialize(
+    if (!m_ResourceManager->LoadModel(
+        "CrystalPrism",
         m_D3D->GetDevice(),
         L"./data/Crystal_Prism.obj",
         L"./data/Crystal_Prism.dds"
-    );
-
-    if (!result)
+    ))
     {
-        MessageBox(
-            hwnd,
-            L"Could not initialize the crystal prism object.",
-            L"Error",
-            MB_OK
-        );
-
         return false;
     }
 
 
-
-    // =====================================================
     // Cloud
-    // =====================================================
-
-    m_Cloud = new ModelClass;
-
-    if (!m_Cloud)
-    {
-        return false;
-    }
-
-
-    result = m_Cloud->Initialize(
+    if (!m_ResourceManager->LoadModel(
+        "Cloud",
         m_D3D->GetDevice(),
         L"./data/Cloud.obj",
         L"./data/Cloud.dds"
-    );
-
-    if (!result)
+    ))
     {
-        MessageBox(
-            hwnd,
-            L"Could not initialize the Cloud object.",
-            L"Error",
-            MB_OK
-        );
-
         return false;
     }
-
-
 
     // =====================================================
     // Billboard
@@ -507,7 +278,6 @@ bool GraphicsClass::Initialize(
     {
         return false;
     }
-
 
     result = m_Billboard->Initialize(
         m_D3D->GetDevice(),
@@ -548,16 +318,8 @@ bool GraphicsClass::Initialize(
     }
 
 
-    // Scene 내부에서 GameObject 생성,
-    // Transform 설정, Component 부착을 수행한다.
-    m_Scene->Initialize(
-        m_GuardianLion,
-        m_SakuraTree,
-        m_WaterPlane,
-        m_FloatingAlter,
-        m_GoldenSpire,
-        m_CircleStone
-    );
+	// Scene에 필요한 GameObject들을 생성하고 구성
+    m_Scene->Initialize(m_ResourceManager);
 
 
 
@@ -742,144 +504,109 @@ bool GraphicsClass::Initialize(
 
 void GraphicsClass::Shutdown()
 {
-	/////////////////////////////////////////////////////////////////////////
-	// Release the model object.
+    // =====================================================
+    // Scene
+    // =====================================================
+    //
+    // Scene이 GameObject들을 소유하고 있으므로
+    // Scene을 먼저 삭제한다.
+    //
+    // GameObject가 삭제되면서
+    // ModelRenderer / Rotator / Orbiter / Floater 등의
+    // Component들도 함께 삭제된다.
+    // =====================================================
 
-	// Scene 삭제
-	if (m_Scene)
-	{
-		delete m_Scene;
-		m_Scene = nullptr;	
-	}
+    // Scene 먼저 제거
+    if (m_Scene)
+    {
+        delete m_Scene;
+        m_Scene = nullptr;
+    }
 
-	// 그 다음 실제 Model 리소스 삭제 (추후 ResourceManager로 옮길 예정)
-	if (m_GuardianLion)
-	{
-		m_GuardianLion->Shutdown();
-		delete m_GuardianLion;
-		m_GuardianLion = nullptr;
-	}
+    // 모델 리소스는 ResourceManager가 한 번만 정리
+    if (m_ResourceManager)
+    {
+        m_ResourceManager->Shutdown();
+        delete m_ResourceManager;
+        m_ResourceManager = nullptr;
+    }
 
-	if (m_SakuraTree)
-	{
-		m_SakuraTree->Shutdown();
-		delete m_SakuraTree;
-		m_SakuraTree = nullptr;
-	}
-	/////////////////////////////////////////////////////////////////////////
 
-	if (m_WaterPlane)
-	{
-		m_WaterPlane->Shutdown();
-		delete m_WaterPlane;
-		m_WaterPlane = 0;
-	}
+    if (m_Billboard)
+    {
+        m_Billboard->Shutdown();
+        delete m_Billboard;
+        m_Billboard = nullptr;
+    }
 
-	if (m_CircleStone)
-	{
-		m_CircleStone->Shutdown();
-		delete m_CircleStone;
-		m_CircleStone = 0;
-	}
 
-	if (m_Lantern)
-	{
-		m_Lantern->Shutdown();
-		delete m_Lantern;
-		m_Lantern = 0;
-	}
+    // 이후 Shader / Bitmap / Camera / D3D 등
+    // 기존 리소스 정리 코드 유지
+    // =====================================================
+    // Text
+    // =====================================================
 
-	if (m_GoldenSpire)
-	{
-		m_GoldenSpire->Shutdown();
-		delete m_GoldenSpire;
-		m_GoldenSpire = 0;
-	}
+    if (m_Text)
+    {
+        m_Text->Shutdown();
+        delete m_Text;
+        m_Text = nullptr;
+    }
 
-	if (m_CrystalPrism)
-	{
-		m_CrystalPrism->Shutdown();
-		delete m_CrystalPrism;
-		m_CrystalPrism = 0;
-	}
 
-	if (m_FloatingAlter)
-	{
-		m_FloatingAlter->Shutdown();
-		delete m_FloatingAlter;
-		m_FloatingAlter = 0;
-	}
+    // =====================================================
+    // Bitmap
+    // =====================================================
 
-	if (m_Cloud)
-	{
-		m_Cloud->Shutdown();
-		delete m_Cloud;
-		m_Cloud = 0;
-	}
+    if (m_Bitmap)
+    {
+        m_Bitmap->Shutdown();
+        delete m_Bitmap;
+        m_Bitmap = nullptr;
+    }
 
-	if (m_FloatingIsland)
-	{
-		m_FloatingIsland->Shutdown();
-		delete m_FloatingIsland;
-		m_FloatingIsland = 0;
-	}
+    if (m_InfoBitmap)
+    {
+        m_InfoBitmap->Shutdown();
+        delete m_InfoBitmap;
+        m_InfoBitmap = nullptr;
+    }
 
-	if (m_CrystalPrism2)
-	{
-		m_CrystalPrism2->Shutdown();
-		delete m_CrystalPrism2;
-		m_CrystalPrism2 = 0;
-	}
 
-	if (m_Billboard)
-	{
-		m_Billboard->Shutdown();
-		delete m_Billboard;
-		m_Billboard = 0;
-	}
+    // =====================================================
+    // Texture Shader
+    // =====================================================
 
-	
-	///////////////////////////////////////////////////////////////////////////
+    if (m_TextureShader)
+    {
+        m_TextureShader->Shutdown();
+        delete m_TextureShader;
+        m_TextureShader = nullptr;
+    }
 
-	// Release the camera object.
-	if(m_Camera)
-	{
-		delete m_Camera;
-		m_Camera = 0;
-	}
 
-	// Release the D3D object.
-	if(m_D3D)
-	{
-		m_D3D->Shutdown();
-		delete m_D3D;
-		m_D3D = 0;
-	}
+    // =====================================================
+    // Camera
+    // =====================================================
 
-	// Release the bitmap object.
-	if (m_Bitmap)
-	{
-		m_Bitmap->Shutdown();
-		delete m_Bitmap;
-		m_Bitmap = 0;
-	}
+    if (m_Camera)
+    {
+        delete m_Camera;
+        m_Camera = nullptr;
+    }
 
-	if (m_InfoBitmap)
-	{
-		m_InfoBitmap->Shutdown();
-		delete m_InfoBitmap;
-		m_InfoBitmap = 0;
-	}
 
-	// Release the texture shader object.
-	if (m_TextureShader)
-	{
-		m_TextureShader->Shutdown();
-		delete m_TextureShader;
-		m_TextureShader = 0;
-	}
+    // =====================================================
+    // Direct3D
+    // =====================================================
 
-	return;
+    if (m_D3D)
+    {
+        m_D3D->Shutdown();
+        delete m_D3D;
+        m_D3D = nullptr;
+    }
+
 }
 
 bool GraphicsClass::Frame(int fps, int cpu)
@@ -925,17 +652,39 @@ bool GraphicsClass::Frame(int fps, int cpu)
 	objectCount += 1;   // SakuraTree
 
 	// Polygon count
-	polygonCount += m_WaterPlane->GetIndexCount() / 3;
-	polygonCount += (m_CrystalPrism->GetIndexCount() / 3) * 10;
-	polygonCount += (m_CrystalPrism2->GetIndexCount() / 3) * 4;
-	polygonCount += (m_Lantern->GetIndexCount() / 3) * 4;
-	polygonCount += (m_FloatingIsland->GetIndexCount() / 3) * 12;
-	polygonCount += (m_Cloud->GetIndexCount() / 3) * 8;
-	polygonCount += m_FloatingAlter->GetIndexCount() / 3;
-	polygonCount += m_GoldenSpire->GetIndexCount() / 3;
-	polygonCount += m_CircleStone->GetIndexCount() / 3;
-	polygonCount += m_GuardianLion->GetIndexCount() / 3;
-	polygonCount += m_SakuraTree->GetIndexCount() / 3;
+    // Polygon count
+    polygonCount +=
+        m_ResourceManager->GetModel("WaterPlane")->GetIndexCount() / 3;
+
+    polygonCount +=
+        (m_ResourceManager->GetModel("CrystalPrism")->GetIndexCount() / 3) * 10;
+
+    polygonCount +=
+        (m_ResourceManager->GetModel("CrystalPrism2")->GetIndexCount() / 3) * 4;
+
+    polygonCount +=
+        (m_ResourceManager->GetModel("Lantern")->GetIndexCount() / 3) * 4;
+
+    polygonCount +=
+        (m_ResourceManager->GetModel("FloatingIsland")->GetIndexCount() / 3) * 12;
+
+    polygonCount +=
+        (m_ResourceManager->GetModel("Cloud")->GetIndexCount() / 3) * 8;
+
+    polygonCount +=
+        m_ResourceManager->GetModel("FloatingAlter")->GetIndexCount() / 3;
+
+    polygonCount +=
+        m_ResourceManager->GetModel("GoldenSpire")->GetIndexCount() / 3;
+
+    polygonCount +=
+        m_ResourceManager->GetModel("CircleStone")->GetIndexCount() / 3;
+
+    polygonCount +=
+        m_ResourceManager->GetModel("GuardianLion")->GetIndexCount() / 3;
+
+    polygonCount +=
+        m_ResourceManager->GetModel("SakuraTree")->GetIndexCount() / 3;
 
 	result = m_Text->SetPerformanceInfo(
 		fps,
@@ -1052,25 +801,9 @@ bool GraphicsClass::Render(float rotation)
         return true;
     }
 
-
-
     // =====================================================
     // Scene GameObject 렌더링
     // =====================================================
-    //
-    // Scene에 등록된 GameObject들의 ModelRenderer를 찾아 렌더링한다.
-    //
-    // 현재 Scene에서 관리하는 오브젝트:
-    // - GuardianLion
-    // - SakuraTree
-    // - WaterPlane
-    // - FloatingAlter
-    // - GoldenSpire
-    // - CircleStone
-    //
-    // 위 오브젝트들은 GraphicsClass에서 직접 렌더링하지 않는다.
-    // =====================================================
-
     result = m_Scene->Render(
         m_D3D->GetDeviceContext(),
         m_TextureShader,
@@ -1088,440 +821,6 @@ bool GraphicsClass::Render(float rotation)
         );
 
         return false;
-    }
-
-
-
-    // =====================================================
-    // Crystal Prism
-    // =====================================================
-    //
-    // 아직 움직임 로직이 GraphicsClass에 있으므로
-    // Scene으로 이동하지 않고 기존 방식 유지
-    // =====================================================
-
-    const int iscrystalCount = 10;
-    const float radius = 700.0f;
-
-    const float centerX = 0.0f;
-    const float centerY = -300.0f;
-    const float centerZ = 0.0f;
-
-    const float orbitSpeed = 0.03f;  // 공전 속도
-    const float selfSpeed = 1.0f;    // 자전 속도
-
-
-    for (int i = 0; i < iscrystalCount; i++)
-    {
-        // 각 Crystal의 기본 배치 각도
-        float baseAngle =
-            (XM_2PI / iscrystalCount) * i;
-
-
-        // 시간에 따라 공전
-        float orbitAngle =
-            baseAngle + rotation * orbitSpeed;
-
-
-        // 원형 위치 계산
-        float x =
-            centerX + cosf(orbitAngle) * radius;
-
-        float z =
-            centerZ + sinf(orbitAngle) * radius;
-
-
-        worldMatrix =
-            XMMatrixScaling(
-                50.0f,
-                50.0f,
-                50.0f
-            )
-            *
-
-            // 공전 방향에 맞춘 회전 + 자전
-            XMMatrixRotationY(
-                -orbitAngle
-                + XM_PIDIV2
-                + rotation * selfSpeed
-            )
-            *
-
-            XMMatrixTranslation(
-                x,
-                centerY,
-                z
-            );
-
-
-        m_CrystalPrism->Render(
-            m_D3D->GetDeviceContext()
-        );
-
-
-        result = m_TextureShader->Render(
-            m_D3D->GetDeviceContext(),
-            m_CrystalPrism->GetIndexCount(),
-            worldMatrix,
-            viewMatrix,
-            projectionMatrix,
-            m_CrystalPrism->GetTexture()
-        );
-
-
-        if (!result)
-        {
-            MessageBox(
-                NULL,
-                L"CrystalPrism Instance Failed",
-                L"Render Error",
-                MB_OK
-            );
-
-            return false;
-        }
-    }
-
-
-
-    // =====================================================
-    // Crystal Prism2
-    // =====================================================
-    //
-    // 4개의 수정이 각 위치에서 상하 이동 및 회전
-    // =====================================================
-
-    const int yellowCrystalCount = 4;
-
-
-    XMFLOAT3 yellowCrystalPositions[yellowCrystalCount] =
-    {
-        XMFLOAT3(-550.0f, 120.0f,  550.0f),
-        XMFLOAT3(550.0f, 120.0f,  550.0f),
-        XMFLOAT3(-550.0f, 120.0f, -550.0f),
-        XMFLOAT3(550.0f, 120.0f, -550.0f)
-    };
-
-
-    for (int i = 0; i < yellowCrystalCount; i++)
-    {
-        // Sin 값을 이용한 상하 이동
-        float floatOffsetY =
-            sinf(rotation * 0.5f + i * 2.0f)
-            * 10.0f;
-
-
-        worldMatrix =
-            XMMatrixScaling(
-                50.0f,
-                50.0f,
-                50.0f
-            )
-            *
-            XMMatrixRotationY(
-                rotation * 0.5f + i
-            )
-            *
-            XMMatrixTranslation(
-                yellowCrystalPositions[i].x,
-                yellowCrystalPositions[i].y + floatOffsetY,
-                yellowCrystalPositions[i].z
-            );
-
-
-        m_CrystalPrism2->Render(
-            m_D3D->GetDeviceContext()
-        );
-
-
-        result = m_TextureShader->Render(
-            m_D3D->GetDeviceContext(),
-            m_CrystalPrism2->GetIndexCount(),
-            worldMatrix,
-            viewMatrix,
-            projectionMatrix,
-            m_CrystalPrism2->GetTexture()
-        );
-
-
-        if (!result)
-        {
-            MessageBox(
-                NULL,
-                L"Yellow Crystal Render Failed",
-                L"Render Error",
-                MB_OK
-            );
-
-            return false;
-        }
-    }
-
-
-
-    // =====================================================
-    // Lantern
-    // =====================================================
-    //
-    // 4개의 랜턴이 상하 이동 및 회전
-    // =====================================================
-
-    const int LanternCount = 4;
-
-
-    XMFLOAT3 LanternPositions[LanternCount] =
-    {
-        XMFLOAT3(-150.0f, -300.0f,  150.0f),
-        XMFLOAT3(150.0f, -300.0f,  150.0f),
-        XMFLOAT3(-150.0f, -300.0f, -150.0f),
-        XMFLOAT3(150.0f, -300.0f, -150.0f)
-    };
-
-
-    for (int i = 0; i < LanternCount; i++)
-    {
-        // 상하 움직임
-        float floatOffsetY =
-            sinf(rotation * 0.5f + i * 2.0f)
-            * 10.0f;
-
-
-        worldMatrix =
-            XMMatrixScaling(
-                50.0f,
-                50.0f,
-                50.0f
-            )
-            *
-            XMMatrixRotationY(
-                rotation * 0.5f + i
-            )
-            *
-            XMMatrixTranslation(
-                LanternPositions[i].x,
-                LanternPositions[i].y + floatOffsetY,
-                LanternPositions[i].z
-            );
-
-
-        m_Lantern->Render(
-            m_D3D->GetDeviceContext()
-        );
-
-
-        result = m_TextureShader->Render(
-            m_D3D->GetDeviceContext(),
-            m_Lantern->GetIndexCount(),
-            worldMatrix,
-            viewMatrix,
-            projectionMatrix,
-            m_Lantern->GetTexture()
-        );
-
-
-        if (!result)
-        {
-            MessageBox(
-                NULL,
-                L"Lantern Render Failed",
-                L"Render Error",
-                MB_OK
-            );
-
-            return false;
-        }
-    }
-
-
-
-    // =====================================================
-    // Floating Island
-    // =====================================================
-    //
-    // 멀리 배치된 12개의 Floating Island
-    // 현재는 동일한 ModelClass를 여러 위치에 직접 렌더링
-    // =====================================================
-
-    const int farIslandCount = 12;
-
-
-    XMFLOAT3 farIslandPositions[farIslandCount] =
-    {
-        XMFLOAT3(-2200.0f, -330.0f, -1400.0f),
-        XMFLOAT3(-2100.0f, -280.0f,   800.0f),
-        XMFLOAT3(-1400.0f, -360.0f,  2100.0f),
-        XMFLOAT3(-600.0f,  -300.0f, -2300.0f),
-
-        XMFLOAT3(800.0f,   -270.0f,  2200.0f),
-        XMFLOAT3(1500.0f,  -340.0f, -2000.0f),
-        XMFLOAT3(2200.0f,  -290.0f,  1100.0f),
-        XMFLOAT3(2400.0f,  -320.0f,  -600.0f),
-
-        XMFLOAT3(-2500.0f, -370.0f,   100.0f),
-        XMFLOAT3(2500.0f,  -300.0f,   300.0f),
-        XMFLOAT3(1100.0f,  -390.0f,  2400.0f),
-        XMFLOAT3(-1100.0f, -310.0f, -2500.0f)
-    };
-
-
-    for (int i = 0; i < farIslandCount; i++)
-    {
-        worldMatrix =
-            XMMatrixScaling(
-                45.0f,
-                45.0f,
-                45.0f
-            )
-            *
-            XMMatrixRotationY(
-                i * 0.6f
-            )
-            *
-            XMMatrixTranslation(
-                farIslandPositions[i].x,
-                farIslandPositions[i].y,
-                farIslandPositions[i].z
-            );
-
-
-        m_FloatingIsland->Render(
-            m_D3D->GetDeviceContext()
-        );
-
-
-        result = m_TextureShader->Render(
-            m_D3D->GetDeviceContext(),
-            m_FloatingIsland->GetIndexCount(),
-            worldMatrix,
-            viewMatrix,
-            projectionMatrix,
-            m_FloatingIsland->GetTexture()
-        );
-
-
-        if (!result)
-        {
-            MessageBox(
-                NULL,
-                L"Far FloatingIsland Render Failed",
-                L"Render Error",
-                MB_OK
-            );
-
-            return false;
-        }
-    }
-
-
-
-    // =====================================================
-    // Cloud
-    // =====================================================
-    //
-    // 구름들은 원점을 중심으로 천천히 공전
-    // =====================================================
-
-    const int cloudCount = 8;
-
-
-    XMFLOAT3 cloudBasePositions[cloudCount] =
-    {
-        XMFLOAT3(-1800.0f, -650.0f, -1200.0f),
-        XMFLOAT3(-1200.0f, -580.0f,  1600.0f),
-        XMFLOAT3(-500.0f,  -700.0f, -2100.0f),
-        XMFLOAT3(700.0f,   -620.0f,  1900.0f),
-
-        XMFLOAT3(1500.0f,  -680.0f, -1500.0f),
-        XMFLOAT3(2100.0f,  -600.0f,   500.0f),
-        XMFLOAT3(-2300.0f, -720.0f,   300.0f),
-        XMFLOAT3(300.0f,   -640.0f,  2400.0f)
-    };
-
-
-    const float cloudOrbitSpeed = 0.01f;
-
-
-    for (int i = 0; i < cloudCount; i++)
-    {
-        float baseX =
-            cloudBasePositions[i].x;
-
-        float baseZ =
-            cloudBasePositions[i].z;
-
-
-        // 원점 기준 거리 계산
-        float cloudRadius =
-            sqrtf(
-                baseX * baseX
-                + baseZ * baseZ
-            );
-
-
-        // 현재 위치의 기본 각도
-        float baseAngle =
-            atan2f(
-                baseZ,
-                baseX
-            );
-
-
-        // 시간에 따라 공전
-        float orbitAngle =
-            baseAngle
-            + rotation * cloudOrbitSpeed;
-
-
-        float x =
-            cosf(orbitAngle) * cloudRadius;
-
-        float z =
-            sinf(orbitAngle) * cloudRadius;
-
-        float y =
-            cloudBasePositions[i].y;
-
-
-        worldMatrix =
-            XMMatrixScaling(
-                100.0f,
-                100.0f,
-                100.0f
-            )
-            *
-            XMMatrixTranslation(
-                x,
-                y,
-                z
-            );
-
-
-        m_Cloud->Render(
-            m_D3D->GetDeviceContext()
-        );
-
-
-        result = m_TextureShader->Render(
-            m_D3D->GetDeviceContext(),
-            m_Cloud->GetIndexCount(),
-            worldMatrix,
-            viewMatrix,
-            projectionMatrix,
-            m_Cloud->GetTexture()
-        );
-
-
-        if (!result)
-        {
-            MessageBox(
-                NULL,
-                L"Cloud Render Failed",
-                L"Render Error",
-                MB_OK
-            );
-
-            return false;
-        }
     }
 
 

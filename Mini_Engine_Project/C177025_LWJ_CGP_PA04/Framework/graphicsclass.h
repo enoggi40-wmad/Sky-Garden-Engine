@@ -17,9 +17,11 @@
 #include "textclass.h"
 
 #include "GameObject.h"
+#include "Scene.h"
+#include "ResourceManager.h"
 #include "Rotator.h"
 #include "ModelRenderer.h"
-#include "Scene.h"
+
 /////////////
 // GLOBALS //
 /////////////
@@ -52,7 +54,7 @@ private:
 	XMMATRIX m_BaseViewMatrix;
 
 	// Models
-	ModelClass* m_WaterPlane;
+	/*ModelClass* m_WaterPlane;
 
 	ModelClass* m_FloatingIsland;
 	ModelClass* m_FloatingAlter;
@@ -63,7 +65,8 @@ private:
 	ModelClass* m_CrystalPrism2;
 	ModelClass* m_CircleStone;
 	ModelClass* m_GoldenSpire;
-	ModelClass* m_Lantern;
+	ModelClass* m_Lantern;*/
+	
 
 	ModelClass* m_Billboard;
 
@@ -79,6 +82,9 @@ private:
 
 	// Scene
 	Scene* m_Scene;
+
+	//Resource Manager
+	ResourceManager* m_ResourceManager;
 };
 
 #endif

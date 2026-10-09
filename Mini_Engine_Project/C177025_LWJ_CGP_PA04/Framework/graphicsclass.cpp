@@ -19,7 +19,7 @@ GraphicsClass::GraphicsClass()
 
 	m_Text = 0;
 
-	m_ShowTitleScene = true;
+	m_ShowTitleScene = false;
 
 	m_hwnd = 0;
 
@@ -319,7 +319,11 @@ bool GraphicsClass::Initialize(
 
 
 	// Scene에 필요한 GameObject들을 생성하고 구성
-    m_Scene->Initialize(m_ResourceManager);
+    // 기존 씬
+    //m_Scene->Initialize(m_ResourceManager);
+
+    // 과제용 씬
+    m_Scene->InitializeAssignment(m_ResourceManager);
 
 
 
@@ -704,7 +708,7 @@ bool GraphicsClass::Frame(int fps, int cpu)
 	m_Scene->Update(0.016f);
 
 	// Render the graphics scene.
-	result = Render(rotation);
+	result = Render();
 	if (!result)
 	{
 		return false;
@@ -713,7 +717,7 @@ bool GraphicsClass::Frame(int fps, int cpu)
 	return true;
 }
 
-bool GraphicsClass::Render(float rotation)
+bool GraphicsClass::Render()
 {
     XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
     bool result;
@@ -724,7 +728,10 @@ bool GraphicsClass::Render(float rotation)
     // =====================================================
 
     // 화면 초기화
-    m_D3D->BeginScene(0.60f, 0.82f, 1.0f, 1.0f);
+    // 하늘색
+    //m_D3D->BeginScene(0.60f, 0.82f, 1.0f, 1.0f);
+    // 검정색 
+    m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
 
     // 현재 카메라 위치와 회전을 이용해 View Matrix 생성
@@ -833,65 +840,65 @@ bool GraphicsClass::Render(float rotation)
     // 아직 GraphicsClass에서 직접 처리
     // =====================================================
 
-    m_D3D->TurnOnAlphaBlending();
+    //m_D3D->TurnOnAlphaBlending();
 
 
-    // 현재 카메라의 Y축 회전값
-    float cameraYaw =
-        m_Camera->GetRotationY();
+    //// 현재 카메라의 Y축 회전값
+    //float cameraYaw =
+    //    m_Camera->GetRotationY();
 
 
-    worldMatrix =
-        XMMatrixScaling(
-            50.0f,
-            50.0f,
-            50.0f
-        )
-        *
+    //worldMatrix =
+    //    XMMatrixScaling(
+    //        50.0f,
+    //        50.0f,
+    //        50.0f
+    //    )
+    //    *
 
-        // 카메라를 바라보도록 회전
-        XMMatrixRotationY(
-            XMConvertToRadians(cameraYaw)
-            + XM_PI
-        )
-        *
+    //    // 카메라를 바라보도록 회전
+    //    XMMatrixRotationY(
+    //        XMConvertToRadians(cameraYaw)
+    //        + XM_PI
+    //    )
+    //    *
 
-        XMMatrixTranslation(
-            195.0f,
-            30.0f,
-            145.0f
-        );
-
-
-    m_Billboard->Render(
-        m_D3D->GetDeviceContext()
-    );
+    //    XMMatrixTranslation(
+    //        195.0f,
+    //        30.0f,
+    //        145.0f
+    //    );
 
 
-    result = m_TextureShader->Render(
-        m_D3D->GetDeviceContext(),
-        m_Billboard->GetIndexCount(),
-        worldMatrix,
-        viewMatrix,
-        projectionMatrix,
-        m_Billboard->GetTexture()
-    );
+    //m_Billboard->Render(
+    //    m_D3D->GetDeviceContext()
+    //);
 
 
-    if (!result)
-    {
-        MessageBox(
-            NULL,
-            L"Billboard Render Failed",
-            L"Render Error",
-            MB_OK
-        );
-
-        return false;
-    }
+    //result = m_TextureShader->Render(
+    //    m_D3D->GetDeviceContext(),
+    //    m_Billboard->GetIndexCount(),
+    //    worldMatrix,
+    //    viewMatrix,
+    //    projectionMatrix,
+    //    m_Billboard->GetTexture()
+    //);
 
 
-    m_D3D->TurnOffAlphaBlending();
+    //if (!result)
+    //{
+    //    MessageBox(
+    //        NULL,
+    //        L"Billboard Render Failed",
+    //        L"Render Error",
+    //        MB_OK
+    //    );
+
+    //    return false;
+    //}
+
+
+    //m_D3D->TurnOffAlphaBlending();
 
 
 
@@ -913,7 +920,7 @@ bool GraphicsClass::Render(float rotation)
     // Info Panel
     // -----------------------------------------------------
 
-    result = m_InfoBitmap->Render(
+    /*result = m_InfoBitmap->Render(
         m_D3D->GetDeviceContext(),
         0,
         15
@@ -952,7 +959,7 @@ bool GraphicsClass::Render(float rotation)
         );
 
         return false;
-    }
+    }*/
 
 
 
@@ -960,7 +967,7 @@ bool GraphicsClass::Render(float rotation)
     // Performance Text
     // -----------------------------------------------------
 
-    worldMatrix = XMMatrixIdentity();
+    /*worldMatrix = XMMatrixIdentity();
 
 
     result = m_Text->Render(
@@ -980,7 +987,7 @@ bool GraphicsClass::Render(float rotation)
         );
 
         return false;
-    }
+    }*/
 
 
     // 렌더링 상태 복구

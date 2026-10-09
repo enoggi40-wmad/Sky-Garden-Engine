@@ -73,6 +73,11 @@ bool Scene::Render(
     return true;
 }
 
+void Scene::InitializeAssignment(ResourceManager* resourceManager)
+{
+    // 아직 아무 GameObject도 생성하지 않음
+}
+
 void Scene::Initialize(ResourceManager* resourceManager)
 {
     ModelClass* guardianLionModel =

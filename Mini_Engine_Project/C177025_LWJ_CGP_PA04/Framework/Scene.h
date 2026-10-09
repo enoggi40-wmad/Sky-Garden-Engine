@@ -17,6 +17,7 @@ public:
 
     // Scene에 필요한 GameObject들을 생성하고 구성
     void Initialize(ResourceManager* resourceManager);
+    void InitializeAssignment(ResourceManager* resourceManager);
 
     // Scene 안에 GameObject를 추가
     void AddGameObject(GameObject* gameObject);

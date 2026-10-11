@@ -320,10 +320,7 @@ bool GraphicsClass::Initialize(
 
 	// Scene에 필요한 GameObject들을 생성하고 구성
     // 기존 씬
-    //m_Scene->Initialize(m_ResourceManager);
-
-    // 과제용 씬
-    m_Scene->InitializeAssignment(m_ResourceManager);
+    m_Scene->Initialize(m_ResourceManager);
 
 
 
@@ -613,6 +610,7 @@ void GraphicsClass::Shutdown()
 
 }
 
+///
 bool GraphicsClass::Frame(int fps, int cpu)
 {
 	bool result;
@@ -704,8 +702,14 @@ bool GraphicsClass::Frame(int fps, int cpu)
 		return false;
 	}
 
-	// Scene Update
+    
+    // GraphicsClass::Frame()
+	// Scene Update 
 	m_Scene->Update(0.016f);
+
+
+
+
 
 	// Render the graphics scene.
 	result = Render();
@@ -729,9 +733,9 @@ bool GraphicsClass::Render()
 
     // 화면 초기화
     // 하늘색
-    //m_D3D->BeginScene(0.60f, 0.82f, 1.0f, 1.0f);
+    m_D3D->BeginScene(0.60f, 0.82f, 1.0f, 1.0f);
     // 검정색 
-    m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
+    //_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
 
     // 현재 카메라 위치와 회전을 이용해 View Matrix 생성

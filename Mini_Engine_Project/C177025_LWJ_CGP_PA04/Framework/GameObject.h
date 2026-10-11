@@ -10,7 +10,7 @@
 class GameObject
 {
 public:
-    GameObject(const std::string& objectName);
+     GameObject(const std::string& objectName);
     ~GameObject();
 
     // GameObject 초기화
@@ -19,8 +19,23 @@ public:
     // 매 프레임 호출
     void Update(float deltaTime);
 
+    // 기존 AddComponent 방식
+    //void AddComponent(Component* component);
+
     // GameObject에 Component를 추가
-    void AddComponent(Component* newComponent);
+    // 템플릿 함수
+    // 가변 인자 템플릿
+    template<typename T, typename... Args>
+    T* AddComponent(Args&&... args)
+    {
+        T* component =
+            new T(this, std::forward<Args>(args)...);
+
+        components.push_back(component);
+
+        return component;
+    }
+
 
     // 이름 반환
     std::string GetName() const;

@@ -39,14 +39,14 @@ void GameObject::Update(float deltaTime)
     }
 }
 
-// Component 추가
-void GameObject::AddComponent(Component* newComponent)
-{
-    components.push_back(newComponent);
-}
-
 // 이름 반환
 std::string GameObject::GetName() const
 {
     return name;
 }
+
+// 기존 AddComponent 방식
+//void AddComponent(Component* newComponent)
+//{
+//    components.push_back(newComponent);
+//}

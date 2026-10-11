@@ -136,20 +136,8 @@ void Scene::Initialize(ResourceManager* resourceManager)
         60.0f
     };
 
-    // Y축 회전 기능 추가
-    Rotator* lionRotator =
-        new Rotator(guardianLion, 1.0f);
-
-    guardianLion->AddComponent(lionRotator);
-
-    // 모델 렌더링 기능 추가
-    ModelRenderer* lionRenderer =
-        new ModelRenderer(
-            guardianLion,
-            guardianLionModel
-        );
-
-    guardianLion->AddComponent(lionRenderer);
+    guardianLion->AddComponent<Rotator>(1.0f);
+    guardianLion->AddComponent<ModelRenderer>(guardianLionModel);
 
     // Scene에 등록
     AddGameObject(guardianLion);
@@ -179,13 +167,13 @@ void Scene::Initialize(ResourceManager* resourceManager)
     };
 
     // 렌더링 Component 추가
-    ModelRenderer* sakuraRenderer =
+    /*ModelRenderer* sakuraRenderer =
         new ModelRenderer(
             sakuraTree,
             sakuraTreeModel
-        );
+        );*/
 
-    sakuraTree->AddComponent(sakuraRenderer);
+    sakuraTree->AddComponent<ModelRenderer>(sakuraTreeModel);
 
     AddGameObject(sakuraTree);
 
@@ -220,7 +208,7 @@ void Scene::Initialize(ResourceManager* resourceManager)
             waterPlaneModel
         );
 
-    waterPlane->AddComponent(waterPlaneRenderer);
+    waterPlane->AddComponent<ModelRenderer>(waterPlaneModel);
 
     AddGameObject(waterPlane);
 
@@ -247,13 +235,7 @@ void Scene::Initialize(ResourceManager* resourceManager)
         0.0f
     };
 
-    ModelRenderer* floatingAlterRenderer =
-        new ModelRenderer(
-            floatingAlter,
-            floatingAlterModel
-        );
-
-    floatingAlter->AddComponent(floatingAlterRenderer);
+    floatingAlter->AddComponent<ModelRenderer>(floatingAlterModel);
 
     AddGameObject(floatingAlter);
 
@@ -280,13 +262,7 @@ void Scene::Initialize(ResourceManager* resourceManager)
         0.0f
     };
 
-    ModelRenderer* goldenSpireRenderer =
-        new ModelRenderer(
-            goldenSpire,
-            goldenSpireModel
-        );
-
-    goldenSpire->AddComponent(goldenSpireRenderer);
+    goldenSpire->AddComponent<ModelRenderer>(goldenSpireModel);
 
     AddGameObject(goldenSpire);
 
@@ -313,13 +289,7 @@ void Scene::Initialize(ResourceManager* resourceManager)
         0.0f
     };
 
-    ModelRenderer* circleStoneRenderer =
-        new ModelRenderer(
-            circleStone,
-            circleStoneModel 
-        );
-
-    circleStone->AddComponent(circleStoneRenderer);
+    circleStone->AddComponent<ModelRenderer>(circleStoneModel);
 
     AddGameObject(circleStone);
 
@@ -385,13 +355,9 @@ void Scene::Initialize(ResourceManager* resourceManager)
 
         // 모든 CrystalPrism GameObject가
         // 동일한 ModelClass 리소스를 공유
-        ModelRenderer* renderer =
-            new ModelRenderer(
-                crystal,
-                crystalPrismModel
-            );
+        
 
-        crystal->AddComponent(renderer);
+        crystal->AddComponent<ModelRenderer>(crystalPrismModel);
 
 
         // -----------------------------------------
@@ -399,19 +365,12 @@ void Scene::Initialize(ResourceManager* resourceManager)
         // -----------------------------------------
 
         // 중심점을 기준으로 일정한 반지름을 유지하며 공전
-        Orbiter* orbiter =
-            new Orbiter(
-                crystal,
-                orbitCenter,
-                radius,
-
-                // 기존 GraphicsClass의 공전 속도와 비슷하게 설정
-                0.03f,
-
-                startAngle
-            );
-
-        crystal->AddComponent(orbiter);
+        crystal->AddComponent<Orbiter>(
+            orbitCenter,
+            radius,
+            0.03f,
+            startAngle
+        );
 
 
         // -----------------------------------------
@@ -419,13 +378,7 @@ void Scene::Initialize(ResourceManager* resourceManager)
         // -----------------------------------------
 
         // 공전하면서 자체적으로 Y축 회전
-        Rotator* rotator =
-            new Rotator(
-                crystal,
-                1.0f
-            );
-
-        crystal->AddComponent(rotator);
+        crystal->AddComponent<Rotator>(1.0f);
 
 
         // -----------------------------------------
@@ -489,13 +442,7 @@ void Scene::Initialize(ResourceManager* resourceManager)
         // -----------------------------------------
 
         // 4개의 GameObject가 하나의 CrystalPrism2 ModelClass를 공유
-        ModelRenderer* crystal2Renderer =
-            new ModelRenderer(
-                crystal2,
-                crystalPrism2Model
-            );
-
-        crystal2->AddComponent(crystal2Renderer);
+        crystal2->AddComponent<ModelRenderer>(crystalPrism2Model);
 
 
         // -----------------------------------------
@@ -506,30 +453,18 @@ void Scene::Initialize(ResourceManager* resourceManager)
         float startPhase =
             i * 2.0f;
 
-
-        Floater* crystal2Floater =
-            new Floater(
-                crystal2,
-                10.0f,       // 상하 이동 거리
-                0.5f,        // 이동 속도
-                startPhase   // 시작 위상
-            );
-
-        crystal2->AddComponent(crystal2Floater);
-
+        crystal2->AddComponent<Floater>(
+            10.0f,
+            0.5f,
+            startPhase
+        );
 
         // -----------------------------------------
         // Rotator
         // -----------------------------------------
 
         // Y축 자전
-        Rotator* crystal2Rotator =
-            new Rotator(
-                crystal2,
-                0.5f
-            );
-
-        crystal2->AddComponent(crystal2Rotator);
+        crystal2->AddComponent<Rotator>(0.5f);
 
 
         // -----------------------------------------
@@ -583,13 +518,7 @@ void Scene::Initialize(ResourceManager* resourceManager)
 
 
         // 모델 렌더링 Component
-        ModelRenderer* lanternRenderer =
-            new ModelRenderer(
-                lantern,
-                lanternModel
-            );
-
-        lantern->AddComponent(lanternRenderer);
+        lantern->AddComponent <ModelRenderer>(lanternModel);
 
 
         // 각 Lantern의 움직임 시작 시점을 다르게 설정
@@ -598,25 +527,15 @@ void Scene::Initialize(ResourceManager* resourceManager)
 
 
         // 상하 이동 Component
-        Floater* lanternFloater =
-            new Floater(
-                lantern,
-                10.0f,       // 이동 거리
-                0.5f,        // 이동 속도
-                startPhase
-            );
-
-        lantern->AddComponent(lanternFloater);
+        lantern->AddComponent<Floater>(
+            10.0f,
+            0.5f,
+            startPhase
+        );
 
 
         // Y축 자전 Component
-        Rotator* lanternRotator =
-            new Rotator(
-                lantern,
-                0.5f
-            );
-
-        lantern->AddComponent(lanternRotator);
+        lantern->AddComponent<Rotator>(0.5f);
 
 
         // Scene 등록
@@ -689,9 +608,7 @@ void Scene::Initialize(ResourceManager* resourceManager)
                 floatingIslandModel
             );
 
-        floatingIsland->AddComponent(
-            floatingIslandRenderer
-        );
+        floatingIsland->AddComponent<ModelRenderer>(floatingIslandModel);
 
 
         AddGameObject(floatingIsland);
@@ -761,7 +678,7 @@ void Scene::Initialize(ResourceManager* resourceManager)
                 cloudModel
             );
 
-        cloud->AddComponent(cloudRenderer);
+        cloud->AddComponent<ModelRenderer>(cloudModel);
 
 
         float baseX =
@@ -786,18 +703,12 @@ void Scene::Initialize(ResourceManager* resourceManager)
                 baseX
             );
 
-
-        // 공전 Component
-        Orbiter* cloudOrbiter =
-            new Orbiter(
-                cloud,
-                cloudOrbitCenter,
-                cloudRadius,
-                0.01f,       // 공전 속도
-                startAngle
-            );
-
-        cloud->AddComponent(cloudOrbiter);
+        cloud->AddComponent<Orbiter>(
+            cloudOrbitCenter,
+            cloudRadius,
+            0.01f,
+            startAngle
+        );
 
 
         AddGameObject(cloud);

@@ -7,30 +7,20 @@ class Component
 {
 public:
 
-    // 이 Component가 붙어있는 GameObject의 주소를 전달받는다.
-    Component(GameObject* ownerObject)
-        : gameObject(ownerObject)
-    {
-    }
+    // 생성자
+    Component(GameObject* ownerObject);
 
     // 부모 클래스로 사용할 예정이므로 virtual 소멸자
-    virtual ~Component() = default;
+    virtual ~Component();
 
     // 초기화 함수
-    virtual void Initialize()
-    {
-    }
+    virtual void Initialize();
 
     // 매 프레임 실행되는 함수
-    virtual void Update(float deltaTime)
-    {
-    }
+    virtual void Update(float deltaTime);
 
     // 이 Component가 붙어있는 GameObject를 반환
-    GameObject* GetGameObject() const
-    {
-        return gameObject;
-    }
+    GameObject* GetGameObject() const;
 
 protected:
 

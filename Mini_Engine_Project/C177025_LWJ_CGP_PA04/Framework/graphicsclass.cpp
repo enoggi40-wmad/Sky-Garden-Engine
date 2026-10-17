@@ -124,149 +124,40 @@ bool GraphicsClass::Initialize(
     // =====================================================
 	// Resource Manager 생성
     // =====================================================
+
     m_ResourceManager = new ResourceManager;
 
     if (!m_ResourceManager)
     {
         return false;
     }
-
-
-
+    
     // =====================================================
-    // Model Resources
+    // Scene
+    // =====================================================
+    //
+    // Scene이 사용할 ModelClass들이 모두 초기화된 뒤
+    // Scene과 GameObject들을 생성한다.
+    //
+    // ModelRenderer가 초기화되지 않은 ModelClass를
+    // 참조하지 않도록 반드시 모델 로딩 이후에 실행한다.
     // =====================================================
 
-    // Guardian Lion
-    if (!m_ResourceManager->LoadModel(
-        "GuardianLion",
-        m_D3D->GetDevice(),
-        L"./data/Guardian_Lion.obj",
-        L"./data/Guardian_Lion.dds"
-    ))
+    m_Scene = new Scene;
+
+    if (!m_Scene)
     {
         return false;
     }
 
 
-    // Sakura Tree
-    if (!m_ResourceManager->LoadModel(
-        "SakuraTree",
-        m_D3D->GetDevice(),
-        L"./data/Sakura_Tree.obj",
-        L"./data/Sakura_Tree.dds"
-    ))
-    {
-        return false;
-    }
+    // Scene에 필요한 GameObject들을 생성하고 구성
+    // 기존 씬
+    m_Scene->Initialize(
+        m_ResourceManager,
+        m_D3D->GetDevice()
+    );
 
-
-    // Crystal Prism2
-    if (!m_ResourceManager->LoadModel(
-        "CrystalPrism2",
-        m_D3D->GetDevice(),
-        L"./data/Crystal_Prism2.obj",
-        L"./data/Crystal_Prism2.dds"
-    ))
-    {
-        return false;
-    }
-
-
-    // Water Plane
-    if (!m_ResourceManager->LoadModel(
-        "WaterPlane",
-        m_D3D->GetDevice(),
-        L"./data/WaterPlane.obj",
-        L"./data/WaterPlane.dds"
-    ))
-    {
-        return false;
-    }
-
-
-    // Floating Island
-    if (!m_ResourceManager->LoadModel(
-        "FloatingIsland",
-        m_D3D->GetDevice(),
-        L"./data/Floating_Island.obj",
-        L"./data/Floating_Island.dds"
-    ))
-    {
-        return false;
-    }
-
-
-    // Floating Alter
-    if (!m_ResourceManager->LoadModel(
-        "FloatingAlter",
-        m_D3D->GetDevice(),
-        L"./data/Floating_Alter.obj",
-        L"./data/Floating_Alter.dds"
-    ))
-    {
-        return false;
-    }
-
-
-    // Lantern
-    if (!m_ResourceManager->LoadModel(
-        "Lantern",
-        m_D3D->GetDevice(),
-        L"./data/Lantern.obj",
-        L"./data/Lantern.dds"
-    ))
-    {
-        return false;
-    }
-
-
-    // Golden Spire
-    if (!m_ResourceManager->LoadModel(
-        "GoldenSpire",
-        m_D3D->GetDevice(),
-        L"./data/Golden_Spire.obj",
-        L"./data/Golden_Spire.dds"
-    ))
-    {
-        return false;
-    }
-
-
-    // Circle Stone
-    if (!m_ResourceManager->LoadModel(
-        "CircleStone",
-        m_D3D->GetDevice(),
-        L"./data/Circle_Stone.obj",
-        L"./data/Circle_Stone.dds"
-    ))
-    {
-        return false;
-    }
-
-
-    // Crystal Prism
-    if (!m_ResourceManager->LoadModel(
-        "CrystalPrism",
-        m_D3D->GetDevice(),
-        L"./data/Crystal_Prism.obj",
-        L"./data/Crystal_Prism.dds"
-    ))
-    {
-        return false;
-    }
-
-
-    // Cloud
-    if (!m_ResourceManager->LoadModel(
-        "Cloud",
-        m_D3D->GetDevice(),
-        L"./data/Cloud.obj",
-        L"./data/Cloud.dds"
-    ))
-    {
-        return false;
-    }
 
     // =====================================================
     // Billboard
@@ -297,33 +188,7 @@ bool GraphicsClass::Initialize(
         return false;
     }
 
-
-
-    // =====================================================
-    // Scene
-    // =====================================================
-    //
-    // Scene이 사용할 ModelClass들이 모두 초기화된 뒤
-    // Scene과 GameObject들을 생성한다.
-    //
-    // ModelRenderer가 초기화되지 않은 ModelClass를
-    // 참조하지 않도록 반드시 모델 로딩 이후에 실행한다.
-    // =====================================================
-
-    m_Scene = new Scene;
-
-    if (!m_Scene)
-    {
-        return false;
-    }
-
-
-	// Scene에 필요한 GameObject들을 생성하고 구성
-    // 기존 씬
-    m_Scene->Initialize(m_ResourceManager);
-
-
-
+    
     // =====================================================
     // Texture Shader
     // =====================================================
@@ -636,72 +501,7 @@ bool GraphicsClass::Frame(int fps, int cpu)
 	{
 		rotation -= 360.0f;
 	}
-
-	int objectCount = 0;
-	int polygonCount = 0;
-
-	// Object count
-	objectCount += 1;   // WaterPlane
-	objectCount += 10;  // CrystalPrism
-	objectCount += 4;   // CrystalPrism2
-	objectCount += 4;   // Lantern
-	objectCount += 12;  // Far Floating Islands
-	objectCount += 8;   // Clouds
-	objectCount += 1;   // FloatingAlter
-	objectCount += 1;   // GoldenSpire
-	objectCount += 1;   // CircleStone
-	objectCount += 1;   // GuardianLion
-	objectCount += 1;   // SakuraTree
-
-	// Polygon count
-    // Polygon count
-    polygonCount +=
-        m_ResourceManager->GetModel("WaterPlane")->GetIndexCount() / 3;
-
-    polygonCount +=
-        (m_ResourceManager->GetModel("CrystalPrism")->GetIndexCount() / 3) * 10;
-
-    polygonCount +=
-        (m_ResourceManager->GetModel("CrystalPrism2")->GetIndexCount() / 3) * 4;
-
-    polygonCount +=
-        (m_ResourceManager->GetModel("Lantern")->GetIndexCount() / 3) * 4;
-
-    polygonCount +=
-        (m_ResourceManager->GetModel("FloatingIsland")->GetIndexCount() / 3) * 12;
-
-    polygonCount +=
-        (m_ResourceManager->GetModel("Cloud")->GetIndexCount() / 3) * 8;
-
-    polygonCount +=
-        m_ResourceManager->GetModel("FloatingAlter")->GetIndexCount() / 3;
-
-    polygonCount +=
-        m_ResourceManager->GetModel("GoldenSpire")->GetIndexCount() / 3;
-
-    polygonCount +=
-        m_ResourceManager->GetModel("CircleStone")->GetIndexCount() / 3;
-
-    polygonCount +=
-        m_ResourceManager->GetModel("GuardianLion")->GetIndexCount() / 3;
-
-    polygonCount +=
-        m_ResourceManager->GetModel("SakuraTree")->GetIndexCount() / 3;
-
-	result = m_Text->SetPerformanceInfo(
-		fps,
-		cpu,
-		objectCount,
-		polygonCount,
-		800,
-		600,
-		m_D3D->GetDeviceContext());
-
-	if (!result)
-	{
-		return false;
-	}
-
+   
     
     // GraphicsClass::Frame()
 	// Scene Update 

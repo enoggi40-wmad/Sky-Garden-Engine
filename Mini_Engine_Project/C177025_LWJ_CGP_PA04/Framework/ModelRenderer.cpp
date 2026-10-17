@@ -42,6 +42,12 @@ bool ModelRenderer::Render(
     XMMATRIX viewMatrix,
     XMMATRIX projectionMatrix)
 {
+    if (!m_Model)
+    {
+        // ModelClass가 연결되어 있지 않으면 렌더링할 수 없음
+        return false;
+	}
+
     // 이 ModelRenderer가 붙어있는 GameObject의
     // Transform을 이용해서 World Matrix를 만든다.
     //

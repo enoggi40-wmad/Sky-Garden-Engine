@@ -51,26 +51,26 @@ bool Scene::Render(
         ModelRenderer* renderer =
             gameObject->GetComponent<ModelRenderer>();
 
-        // ModelRenderer가 있는 GameObject만 렌더링
-        if (renderer)
+        if (!renderer)
         {
-            bool result = renderer->Render(
-                deviceContext,
-                textureShader,
-                viewMatrix,
-                projectionMatrix
-            );
+            // ModelRenderer가 없으면 렌더링할 필요 없음
+            continue;
+		}
 
-            // 하나라도 렌더링 실패하면 Scene 렌더링도 실패
-            if (!result)
-            {
-                return false;
-            }
-        }
+        bool result = renderer->Render(
+            deviceContext,
+            textureShader,
+            viewMatrix,
+            projectionMatrix
+        );
+
+        if (!result)
+        {
+            continue;
+		}
     }
 
-    // 모든 GameObject 렌더링 성공
-    return true;
+	return true;
 }
 
 void Scene::InitializeAssignment(ResourceManager* resourceManager)
@@ -78,44 +78,24 @@ void Scene::InitializeAssignment(ResourceManager* resourceManager)
     // 아직 아무 GameObject도 생성하지 않음
 }
 
-void Scene::Initialize(ResourceManager* resourceManager)
+void Scene::Initialize(ResourceManager* resourceManager, ID3D11Device* device)
 {
-    ModelClass* guardianLionModel =
-        resourceManager->GetModel("GuardianLion");
-
-    ModelClass* sakuraTreeModel =
-        resourceManager->GetModel("SakuraTree");
-
-    ModelClass* waterPlaneModel =
-        resourceManager->GetModel("WaterPlane");
-
-    ModelClass* floatingAlterModel =
-        resourceManager->GetModel("FloatingAlter");
-
-    ModelClass* goldenSpireModel =
-        resourceManager->GetModel("GoldenSpire");
-
-    ModelClass* circleStoneModel =
-        resourceManager->GetModel("CircleStone");
-
-    ModelClass* crystalPrismModel =
-        resourceManager->GetModel("CrystalPrism");
-
-    ModelClass* crystalPrism2Model =
-        resourceManager->GetModel("CrystalPrism2");
-
-    ModelClass* lanternModel =
-        resourceManager->GetModel("Lantern");
-
-    ModelClass* floatingIslandModel =
-        resourceManager->GetModel("FloatingIsland");
-
-    ModelClass* cloudModel =
-        resourceManager->GetModel("Cloud");
-
     // =====================================================
     // Guardian Lion
     // =====================================================
+
+    ModelClass* guardianLionModel =
+        resourceManager->LoadModel(
+            "GuardianLion",
+            device,
+			L"./data/Guardian_Lion.obj",
+			L"./data/Guardian_Lion.dds"
+            );
+
+    if (!guardianLionModel)
+    {
+        return;
+    }
 
     // GameObject 생성
     GameObject* guardianLion =
@@ -141,12 +121,23 @@ void Scene::Initialize(ResourceManager* resourceManager)
 
     // Scene에 등록
     AddGameObject(guardianLion);
-
-
-
+    
     // =====================================================
     // Sakura Tree
     // =====================================================
+
+    ModelClass* sakuraTreeModel =
+        resourceManager->LoadModel(
+            "SakuraTree",
+            device,
+            L"./data/Sakura_Tree.obj",
+            L"./data/Sakura_Tree.dds"
+        );
+
+    if (!sakuraTreeModel)
+    {
+        return;
+    }
 
     GameObject* sakuraTree =
         new GameObject("SakuraTree");
@@ -177,11 +168,22 @@ void Scene::Initialize(ResourceManager* resourceManager)
 
     AddGameObject(sakuraTree);
 
-
-
     // =====================================================
     // Water Plane
     // =====================================================
+
+    ModelClass* waterPlaneModel =
+        resourceManager->LoadModel(
+            "WaterPlane",
+            device,
+            L"./data/WaterPlane.obj",
+            L"./data/WaterPlane.dds"
+        );
+
+    if (!waterPlaneModel)
+    {
+        return;
+    }
 
     GameObject* waterPlane =
         new GameObject("WaterPlane");
@@ -212,87 +214,116 @@ void Scene::Initialize(ResourceManager* resourceManager)
 
     AddGameObject(waterPlane);
 
-
-
     // =====================================================
     // Floating Alter
     // =====================================================
 
+    ModelClass* floatingAlterModel =
+        resourceManager->LoadModel(
+            "FloatingAlter",
+            device,
+            L"./data/Floating_Alter.obj",
+            L"./data/Floating_Alter.dds"
+        );
+
+    if (!floatingAlterModel)
+    {
+        return;
+    }
     GameObject* floatingAlter =
-        new GameObject("FloatingAlter");
+            new GameObject("FloatingAlter");
 
-    floatingAlter->transform.scale =
-    {
-        320.0f,
-        120.0f,
-        320.0f
-    };
+        floatingAlter->transform.scale =
+        {
+            320.0f,
+            120.0f,
+            320.0f
+        };
 
-    floatingAlter->transform.position =
-    {
-        0.0f,
-        -80.0f,
-        0.0f
-    };
+        floatingAlter->transform.position =
+        {
+            0.0f,
+            -80.0f,
+            0.0f
+        };
 
-    floatingAlter->AddComponent<ModelRenderer>(floatingAlterModel);
+        floatingAlter->AddComponent<ModelRenderer>(floatingAlterModel);
 
-    AddGameObject(floatingAlter);
-
-
+        AddGameObject(floatingAlter);
 
     // =====================================================
     // Golden Spire
     // =====================================================
+    ModelClass* goldenSpireModel =
+        resourceManager->LoadModel(
+            "GoldenSpire",
+            device,
+            L"./data/Golden_Spire.obj",
+            L"./data/Golden_Spire.dds"
+        );
+
+    if (!goldenSpireModel)
+    {
+        return;
+    }
 
     GameObject* goldenSpire =
-        new GameObject("GoldenSpire");
+            new GameObject("GoldenSpire");
 
-    goldenSpire->transform.scale =
-    {
-        100.0f,
-        100.0f,
-        100.0f
-    };
+        goldenSpire->transform.scale =
+        {
+            100.0f,
+            100.0f,
+            100.0f
+        };
 
-    goldenSpire->transform.position =
-    {
-        0.0f,
-        -300.0f,
-        0.0f
-    };
+        goldenSpire->transform.position =
+        {
+            0.0f,
+            -300.0f,
+            0.0f
+        };
 
-    goldenSpire->AddComponent<ModelRenderer>(goldenSpireModel);
+        goldenSpire->AddComponent<ModelRenderer>(goldenSpireModel);
 
-    AddGameObject(goldenSpire);
-
-
+        AddGameObject(goldenSpire);
 
     // =====================================================
     // Circle Stone
     // =====================================================
+    ModelClass* circleStoneModel =
+        resourceManager->LoadModel(
+            "CircleStone",
+            device,
+            L"./data/Circle_Stone.obj",
+            L"./data/Circle_Stone.dds"
+        );
+
+    if (!circleStoneModel)
+    {
+        return;
+    }
 
     GameObject* circleStone =
-        new GameObject("CircleStone");
+            new GameObject("CircleStone");
 
-    circleStone->transform.scale =
-    {
-        1000.0f,
-        120.0f,
-        1000.0f
-    };
+        circleStone->transform.scale =
+        {
+            1000.0f,
+            120.0f,
+            1000.0f
+        };
 
-    circleStone->transform.position =
-    {
-        0.0f,
-        -500.0f,
-        0.0f
-    };
+        circleStone->transform.position =
+        {
+            0.0f,
+            -500.0f,
+            0.0f
+        };
 
-    circleStone->AddComponent<ModelRenderer>(circleStoneModel);
+        circleStone->AddComponent<ModelRenderer>(circleStoneModel);
 
-    AddGameObject(circleStone);
-
+        AddGameObject(circleStone);
 
     // =====================================================
     // Crystal Prism
@@ -301,6 +332,18 @@ void Scene::Initialize(ResourceManager* resourceManager)
     // 하나의 ModelClass를 공유하는 10개의 GameObject 생성
     // 각 GameObject는 서로 다른 시작 각도에서 공전
     // =====================================================
+    ModelClass* crystalPrismModel =
+        resourceManager->LoadModel(
+            "CrystalPrism",
+            device,
+            L"./data/Crystal_Prism.obj",
+            L"./data/Crystal_Prism.dds"
+        );
+
+    if (!crystalPrismModel)
+    {
+        return;
+    }
 
     const int crystalCount = 10;
 
@@ -317,10 +360,6 @@ void Scene::Initialize(ResourceManager* resourceManager)
 
     for (int i = 0; i < crystalCount; i++)
     {
-        // -----------------------------------------
-        // GameObject 생성
-        // -----------------------------------------
-
         GameObject* crystal =
             new GameObject("CrystalPrism");
 
@@ -336,6 +375,7 @@ void Scene::Initialize(ResourceManager* resourceManager)
 
         // 각 수정이 원 둘레에서 서로 다른 위치에서 시작하도록
         // 시작 각도를 균등하게 배치
+		// DirectX::XM_2PI는 360도에 해당하는 라디안 값
         float startAngle =
             (DirectX::XM_2PI / crystalCount) * i;
 
@@ -347,24 +387,9 @@ void Scene::Initialize(ResourceManager* resourceManager)
             orbitCenter.y,
             orbitCenter.z + sinf(startAngle) * radius
         };
-
-
-        // -----------------------------------------
-        // ModelRenderer
-        // -----------------------------------------
-
-        // 모든 CrystalPrism GameObject가
-        // 동일한 ModelClass 리소스를 공유
         
-
         crystal->AddComponent<ModelRenderer>(crystalPrismModel);
 
-
-        // -----------------------------------------
-        // Orbiter
-        // -----------------------------------------
-
-        // 중심점을 기준으로 일정한 반지름을 유지하며 공전
         crystal->AddComponent<Orbiter>(
             orbitCenter,
             radius,
@@ -372,22 +397,10 @@ void Scene::Initialize(ResourceManager* resourceManager)
             startAngle
         );
 
-
-        // -----------------------------------------
-        // Rotator
-        // -----------------------------------------
-
-        // 공전하면서 자체적으로 Y축 회전
         crystal->AddComponent<Rotator>(1.0f);
-
-
-        // -----------------------------------------
-        // Scene 등록
-        // -----------------------------------------
 
         AddGameObject(crystal);
     }
-
 
     // =====================================================
     // Crystal Prism2
@@ -396,84 +409,78 @@ void Scene::Initialize(ResourceManager* resourceManager)
     // 4개의 CrystalPrism2 GameObject 생성
     // 각 오브젝트는 서로 다른 위치에서 상하 이동 + 자전
     // =====================================================
-
-    const int crystal2Count = 4;
-
-    // 각 CrystalPrism2의 기본 위치
-    DirectX::XMFLOAT3 crystal2Positions[crystal2Count] =
-    {
-        DirectX::XMFLOAT3(-550.0f, 120.0f,  550.0f),
-        DirectX::XMFLOAT3(550.0f, 120.0f,  550.0f),
-        DirectX::XMFLOAT3(-550.0f, 120.0f, -550.0f),
-        DirectX::XMFLOAT3(550.0f, 120.0f, -550.0f)
-    };
-
-
-    for (int i = 0; i < crystal2Count; i++)
-    {
-        // -----------------------------------------
-        // GameObject 생성
-        // -----------------------------------------
-
-        GameObject* crystal2 =
-            new GameObject("CrystalPrism2");
-
-
-        // 크기 설정
-        crystal2->transform.scale =
-        {
-            50.0f,
-            50.0f,
-            50.0f
-        };
-
-
-        // 각 CrystalPrism2의 기본 위치 설정
-        crystal2->transform.position =
-        {
-            crystal2Positions[i].x,
-            crystal2Positions[i].y,
-            crystal2Positions[i].z
-        };
-
-
-        // -----------------------------------------
-        // ModelRenderer
-        // -----------------------------------------
-
-        // 4개의 GameObject가 하나의 CrystalPrism2 ModelClass를 공유
-        crystal2->AddComponent<ModelRenderer>(crystalPrism2Model);
-
-
-        // -----------------------------------------
-        // Floater
-        // -----------------------------------------
-
-        // 각 오브젝트의 상하 움직임 시작 타이밍을 다르게 설정
-        float startPhase =
-            i * 2.0f;
-
-        crystal2->AddComponent<Floater>(
-            10.0f,
-            0.5f,
-            startPhase
+    ModelClass* crystalPrism2Model =
+        resourceManager->LoadModel(
+            "CrystalPrism2",
+            device,
+            L"./data/Crystal_Prism2.obj",
+            L"./data/Crystal_Prism2.dds"
         );
 
-        // -----------------------------------------
-        // Rotator
-        // -----------------------------------------
-
-        // Y축 자전
-        crystal2->AddComponent<Rotator>(0.5f);
-
-
-        // -----------------------------------------
-        // Scene 등록
-        // -----------------------------------------
-
-        AddGameObject(crystal2);
+    if (!crystalPrism2Model)
+    {
+        return;
     }
+    const int crystal2Count = 4;
 
+        // 각 CrystalPrism2의 기본 위치
+        DirectX::XMFLOAT3 crystal2Positions[crystal2Count] =
+        {
+            DirectX::XMFLOAT3(-550.0f, 120.0f,  550.0f),
+            DirectX::XMFLOAT3(550.0f, 120.0f,  550.0f),
+            DirectX::XMFLOAT3(-550.0f, 120.0f, -550.0f),
+            DirectX::XMFLOAT3(550.0f, 120.0f, -550.0f)
+        };
+
+
+        for (int i = 0; i < crystal2Count; i++)
+        {
+        
+            GameObject* crystal2 =
+                new GameObject("CrystalPrism2");
+
+
+            // 크기 설정
+            crystal2->transform.scale =
+            {
+                50.0f,
+                50.0f,
+                50.0f
+            };
+
+
+            // 각 CrystalPrism2의 기본 위치 설정
+            crystal2->transform.position =
+            {
+                crystal2Positions[i].x,
+                crystal2Positions[i].y,
+                crystal2Positions[i].z
+            };
+
+                
+            // 4개의 GameObject가 하나의 CrystalPrism2 ModelClass를 공유
+            crystal2->AddComponent<ModelRenderer>(crystalPrism2Model);
+
+
+        
+            // 각 오브젝트의 상하 움직임 시작 타이밍을 다르게 설정
+            float startPhase =
+                i * 2.0f;
+
+            crystal2->AddComponent<Floater>(
+                10.0f,
+                0.5f,
+                startPhase
+            );
+
+        
+            // Y축 자전
+            crystal2->AddComponent<Rotator>(0.5f);
+
+
+        
+            AddGameObject(crystal2);
+        }
 
     // =====================================================
     // Lantern
@@ -482,6 +489,19 @@ void Scene::Initialize(ResourceManager* resourceManager)
     // 4개의 Lantern GameObject 생성
     // 각 Lantern은 상하 이동 + Y축 자전
     // =====================================================
+        
+    ModelClass* lanternModel =
+        resourceManager->LoadModel(
+            "Lantern",
+            device,
+            L"./data/Lantern.obj",
+            L"./data/Lantern.dds"
+        );
+
+    if (!lanternModel)
+    {
+        return;
+    }
 
     const int lanternCount = 4;
 
@@ -542,8 +562,6 @@ void Scene::Initialize(ResourceManager* resourceManager)
         AddGameObject(lantern);
     }
 
-
-
     // =====================================================
     // Floating Island
     // =====================================================
@@ -551,6 +569,18 @@ void Scene::Initialize(ResourceManager* resourceManager)
     // 12개의 FloatingIsland GameObject 생성
     // 현재 움직임이 없으므로 Transform + ModelRenderer만 사용
     // =====================================================
+    ModelClass* floatingIslandModel =
+        resourceManager->LoadModel(
+            "FloatingIsland",
+            device,
+            L"./data/Floating_Island.obj",
+            L"./data/Floating_Island.dds"
+        );
+
+    if (!floatingIslandModel)
+    {
+        return;
+    }
 
     const int floatingIslandCount = 12;
 
@@ -614,7 +644,6 @@ void Scene::Initialize(ResourceManager* resourceManager)
         AddGameObject(floatingIsland);
     }
 
-
     // =====================================================
     // Cloud
     // =====================================================
@@ -622,7 +651,19 @@ void Scene::Initialize(ResourceManager* resourceManager)
     // 8개의 Cloud GameObject 생성
     // 기존 위치를 기준으로 공전 반지름과 시작 각도를 계산
     // =====================================================
+    ModelClass* cloudModel =
+        resourceManager->LoadModel(
+            "Cloud",
+            device,
+            L"./data/Cloud.obj",
+            L"./data/Cloud.dds"
+        );
 
+    if (!cloudModel)
+    {
+        return;
+    }    
+        
     const int cloudCount = 8;
 
     DirectX::XMFLOAT3 cloudPositions[cloudCount] =

@@ -52,20 +52,6 @@ private:
 	D3DClass* m_D3D;
 	CameraClass* m_Camera;
 	XMMATRIX m_BaseViewMatrix;
-
-	// Models
-	/*ModelClass* m_WaterPlane;
-
-	ModelClass* m_FloatingIsland;
-	ModelClass* m_FloatingAlter;
-	ModelClass* m_GuardianLion;
-	ModelClass* m_CrystalPrism;
-	ModelClass* m_Cloud;
-	ModelClass* m_SakuraTree;
-	ModelClass* m_CrystalPrism2;
-	ModelClass* m_CircleStone;
-	ModelClass* m_GoldenSpire;
-	ModelClass* m_Lantern;*/
 	
 
 	ModelClass* m_Billboard;

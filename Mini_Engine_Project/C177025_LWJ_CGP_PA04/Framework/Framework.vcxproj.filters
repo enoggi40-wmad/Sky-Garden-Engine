@@ -1,101 +1,98 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="리소스 파일">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="헤더 파일">
       <UniqueIdentifier>{f0af879d-01af-4227-8296-1502f95fc740}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="기존 소스 파일">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="소스 파일">
       <UniqueIdentifier>{9d3247ed-d514-4f8f-a2ce-1474695a0e81}</UniqueIdentifier>
     </Filter>
-    <Filter Include="헤더 파일_Scenes">
-      <UniqueIdentifier>{871facee-527e-4241-8a8c-835bc98bd315}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일_Scenes">
+    <Filter Include="Scenes_소스 파일">
       <UniqueIdentifier>{4e003007-e4af-4299-ab67-c0a09313cebe}</UniqueIdentifier>
     </Filter>
-    <Filter Include="헤더 파일_Renderers">
+    <Filter Include="Scenes_헤더 파일">
+      <UniqueIdentifier>{871facee-527e-4241-8a8c-835bc98bd315}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderers_헤더 파일">
       <UniqueIdentifier>{73e4cedb-bbd8-48ea-a33a-2ad28fd4fe7b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일_Renderers">
+    <Filter Include="Renderers_소스 파일">
       <UniqueIdentifier>{dafe32cd-e726-4f1b-8211-87942b8d8c43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components_헤더 파일">
+      <UniqueIdentifier>{8021df4a-3ea3-4622-a362-c922fb5407c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components_소스파일">
+      <UniqueIdentifier>{3233f694-5382-49a5-a7fd-8ca134c61ea3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_Framework">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="_리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="d3dclass.cpp">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClCompile>
     <ClCompile Include="graphicsclass.cpp">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClCompile>
     <ClCompile Include="inputclass.cpp">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClCompile>
     <ClCompile Include="systemclass.cpp">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClCompile>
     <ClCompile Include="cameraclass.cpp">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClCompile>
     <ClCompile Include="modelclass.cpp">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClCompile>
     <ClCompile Include="textureclass.cpp">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClCompile>
     <ClCompile Include="textureshaderclass.cpp">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClCompile>
     <ClCompile Include="bitmapclass.cpp">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClCompile>
     <ClCompile Include="fontclass.cpp">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClCompile>
     <ClCompile Include="fontshaderclass.cpp">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClCompile>
     <ClCompile Include="textclass.cpp">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClCompile>
     <ClCompile Include="fpsclass.cpp">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClCompile>
     <ClCompile Include="timerclass.cpp">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClCompile>
     <ClCompile Include="cpuclass.cpp">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClCompile>
     <ClCompile Include="DDSTextureLoader.cpp">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Rotator.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Transform.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Orbiter.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Floater.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="ResouceManager.cpp">
@@ -105,69 +102,78 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="MainScene.cpp">
-      <Filter>소스 파일_Scenes</Filter>
+      <Filter>Scenes_소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="TitleScene.cpp">
-      <Filter>소스 파일_Scenes</Filter>
+      <Filter>Scenes_소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SceneManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="ModelRenderer.cpp">
-      <Filter>소스 파일_Renderers</Filter>
+      <Filter>Renderers_소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Floater.cpp">
+      <Filter>Components_소스파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Orbiter.cpp">
+      <Filter>Components_소스파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Rotator.cpp">
+      <Filter>Components_소스파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dclass.h">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClInclude>
     <ClInclude Include="graphicsclass.h">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClInclude>
     <ClInclude Include="inputclass.h">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClInclude>
     <ClInclude Include="systemclass.h">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClInclude>
     <ClInclude Include="AlignedAllocationPolicy.h">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClInclude>
     <ClInclude Include="cameraclass.h">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClInclude>
     <ClInclude Include="modelclass.h">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClInclude>
     <ClInclude Include="textureclass.h">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClInclude>
     <ClInclude Include="textureshaderclass.h">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClInclude>
     <ClInclude Include="bitmapclass.h">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClInclude>
     <ClInclude Include="fontclass.h">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClInclude>
     <ClInclude Include="fontshaderclass.h">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClInclude>
     <ClInclude Include="textclass.h">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClInclude>
     <ClInclude Include="fpsclass.h">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClInclude>
     <ClInclude Include="timerclass.h">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClInclude>
     <ClInclude Include="cpuclass.h">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClInclude>
     <ClInclude Include="DDSTextureLoader.h">
-      <Filter>기존 소스 파일</Filter>
+      <Filter>_Framework</Filter>
     </ClInclude>
     <ClInclude Include="Transform.h">
       <Filter>헤더 파일</Filter>
@@ -178,59 +184,59 @@
     <ClInclude Include="Component.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Rotator.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Scene.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbiter.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Floater.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="ResourceManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="MainScene.h">
-      <Filter>헤더 파일_Scenes</Filter>
+      <Filter>Scenes_헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="TitleScene.h">
-      <Filter>헤더 파일_Scenes</Filter>
+      <Filter>Scenes_헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SceneManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="ModelRenderer.h">
-      <Filter>헤더 파일_Renderers</Filter>
+      <Filter>Renderers_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Orbiter.h">
+      <Filter>Components_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Rotator.h">
+      <Filter>Components_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Floater.h">
+      <Filter>Components_헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="data\font.dds">
-      <Filter>리소스 파일</Filter>
+      <Filter>_리소스 파일</Filter>
     </Image>
     <Image Include="data\bluesky.dds">
-      <Filter>리소스 파일</Filter>
+      <Filter>_리소스 파일</Filter>
     </Image>
     <Image Include="data\CloudPlane.dds">
-      <Filter>리소스 파일</Filter>
+      <Filter>_리소스 파일</Filter>
     </Image>
     <Image Include="data\WaterPlane.dds">
-      <Filter>리소스 파일</Filter>
+      <Filter>_리소스 파일</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="data\fontdata.txt">
-      <Filter>리소스 파일</Filter>
+      <Filter>_리소스 파일</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\fontShader.hlsl">
-      <Filter>리소스 파일</Filter>
+      <Filter>_리소스 파일</Filter>
     </None>
     <None Include="data\textureShader.hlsl">
-      <Filter>리소스 파일</Filter>
+      <Filter>_리소스 파일</Filter>
     </None>
   </ItemGroup>
 </Project>

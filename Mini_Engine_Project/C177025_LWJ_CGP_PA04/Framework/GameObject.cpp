@@ -44,9 +44,3 @@ std::string GameObject::GetName() const
 {
     return name;
 }
-
-// 기존 AddComponent 방식
-//void AddComponent(Component* newComponent)
-//{
-//    components.push_back(newComponent);
-//}

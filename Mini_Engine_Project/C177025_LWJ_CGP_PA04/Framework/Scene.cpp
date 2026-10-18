@@ -85,12 +85,7 @@ void Scene::Initialize(ResourceManager* resourceManager, ID3D11Device* device)
     // =====================================================
 
     ModelClass* guardianLionModel =
-        resourceManager->LoadModel(
-            "GuardianLion",
-            device,
-			L"./data/Guardian_Lion.obj",
-			L"./data/Guardian_Lion.dds"
-            );
+        resourceManager->GetModel("GuardianLion");
 
     if (!guardianLionModel)
     {
@@ -127,12 +122,8 @@ void Scene::Initialize(ResourceManager* resourceManager, ID3D11Device* device)
     // =====================================================
 
     ModelClass* sakuraTreeModel =
-        resourceManager->LoadModel(
-            "SakuraTree",
-            device,
-            L"./data/Sakura_Tree.obj",
-            L"./data/Sakura_Tree.dds"
-        );
+        resourceManager->GetModel("SakuraTree");
+        
 
     if (!sakuraTreeModel)
     {
@@ -173,12 +164,7 @@ void Scene::Initialize(ResourceManager* resourceManager, ID3D11Device* device)
     // =====================================================
 
     ModelClass* waterPlaneModel =
-        resourceManager->LoadModel(
-            "WaterPlane",
-            device,
-            L"./data/WaterPlane.obj",
-            L"./data/WaterPlane.dds"
-        );
+       resourceManager->GetModel("WaterPlane");
 
     if (!waterPlaneModel)
     {
@@ -219,12 +205,7 @@ void Scene::Initialize(ResourceManager* resourceManager, ID3D11Device* device)
     // =====================================================
 
     ModelClass* floatingAlterModel =
-        resourceManager->LoadModel(
-            "FloatingAlter",
-            device,
-            L"./data/Floating_Alter.obj",
-            L"./data/Floating_Alter.dds"
-        );
+        resourceManager->GetModel("FloatingAlter");
 
     if (!floatingAlterModel)
     {
@@ -255,12 +236,7 @@ void Scene::Initialize(ResourceManager* resourceManager, ID3D11Device* device)
     // Golden Spire
     // =====================================================
     ModelClass* goldenSpireModel =
-        resourceManager->LoadModel(
-            "GoldenSpire",
-            device,
-            L"./data/Golden_Spire.obj",
-            L"./data/Golden_Spire.dds"
-        );
+        resourceManager->GetModel("GoldenSpire");
 
     if (!goldenSpireModel)
     {
@@ -292,12 +268,7 @@ void Scene::Initialize(ResourceManager* resourceManager, ID3D11Device* device)
     // Circle Stone
     // =====================================================
     ModelClass* circleStoneModel =
-        resourceManager->LoadModel(
-            "CircleStone",
-            device,
-            L"./data/Circle_Stone.obj",
-            L"./data/Circle_Stone.dds"
-        );
+        resourceManager->GetModel("CircleStone");
 
     if (!circleStoneModel)
     {
@@ -333,12 +304,7 @@ void Scene::Initialize(ResourceManager* resourceManager, ID3D11Device* device)
     // 각 GameObject는 서로 다른 시작 각도에서 공전
     // =====================================================
     ModelClass* crystalPrismModel =
-        resourceManager->LoadModel(
-            "CrystalPrism",
-            device,
-            L"./data/Crystal_Prism.obj",
-            L"./data/Crystal_Prism.dds"
-        );
+        resourceManager->GetModel("CrystalPrism");
 
     if (!crystalPrismModel)
     {
@@ -410,12 +376,7 @@ void Scene::Initialize(ResourceManager* resourceManager, ID3D11Device* device)
     // 각 오브젝트는 서로 다른 위치에서 상하 이동 + 자전
     // =====================================================
     ModelClass* crystalPrism2Model =
-        resourceManager->LoadModel(
-            "CrystalPrism2",
-            device,
-            L"./data/Crystal_Prism2.obj",
-            L"./data/Crystal_Prism2.dds"
-        );
+        resourceManager->GetModel("CrystalPrism2");
 
     if (!crystalPrism2Model)
     {
@@ -491,12 +452,7 @@ void Scene::Initialize(ResourceManager* resourceManager, ID3D11Device* device)
     // =====================================================
         
     ModelClass* lanternModel =
-        resourceManager->LoadModel(
-            "Lantern",
-            device,
-            L"./data/Lantern.obj",
-            L"./data/Lantern.dds"
-        );
+        resourceManager->GetModel("Lantern");
 
     if (!lanternModel)
     {
@@ -570,12 +526,7 @@ void Scene::Initialize(ResourceManager* resourceManager, ID3D11Device* device)
     // 현재 움직임이 없으므로 Transform + ModelRenderer만 사용
     // =====================================================
     ModelClass* floatingIslandModel =
-        resourceManager->LoadModel(
-            "FloatingIsland",
-            device,
-            L"./data/Floating_Island.obj",
-            L"./data/Floating_Island.dds"
-        );
+        resourceManager->GetModel("FloatingIsland");
 
     if (!floatingIslandModel)
     {
@@ -652,12 +603,7 @@ void Scene::Initialize(ResourceManager* resourceManager, ID3D11Device* device)
     // 기존 위치를 기준으로 공전 반지름과 시작 각도를 계산
     // =====================================================
     ModelClass* cloudModel =
-        resourceManager->LoadModel(
-            "Cloud",
-            device,
-            L"./data/Cloud.obj",
-            L"./data/Cloud.dds"
-        );
+        resourceManager->GetModel("Cloud");
 
     if (!cloudModel)
     {

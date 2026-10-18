@@ -131,6 +131,10 @@ bool GraphicsClass::Initialize(
     {
         return false;
     }
+
+    m_ResourceManager->Initialize(
+        m_D3D->GetDevice()
+    );
     
     // =====================================================
     // Scene
@@ -157,36 +161,6 @@ bool GraphicsClass::Initialize(
         m_ResourceManager,
         m_D3D->GetDevice()
     );
-
-
-    // =====================================================
-    // Billboard
-    // =====================================================
-
-    m_Billboard = new ModelClass;
-
-    if (!m_Billboard)
-    {
-        return false;
-    }
-
-    result = m_Billboard->Initialize(
-        m_D3D->GetDevice(),
-        L"./data/Magic_Billboard.obj",
-        L"./data/Magic_Billboard.dds"
-    );
-
-    if (!result)
-    {
-        MessageBox(
-            hwnd,
-            L"Could not initialize the billboard object.",
-            L"Error",
-            MB_OK
-        );
-
-        return false;
-    }
 
     
     // =====================================================
@@ -548,70 +522,6 @@ bool GraphicsClass::Render()
     m_D3D->GetProjectionMatrix(projectionMatrix);
     m_D3D->GetOrthoMatrix(orthoMatrix);
 
-
-
-    // =====================================================
-    // Title Scene
-    // =====================================================
-
-    if (m_ShowTitleScene)
-    {
-        // 2D 이미지이므로 ZBuffer 비활성화
-        m_D3D->TurnZBufferOff();
-
-        worldMatrix = XMMatrixIdentity();
-
-
-        // Title Bitmap 렌더링 준비
-        result = m_Bitmap->Render(
-            m_D3D->GetDeviceContext(),
-            0,
-            0
-        );
-
-        if (!result)
-        {
-            MessageBox(
-                NULL,
-                L"Title Bitmap Render Failed",
-                L"Render Error",
-                MB_OK
-            );
-
-            return false;
-        }
-
-
-        // Title Texture 렌더링
-        result = m_TextureShader->Render(
-            m_D3D->GetDeviceContext(),
-            m_Bitmap->GetIndexCount(),
-            worldMatrix,
-            m_BaseViewMatrix,
-            orthoMatrix,
-            m_Bitmap->GetTexture()
-        );
-
-        if (!result)
-        {
-            MessageBox(
-                NULL,
-                L"Title Texture Render Failed",
-                L"Render Error",
-                MB_OK
-            );
-
-            return false;
-        }
-
-
-        m_D3D->TurnZBufferOn();
-
-        m_D3D->EndScene();
-
-        return true;
-    }
-
     // =====================================================
     // Scene GameObject 렌더링
     // =====================================================
@@ -634,78 +544,6 @@ bool GraphicsClass::Render()
         return false;
     }
 
-
-
-    // =====================================================
-    // Billboard
-    // =====================================================
-    //
-    // Billboard는 항상 카메라 방향을 바라봐야 하므로
-    // 아직 GraphicsClass에서 직접 처리
-    // =====================================================
-
-    //m_D3D->TurnOnAlphaBlending();
-
-
-    //// 현재 카메라의 Y축 회전값
-    //float cameraYaw =
-    //    m_Camera->GetRotationY();
-
-
-    //worldMatrix =
-    //    XMMatrixScaling(
-    //        50.0f,
-    //        50.0f,
-    //        50.0f
-    //    )
-    //    *
-
-    //    // 카메라를 바라보도록 회전
-    //    XMMatrixRotationY(
-    //        XMConvertToRadians(cameraYaw)
-    //        + XM_PI
-    //    )
-    //    *
-
-    //    XMMatrixTranslation(
-    //        195.0f,
-    //        30.0f,
-    //        145.0f
-    //    );
-
-
-    //m_Billboard->Render(
-    //    m_D3D->GetDeviceContext()
-    //);
-
-
-    //result = m_TextureShader->Render(
-    //    m_D3D->GetDeviceContext(),
-    //    m_Billboard->GetIndexCount(),
-    //    worldMatrix,
-    //    viewMatrix,
-    //    projectionMatrix,
-    //    m_Billboard->GetTexture()
-    //);
-
-
-    //if (!result)
-    //{
-    //    MessageBox(
-    //        NULL,
-    //        L"Billboard Render Failed",
-    //        L"Render Error",
-    //        MB_OK
-    //    );
-
-    //    return false;
-    //}
-
-
-    //m_D3D->TurnOffAlphaBlending();
-
-
-
     // =====================================================
     // 2D UI
     // =====================================================
@@ -718,80 +556,6 @@ bool GraphicsClass::Render()
 
 
     worldMatrix = XMMatrixIdentity();
-
-
-    // -----------------------------------------------------
-    // Info Panel
-    // -----------------------------------------------------
-
-    /*result = m_InfoBitmap->Render(
-        m_D3D->GetDeviceContext(),
-        0,
-        15
-    );
-
-    if (!result)
-    {
-        MessageBox(
-            NULL,
-            L"Info Bitmap Render Failed",
-            L"Render Error",
-            MB_OK
-        );
-
-        return false;
-    }
-
-
-    result = m_TextureShader->Render(
-        m_D3D->GetDeviceContext(),
-        m_InfoBitmap->GetIndexCount(),
-        worldMatrix,
-        m_BaseViewMatrix,
-        orthoMatrix,
-        m_InfoBitmap->GetTexture()
-    );
-
-
-    if (!result)
-    {
-        MessageBox(
-            NULL,
-            L"Info Bitmap Texture Render Failed",
-            L"Render Error",
-            MB_OK
-        );
-
-        return false;
-    }*/
-
-
-
-    // -----------------------------------------------------
-    // Performance Text
-    // -----------------------------------------------------
-
-    /*worldMatrix = XMMatrixIdentity();
-
-
-    result = m_Text->Render(
-        m_D3D->GetDeviceContext(),
-        worldMatrix,
-        orthoMatrix
-    );
-
-
-    if (!result)
-    {
-        MessageBox(
-            NULL,
-            L"Text Render Failed",
-            L"Render Error",
-            MB_OK
-        );
-
-        return false;
-    }*/
 
 
     // 렌더링 상태 복구

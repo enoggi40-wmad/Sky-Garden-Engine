@@ -12,14 +12,17 @@ public:
     ResourceManager();
     ~ResourceManager();
 
+    void Initialize(ID3D11Device* device);
+
     // 모델 리소스를 로드하고 ResourceManager 내부에 저장
     // 같은 이름의 모델이 이미 존재하면 기존 모델 반환
     ModelClass* LoadModel(
         const std::string& name,
-        ID3D11Device* device,
         const wchar_t* modelPath,
         const wchar_t* texturePath
     );
+    
+    
 
     // 이름을 이용해 이미 로드된 모델 검색
     ModelClass* GetModel(
@@ -30,7 +33,18 @@ public:
     void Shutdown();
 
 private:
+    struct ModelResourceInfo
+    {
+        std::wstring modelPath;
+        std::wstring texturePath;
+    };
+
+    ID3D11Device* m_Device;
+
     // 모델 이름을 Key로 사용
     // 예: "Cloud" -> ModelClass*
     std::unordered_map<std::string, ModelClass*> m_Models;
+
+
+    std::unordered_map<std::string, ModelResourceInfo> m_ModelInfos;
 };

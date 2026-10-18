@@ -31,7 +31,10 @@ public:
 	XMFLOAT3 GetPosition();
 	XMFLOAT3 GetRotation();
 
-	void UpdateFreeCamera(HWND hwnd);
+	void UpdateFreeCamera(
+		HWND hwnd,
+		float deltaTime
+	);
 
 	void Render();
 	void GetViewMatrix(XMMATRIX&);

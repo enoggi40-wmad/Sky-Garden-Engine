@@ -62,110 +62,200 @@ float CameraClass::GetRotationY()
 	return m_rotation.y;
 }
 
-void CameraClass::UpdateFreeCamera(HWND hwnd)
+void CameraClass::UpdateFreeCamera(
+    HWND hwnd,
+    float deltaTime)
 {
-	const float moveSpeed = 1.2f;
-	const float mouseSensitivity = 0.15f;
+    const float moveSpeed = 200.0f;
+    const float mouseSensitivity = 0.15f;
 
-	// -----------------------------
-// Mouse rotation
-// Right mouse button + mouse movement
-// -----------------------------
-	POINT currentMousePos;
-	GetCursorPos(&currentMousePos);
-	ScreenToClient(hwnd, &currentMousePos);
+    float moveDistance =
+        moveSpeed * deltaTime;
 
-	RECT clientRect;
-	GetClientRect(hwnd, &clientRect);
 
-	POINT centerPos;
-	centerPos.x = (clientRect.right - clientRect.left) / 2;
-	centerPos.y = (clientRect.bottom - clientRect.top) / 2;
+    // -----------------------------
+    // Mouse rotation
+    // Right mouse button + mouse movement
+    // -----------------------------
+    POINT currentMousePos;
+    GetCursorPos(&currentMousePos);
+    ScreenToClient(hwnd, &currentMousePos);
 
-	if (GetAsyncKeyState(VK_RBUTTON) & 0x8000)
-	{
-		int deltaX = currentMousePos.x - centerPos.x;
-		int deltaY = currentMousePos.y - centerPos.y;
+    RECT clientRect;
+    GetClientRect(hwnd, &clientRect);
 
-		m_rotation.y += deltaX * mouseSensitivity;
-		m_rotation.x += deltaY * mouseSensitivity;
+    POINT centerPos;
+    centerPos.x =
+        (clientRect.right - clientRect.left) / 2;
 
-		// 시야 제한 없애려면 pitch 제한 코드는 넣지 않음
+    centerPos.y =
+        (clientRect.bottom - clientRect.top) / 2;
 
-		POINT screenCenter = centerPos;
-		ClientToScreen(hwnd, &screenCenter);
-		SetCursorPos(screenCenter.x, screenCenter.y);
-	}
 
-	// -----------------------------
-	// Calculate forward / right
-	// -----------------------------
-	float pitch = m_rotation.x * 0.0174532925f;
-	float yaw = m_rotation.y * 0.0174532925f;
+    if (GetAsyncKeyState(VK_RBUTTON) & 0x8000)
+    {
+        int deltaX =
+            currentMousePos.x - centerPos.x;
 
-	XMMATRIX rotationMatrix;
-	rotationMatrix = XMMatrixRotationRollPitchYaw(pitch, yaw, 0.0f);
+        int deltaY =
+            currentMousePos.y - centerPos.y;
 
-	XMVECTOR defaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-	XMVECTOR defaultRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 
-	XMVECTOR forward = XMVector3TransformCoord(defaultForward, rotationMatrix);
-	XMVECTOR right = XMVector3TransformCoord(defaultRight, rotationMatrix);
+        m_rotation.y +=
+            deltaX * mouseSensitivity;
 
-	forward = XMVector3Normalize(forward);
-	right = XMVector3Normalize(right);
+        m_rotation.x +=
+            deltaY * mouseSensitivity;
 
-	XMVECTOR position = XMLoadFloat3(&m_position);
 
-	// -----------------------------
-	// Arrow // WASD movement
-	// -----------------------------
-	// Forward
-	if ((GetAsyncKeyState(VK_UP) & 0x8000) || (GetAsyncKeyState('W') & 0x8000))
-	{
-		position += forward * moveSpeed;
-	}
+        POINT screenCenter =
+            centerPos;
 
-	// Backward
-	if ((GetAsyncKeyState(VK_DOWN) & 0x8000) || (GetAsyncKeyState('S') & 0x8000))
-	{
-		position -= forward * moveSpeed;
-	}
+        ClientToScreen(
+            hwnd,
+            &screenCenter
+        );
 
-	// Left
-	if ((GetAsyncKeyState(VK_LEFT) & 0x8000) || (GetAsyncKeyState('A') & 0x8000))
-	{
-		position -= right * moveSpeed;
-	}
+        SetCursorPos(
+            screenCenter.x,
+            screenCenter.y
+        );
+    }
 
-	// Right
-	if ((GetAsyncKeyState(VK_RIGHT) & 0x8000) || (GetAsyncKeyState('D') & 0x8000))
-	{
-		position += right * moveSpeed;
-	}
 
-	XMFLOAT3 newPosition;
-	XMStoreFloat3(&newPosition, position);
+    // -----------------------------
+    // Calculate forward / right
+    // -----------------------------
+    float pitch =
+        m_rotation.x * 0.0174532925f;
 
-	// 이동 범위 제한
-	// Camera movement boundary based on WaterPlane size.
-	// WaterPlane range:
-	// x: -100 ~ 100
-	// z: -50  ~ 150
-	// y: -8   water surface height
+    float yaw =
+        m_rotation.y * 0.0174532925f;
 
-	if (newPosition.x < -800.0f) newPosition.x = -800.0f;
-	if (newPosition.x > 800.0f) newPosition.x = 800.0f;
 
-	if (newPosition.z < -800.0f) newPosition.z = -800.0f;
-	if (newPosition.z > 800.0f) newPosition.z = 800.0f;
+    XMMATRIX rotationMatrix =
+        XMMatrixRotationRollPitchYaw(
+            pitch,
+            yaw,
+            0.0f
+        );
 
-	if (newPosition.y < -650.0f) newPosition.y = -650.0f;
-	if (newPosition.y > 650.0f) newPosition.y = 650.0f;
 
-	
+    XMVECTOR defaultForward =
+        XMVectorSet(
+            0.0f,
+            0.0f,
+            1.0f,
+            0.0f
+        );
 
-	m_position = newPosition;
+    XMVECTOR defaultRight =
+        XMVectorSet(
+            1.0f,
+            0.0f,
+            0.0f,
+            0.0f
+        );
+
+
+    XMVECTOR forward =
+        XMVector3TransformCoord(
+            defaultForward,
+            rotationMatrix
+        );
+
+    XMVECTOR right =
+        XMVector3TransformCoord(
+            defaultRight,
+            rotationMatrix
+        );
+
+
+    forward =
+        XMVector3Normalize(forward);
+
+    right =
+        XMVector3Normalize(right);
+
+
+    XMVECTOR position =
+        XMLoadFloat3(&m_position);
+
+
+    // -----------------------------
+    // Arrow / WASD movement
+    // -----------------------------
+
+    // Forward
+    if ((GetAsyncKeyState(VK_UP) & 0x8000) ||
+        (GetAsyncKeyState('W') & 0x8000))
+    {
+        position +=
+            forward * moveDistance;
+    }
+
+
+    // Backward
+    if ((GetAsyncKeyState(VK_DOWN) & 0x8000) ||
+        (GetAsyncKeyState('S') & 0x8000))
+    {
+        position -=
+            forward * moveDistance;
+    }
+
+
+    // Left
+    if ((GetAsyncKeyState(VK_LEFT) & 0x8000) ||
+        (GetAsyncKeyState('A') & 0x8000))
+    {
+        position -=
+            right * moveDistance;
+    }
+
+
+    // Right
+    if ((GetAsyncKeyState(VK_RIGHT) & 0x8000) ||
+        (GetAsyncKeyState('D') & 0x8000))
+    {
+        position +=
+            right * moveDistance;
+    }
+
+
+    XMFLOAT3 newPosition;
+
+    XMStoreFloat3(
+        &newPosition,
+        position
+    );
+
+
+    // -----------------------------
+    // Camera movement boundary
+    // -----------------------------
+    if (newPosition.x < -800.0f)
+        newPosition.x = -800.0f;
+
+    if (newPosition.x > 800.0f)
+        newPosition.x = 800.0f;
+
+
+    if (newPosition.z < -800.0f)
+        newPosition.z = -800.0f;
+
+    if (newPosition.z > 800.0f)
+        newPosition.z = 800.0f;
+
+
+    if (newPosition.y < -650.0f)
+        newPosition.y = -650.0f;
+
+    if (newPosition.y > 650.0f)
+        newPosition.y = 650.0f;
+
+
+    m_position =
+        newPosition;
 }
 
 // This uses the position and rotation of the camera to build and to update the view matrix.

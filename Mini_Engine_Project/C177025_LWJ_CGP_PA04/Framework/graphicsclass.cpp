@@ -4,6 +4,8 @@
 #include "graphicsclass.h"
 #include "SceneManager.h"
 
+#include <chrono>
+
 
 GraphicsClass::GraphicsClass()
 {
@@ -335,39 +337,36 @@ bool GraphicsClass::Initialize(
 bool GraphicsClass::Frame(int fps, int cpu)
 {
     bool result;
-    static float rotation = 0.0f;
-	float deltaTime = 0.016f; // Assuming a fixed time step for simplicity
 
-    // Title scene input.
-    if (m_ShowTitleScene)
-    {
-        if (GetAsyncKeyState(VK_RETURN) & 0x8000)
-        {
-            m_ShowTitleScene = false;
-        }
-    }
-    else
-    {
-        // Camera movement is only enabled in the main scene.
-        m_Camera->UpdateFreeCamera(m_hwnd);
-    }
+    static auto previousTime =
+        std::chrono::high_resolution_clock::now();
 
-    // Update the rotation variable each frame.
-    rotation += (float)XM_PI * 0.005f;
-    if (rotation > 360.0f)
-    {
-        rotation -= 360.0f;
-    }
+    auto currentTime =
+        std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<float> elapsedTime =
+        currentTime - previousTime;
+
+    float deltaTime =
+        elapsedTime.count();
+
+    previousTime =
+        currentTime;
 
 
-    // GraphicsClass::Frame()
-    // Scene Update 
-    m_SceneManager->Update(deltaTime);
+    m_Camera->UpdateFreeCamera(
+        m_hwnd,
+        deltaTime
+    );
 
 
+    m_SceneManager->Update(
+        deltaTime
+    );
 
-    // Render the graphics scene.
+
     result = Render();
+
     if (!result)
     {
         return false;

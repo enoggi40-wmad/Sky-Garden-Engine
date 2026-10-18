@@ -2,15 +2,13 @@
 // Filename: graphicsclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
 #include "graphicsclass.h"
-
+#include "SceneManager.h"
 
 
 GraphicsClass::GraphicsClass()
 {
 	m_D3D = 0;
 	m_Camera = 0;
-
-	m_Billboard = 0;
 
 	//
 	m_TextureShader = 0;
@@ -135,34 +133,26 @@ bool GraphicsClass::Initialize(
     m_ResourceManager->Initialize(
         m_D3D->GetDevice()
     );
-    
-    // =====================================================
-    // Scene
-    // =====================================================
-    //
-    // Scene이 사용할 ModelClass들이 모두 초기화된 뒤
-    // Scene과 GameObject들을 생성한다.
-    //
-    // ModelRenderer가 초기화되지 않은 ModelClass를
-    // 참조하지 않도록 반드시 모델 로딩 이후에 실행한다.
-    // =====================================================
 
-    m_Scene = new Scene;
+    // =====================================================
+    // Scene Manager
+    // =====================================================
+    m_SceneManager = new SceneManager;
 
-    if (!m_Scene)
+    if (!m_SceneManager)
     {
         return false;
     }
 
-
-    // Scene에 필요한 GameObject들을 생성하고 구성
-    // 기존 씬
-    m_Scene->Initialize(
-        m_ResourceManager,
-        m_D3D->GetDevice()
-    );
+    if (!m_SceneManager->Initialize(
+        m_ResourceManager))
+    {
+        return false;
+    }
 
     
+        
+        
     // =====================================================
     // Texture Shader
     // =====================================================
@@ -341,29 +331,146 @@ bool GraphicsClass::Initialize(
     return true;
 }
 
+///
+bool GraphicsClass::Frame(int fps, int cpu)
+{
+    bool result;
+    static float rotation = 0.0f;
+	float deltaTime = 0.016f; // Assuming a fixed time step for simplicity
+
+    // Title scene input.
+    if (m_ShowTitleScene)
+    {
+        if (GetAsyncKeyState(VK_RETURN) & 0x8000)
+        {
+            m_ShowTitleScene = false;
+        }
+    }
+    else
+    {
+        // Camera movement is only enabled in the main scene.
+        m_Camera->UpdateFreeCamera(m_hwnd);
+    }
+
+    // Update the rotation variable each frame.
+    rotation += (float)XM_PI * 0.005f;
+    if (rotation > 360.0f)
+    {
+        rotation -= 360.0f;
+    }
+
+
+    // GraphicsClass::Frame()
+    // Scene Update 
+    m_SceneManager->Update(deltaTime);
+
+
+
+    // Render the graphics scene.
+    result = Render();
+    if (!result)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool GraphicsClass::Render()
+{
+    XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
+    bool result;
+
+
+    // =====================================================
+    // Scene 렌더링 준비
+    // =====================================================
+
+    // 화면 초기화
+    // 하늘색
+    m_D3D->BeginScene(0.60f, 0.82f, 1.0f, 1.0f);
+    // 검정색 
+    //_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
+
+
+    // 현재 카메라 위치와 회전을 이용해 View Matrix 생성
+    m_Camera->Render();
+
+
+    // 렌더링에 필요한 Matrix 가져오기
+    m_Camera->GetViewMatrix(viewMatrix);
+    m_D3D->GetWorldMatrix(worldMatrix);
+    m_D3D->GetProjectionMatrix(projectionMatrix);
+    m_D3D->GetOrthoMatrix(orthoMatrix);
+
+    // =====================================================
+	// SceneManager를 통해 현재 Scene 렌더링
+    // =====================================================
+    result = m_SceneManager->Render(
+        m_D3D->GetDeviceContext(),
+        m_TextureShader,
+        viewMatrix,
+        projectionMatrix
+    );
+
+    if (!result)
+    {
+        MessageBox(
+            NULL,
+            L"Scene Render Failed",
+            L"Render Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+    // =====================================================
+    // 2D UI
+    // =====================================================
+
+    // UI는 깊이 검사를 사용하지 않음
+    m_D3D->TurnZBufferOff();
+
+    // Panel의 투명도 처리를 위해 Alpha Blending 활성화
+    m_D3D->TurnOnAlphaBlending();
+
+
+    worldMatrix = XMMatrixIdentity();
+
+
+    // 렌더링 상태 복구
+    m_D3D->TurnOffAlphaBlending();
+    m_D3D->TurnZBufferOn();
+
+
+    // 한 프레임 렌더링 종료
+    m_D3D->EndScene();
+
+
+    return true;
+}
+
 
 void GraphicsClass::Shutdown()
 {
-    // =====================================================
-    // Scene
-    // =====================================================
-    //
-    // Scene이 GameObject들을 소유하고 있으므로
-    // Scene을 먼저 삭제한다.
-    //
-    // GameObject가 삭제되면서
-    // ModelRenderer / Rotator / Orbiter / Floater 등의
-    // Component들도 함께 삭제된다.
-    // =====================================================
-
-    // Scene 먼저 제거
+    // Scene 제거
     if (m_Scene)
     {
         delete m_Scene;
         m_Scene = nullptr;
     }
 
-    // 모델 리소스는 ResourceManager가 한 번만 정리
+	// SceneManager 제거
+    if (m_SceneManager)
+    {
+        m_SceneManager->Shutdown();
+
+        delete m_SceneManager;
+        m_SceneManager = nullptr;
+    }
+
+    // 모델 리소스 제거
     if (m_ResourceManager)
     {
         m_ResourceManager->Shutdown();
@@ -371,17 +478,7 @@ void GraphicsClass::Shutdown()
         m_ResourceManager = nullptr;
     }
 
-
-    if (m_Billboard)
-    {
-        m_Billboard->Shutdown();
-        delete m_Billboard;
-        m_Billboard = nullptr;
-    }
-
-
     // 이후 Shader / Bitmap / Camera / D3D 등
-    // 기존 리소스 정리 코드 유지
     // =====================================================
     // Text
     // =====================================================
@@ -449,123 +546,3 @@ void GraphicsClass::Shutdown()
 
 }
 
-///
-bool GraphicsClass::Frame(int fps, int cpu)
-{
-	bool result;
-	static float rotation = 0.0f;
-
-	// Title scene input.
-	if (m_ShowTitleScene)
-	{
-		if (GetAsyncKeyState(VK_RETURN) & 0x8000)
-		{
-			m_ShowTitleScene = false;
-		}
-	}
-	else
-	{
-		// Camera movement is only enabled in the main scene.
-		m_Camera->UpdateFreeCamera(m_hwnd);
-	}
-
-	// Update the rotation variable each frame.
-	rotation += (float)XM_PI * 0.005f;
-	if (rotation > 360.0f)
-	{
-		rotation -= 360.0f;
-	}
-   
-    
-    // GraphicsClass::Frame()
-	// Scene Update 
-	m_Scene->Update(0.016f);
-
-
-
-
-
-	// Render the graphics scene.
-	result = Render();
-	if (!result)
-	{
-		return false;
-	}
-
-	return true;
-}
-
-bool GraphicsClass::Render()
-{
-    XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
-    bool result;
-
-
-    // =====================================================
-    // Scene 렌더링 준비
-    // =====================================================
-
-    // 화면 초기화
-    // 하늘색
-    m_D3D->BeginScene(0.60f, 0.82f, 1.0f, 1.0f);
-    // 검정색 
-    //_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
-
-
-    // 현재 카메라 위치와 회전을 이용해 View Matrix 생성
-    m_Camera->Render();
-
-
-    // 렌더링에 필요한 Matrix 가져오기
-    m_Camera->GetViewMatrix(viewMatrix);
-    m_D3D->GetWorldMatrix(worldMatrix);
-    m_D3D->GetProjectionMatrix(projectionMatrix);
-    m_D3D->GetOrthoMatrix(orthoMatrix);
-
-    // =====================================================
-    // Scene GameObject 렌더링
-    // =====================================================
-    result = m_Scene->Render(
-        m_D3D->GetDeviceContext(),
-        m_TextureShader,
-        viewMatrix,
-        projectionMatrix
-    );
-
-    if (!result)
-    {
-        MessageBox(
-            NULL,
-            L"Scene Render Failed",
-            L"Render Error",
-            MB_OK
-        );
-
-        return false;
-    }
-
-    // =====================================================
-    // 2D UI
-    // =====================================================
-
-    // UI는 깊이 검사를 사용하지 않음
-    m_D3D->TurnZBufferOff();
-
-    // Panel의 투명도 처리를 위해 Alpha Blending 활성화
-    m_D3D->TurnOnAlphaBlending();
-
-
-    worldMatrix = XMMatrixIdentity();
-
-
-    // 렌더링 상태 복구
-    m_D3D->TurnOffAlphaBlending();
-    m_D3D->TurnZBufferOn();
-
-
-    // 한 프레임 렌더링 종료
-    m_D3D->EndScene();
-
-
-    return true;
-}

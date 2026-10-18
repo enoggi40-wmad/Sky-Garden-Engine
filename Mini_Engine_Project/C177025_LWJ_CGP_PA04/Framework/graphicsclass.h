@@ -34,6 +34,8 @@ const float SCREEN_NEAR = 0.1f;
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: GraphicsClass
 ////////////////////////////////////////////////////////////////////////////////
+class SceneManager;
+
 class GraphicsClass
 {
 public:
@@ -54,8 +56,6 @@ private:
 	XMMATRIX m_BaseViewMatrix;
 	
 
-	ModelClass* m_Billboard;
-
 	TextureShaderClass* m_TextureShader;
 	BitmapClass* m_Bitmap;
 	BitmapClass* m_InfoBitmap;
@@ -65,6 +65,9 @@ private:
 	HWND m_hwnd;
 
 	bool m_ShowTitleScene;
+
+	// SceneManager
+	SceneManager* m_SceneManager;
 
 	// Scene
 	Scene* m_Scene;

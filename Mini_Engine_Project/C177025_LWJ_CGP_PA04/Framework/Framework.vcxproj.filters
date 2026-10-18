@@ -15,6 +15,18 @@
     <Filter Include="소스 파일">
       <UniqueIdentifier>{9d3247ed-d514-4f8f-a2ce-1474695a0e81}</UniqueIdentifier>
     </Filter>
+    <Filter Include="헤더 파일_Scenes">
+      <UniqueIdentifier>{871facee-527e-4241-8a8c-835bc98bd315}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일_Scenes">
+      <UniqueIdentifier>{4e003007-e4af-4299-ab67-c0a09313cebe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일_Renderers">
+      <UniqueIdentifier>{73e4cedb-bbd8-48ea-a33a-2ad28fd4fe7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일_Renderers">
+      <UniqueIdentifier>{dafe32cd-e726-4f1b-8211-87942b8d8c43}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="d3dclass.cpp">
@@ -74,9 +86,6 @@
     <ClCompile Include="Rotator.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="ModelRenderer.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Transform.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -94,6 +103,18 @@
     </ClCompile>
     <ClCompile Include="Component.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MainScene.cpp">
+      <Filter>소스 파일_Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleScene.cpp">
+      <Filter>소스 파일_Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelRenderer.cpp">
+      <Filter>소스 파일_Renderers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -160,9 +181,6 @@
     <ClInclude Include="Rotator.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="ModelRenderer.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -174,6 +192,18 @@
     </ClInclude>
     <ClInclude Include="ResourceManager.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="MainScene.h">
+      <Filter>헤더 파일_Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleScene.h">
+      <Filter>헤더 파일_Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelRenderer.h">
+      <Filter>헤더 파일_Renderers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

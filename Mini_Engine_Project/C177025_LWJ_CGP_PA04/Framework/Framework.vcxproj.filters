@@ -122,6 +122,9 @@
     <ClCompile Include="Rotator.cpp">
       <Filter>Components_소스파일</Filter>
     </ClCompile>
+    <ClCompile Include="CameraComponent.cpp">
+      <Filter>Components_소스파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dclass.h">
@@ -209,6 +212,9 @@
       <Filter>Components_헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Floater.h">
+      <Filter>Components_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraComponent.h">
       <Filter>Components_헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

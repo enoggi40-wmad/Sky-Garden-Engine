@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "graphicsclass.h"
 #include "SceneManager.h"
+#include "InputManager.h"
 
 #include <chrono>
 
@@ -10,7 +11,6 @@
 GraphicsClass::GraphicsClass()
 {
 	m_D3D = 0;
-	m_Camera = 0;
 
 	//
 	m_TextureShader = 0;
@@ -54,6 +54,7 @@ bool GraphicsClass::Initialize(
     bool result;
 
     m_hwnd = hwnd;
+    InputManager::SetWindowHandle(hwnd);
 
 
     // =====================================================
@@ -91,35 +92,6 @@ bool GraphicsClass::Initialize(
 
         return false;
     }
-
-
-    // =====================================================
-    // Camera
-    // =====================================================
-
-    // Camera 객체 생성
-    m_Camera = new CameraClass;
-
-    if (!m_Camera)
-    {
-        return false;
-    }
-
-
-    // 초기 카메라 위치 / 회전
-    m_Camera->SetPosition(
-        0.0f,
-        100.0f,
-        0.0f
-    );
-
-    m_Camera->SetRotation(
-        5.0f,
-        0.0f,
-        0.0f
-    );
-
-
 
     // =====================================================
 	// Resource Manager 생성
@@ -254,48 +226,6 @@ bool GraphicsClass::Initialize(
         return false;
     }
 
-
-
-    // =====================================================
-    // 2D UI Base View Matrix
-    // =====================================================
-
-    // 2D UI용 카메라 위치로 잠시 이동
-    m_Camera->SetPosition(
-        0.0f,
-        0.0f,
-        -1.0f
-    );
-
-    m_Camera->SetRotation(
-        0.0f,
-        0.0f,
-        0.0f
-    );
-
-
-    // UI 렌더링에 사용할 View Matrix 저장
-    m_Camera->Render();
-    m_Camera->GetViewMatrix(
-        m_BaseViewMatrix
-    );
-
-
-    // 메인 3D Scene의 시작 카메라 위치로 복구
-    m_Camera->SetPosition(
-        500.0f,
-        500.0f,
-        500.0f
-    );
-
-    m_Camera->SetRotation(
-        45.0f,
-        -135.0f,
-        0.0f
-    );
-
-
-
     // =====================================================
     // Text
     // =====================================================
@@ -354,12 +284,6 @@ bool GraphicsClass::Frame(int fps, int cpu)
         currentTime;
 
 
-    m_Camera->UpdateFreeCamera(
-        m_hwnd,
-        deltaTime
-    );
-
-
     m_SceneManager->Update(
         deltaTime
     );
@@ -380,11 +304,6 @@ bool GraphicsClass::Render()
     XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
     bool result;
 
-
-    // =====================================================
-    // Scene 렌더링 준비
-    // =====================================================
-
     // 화면 초기화
     // 하늘색
     m_D3D->BeginScene(0.60f, 0.82f, 1.0f, 1.0f);
@@ -392,12 +311,7 @@ bool GraphicsClass::Render()
     //_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
 
-    // 현재 카메라 위치와 회전을 이용해 View Matrix 생성
-    m_Camera->Render();
-
-
     // 렌더링에 필요한 Matrix 가져오기
-    m_Camera->GetViewMatrix(viewMatrix);
     m_D3D->GetWorldMatrix(worldMatrix);
     m_D3D->GetProjectionMatrix(projectionMatrix);
     m_D3D->GetOrthoMatrix(orthoMatrix);
@@ -408,7 +322,6 @@ bool GraphicsClass::Render()
     result = m_SceneManager->Render(
         m_D3D->GetDeviceContext(),
         m_TextureShader,
-        viewMatrix,
         projectionMatrix
     );
 
@@ -518,17 +431,6 @@ void GraphicsClass::Shutdown()
         m_TextureShader->Shutdown();
         delete m_TextureShader;
         m_TextureShader = nullptr;
-    }
-
-
-    // =====================================================
-    // Camera
-    // =====================================================
-
-    if (m_Camera)
-    {
-        delete m_Camera;
-        m_Camera = nullptr;
     }
 
 

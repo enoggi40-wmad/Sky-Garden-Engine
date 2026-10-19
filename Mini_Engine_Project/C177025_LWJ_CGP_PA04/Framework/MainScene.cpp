@@ -7,6 +7,9 @@
 #include "Orbiter.h"
 #include "Floater.h"
 #include "GameObject.h"
+#include "CameraComponent.h"
+
+#include "FreeCameraController.h"
 
 
 MainScene::MainScene()
@@ -19,6 +22,33 @@ MainScene::~MainScene()
 
 void MainScene::Initialize(ResourceManager* resourceManager)
 {
+    // =====================================================
+    // Main Camera
+    // =====================================================
+    GameObject* mainCamera = new GameObject("MainCamera");
+
+    mainCamera->transform.position =
+    {
+        500.0f,
+        500.0f,
+        500.0f
+    };
+
+    mainCamera->transform.rotation =
+    {
+        45.0f,
+        -135.0f,
+        0.0f
+    };
+
+    CameraComponent* camera =
+        mainCamera->AddComponent<CameraComponent>();
+        mainCamera->AddComponent<FreeCameraController>();
+
+    SetMainCamera(camera);
+
+    AddGameObject(mainCamera);
+
     // =====================================================
     // Guardian Lion
     // =====================================================

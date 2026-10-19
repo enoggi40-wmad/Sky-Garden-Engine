@@ -28,17 +28,14 @@ public:
 	bool Render(
 		ID3D11DeviceContext* deviceContext,
 		TextureShaderClass* textureShader,
-		DirectX::XMMATRIX viewMatrix,
 		DirectX::XMMATRIX projectionMatrix
 	);
 
-	void ChangeScene(SceneType type);
+	void LoadScene(SceneType type);
 	void Shutdown();
 	
 
 private:
-	void SetScene(Scene* scene);
-
 	Scene* m_CurrentScene;
 	ResourceManager* m_ResourceManager;
 

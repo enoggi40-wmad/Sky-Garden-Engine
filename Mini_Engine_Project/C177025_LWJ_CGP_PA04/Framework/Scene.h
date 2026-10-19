@@ -10,6 +10,9 @@ class ResourceManager;
 struct ID3D11DeviceContext;
 struct ID3D11Device;
 
+class CameraComponent;
+
+
 class Scene
 {
 public:
@@ -32,9 +35,14 @@ public:
     bool Render(
         ID3D11DeviceContext* deviceContext,
         TextureShaderClass* textureShader,
-        DirectX::XMMATRIX viewMatrix,
         DirectX::XMMATRIX projectionMatrix
     );
+
+protected:
+    CameraComponent* m_MainCamera;
+
+public:
+    void SetMainCamera(CameraComponent* camera);
 
 private:
     // 현재 Scene에 들어있는 GameObject 목록

@@ -9,9 +9,11 @@
 #include "Rotator.h"
 #include "Orbiter.h"
 #include "Floater.h"
+#include "CameraComponent.h"
 
 Scene::Scene()
 {
+    m_MainCamera = nullptr;
 }
 
 Scene::~Scene()
@@ -41,21 +43,29 @@ void Scene::Update(float deltaTime)
 bool Scene::Render(
     ID3D11DeviceContext* deviceContext,
     TextureShaderClass* textureShader,
-    DirectX::XMMATRIX viewMatrix,
     DirectX::XMMATRIX projectionMatrix)
 {
-    // Scene 안에 있는 모든 GameObject를 하나씩 확인
+	// Main Camera가 설정되어 있지 않으면 렌더링하지 않음
+    if (!m_MainCamera)
+    {
+        return false;
+    }
+
+	// Main Camera의 Transform을 기준으로 View Matrix를 가져옴
+    m_MainCamera->Render();
+
+	XMMATRIX viewMatrix;
+    m_MainCamera->GetViewMatrix(viewMatrix);
+
+    // 기존 GameObject 랜더링
     for (GameObject* gameObject : gameObjects)
     {
-        // 현재 GameObject 안에 ModelRenderer가 있는지 찾는다.
         ModelRenderer* renderer =
             gameObject->GetComponent<ModelRenderer>();
-
         if (!renderer)
         {
-            // ModelRenderer가 없으면 렌더링할 필요 없음
             continue;
-		}
+        }
 
         bool result = renderer->Render(
             deviceContext,
@@ -67,10 +77,11 @@ bool Scene::Render(
         if (!result)
         {
             continue;
-		}
+        }
     }
 
-	return true;
+    return true;
+
 }
 
 void Scene::InitializeAssignment(ResourceManager* resourceManager)
@@ -81,4 +92,9 @@ void Scene::InitializeAssignment(ResourceManager* resourceManager)
 void Scene::Initialize(ResourceManager* resourceManager)
 {
     
+}
+
+void Scene::SetMainCamera(CameraComponent* camera)
+{
+    m_MainCamera = camera;
 }

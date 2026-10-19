@@ -24,11 +24,6 @@ SceneManager::~SceneManager()
 {
 }
 
-void SceneManager::SetScene(Scene* scene)
-{
-    m_CurrentScene = scene;
-}
-
 Scene* SceneManager::GetCurrentScene()
 {
     return m_CurrentScene;
@@ -41,6 +36,7 @@ void SceneManager::Update(float deltaTime)
         m_CurrentScene->Update(deltaTime);
     }
 
+	// CurrentSceneType이 Title일 때 Enter 키를 누르면 Main Scene으로 전환
     bool enterDown =
         GetAsyncKeyState(VK_RETURN) & 0x8000;
 
@@ -48,7 +44,7 @@ void SceneManager::Update(float deltaTime)
     {
         if (m_CurrentSceneType == SceneType::Title)
         {
-            ChangeScene(SceneType::Main);
+            LoadScene(SceneType::Main);
         }
     }
 
@@ -58,7 +54,6 @@ void SceneManager::Update(float deltaTime)
 bool SceneManager::Render(
     ID3D11DeviceContext* deviceContext,
     TextureShaderClass* textureShader,
-    DirectX::XMMATRIX viewMatrix,
     DirectX::XMMATRIX projectionMatrix)
 {
     if (!m_CurrentScene)
@@ -69,7 +64,6 @@ bool SceneManager::Render(
     return m_CurrentScene->Render(
         deviceContext,
         textureShader,
-        viewMatrix,
         projectionMatrix
     );
 }
@@ -78,13 +72,13 @@ bool SceneManager::Initialize(
     ResourceManager* resourceManager)
 {
     m_ResourceManager = resourceManager;
-
-    ChangeScene(SceneType::Title);
+	
+    LoadScene(SceneType::Main);
 
     return true;
 }
 
-void SceneManager::ChangeScene(SceneType type)
+void SceneManager::LoadScene(SceneType type)
 {
     if (m_CurrentScene)
     {

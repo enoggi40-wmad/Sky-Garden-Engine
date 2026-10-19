@@ -122,9 +122,6 @@
     <ClCompile Include="CameraComponent.cpp">
       <Filter>Components_소스파일</Filter>
     </ClCompile>
-    <ClCompile Include="cameraclass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="FreeCameraConroller.cpp">
       <Filter>Components_소스파일</Filter>
     </ClCompile>
@@ -219,9 +216,6 @@
     </ClInclude>
     <ClInclude Include="CameraComponent.h">
       <Filter>Components_헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="cameraclass.h">
-      <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="FreeCameraController.h">
       <Filter>Components_헤더 파일</Filter>

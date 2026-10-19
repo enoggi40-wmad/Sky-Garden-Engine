@@ -21,4 +21,13 @@ public:
 private:
 	DirectX::XMMATRIX m_ViewMatrix;
 
+public:
+	void SetActive(bool active);
+	bool IsActive() const;
+
+private:
+	bool m_IsActive;
+
+
+
 };

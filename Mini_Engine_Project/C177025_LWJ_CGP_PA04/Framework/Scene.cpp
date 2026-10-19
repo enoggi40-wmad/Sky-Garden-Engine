@@ -13,7 +13,7 @@
 
 Scene::Scene()
 {
-    m_MainCamera = nullptr;
+    m_ActiveCamera = nullptr;
 }
 
 Scene::~Scene()
@@ -46,16 +46,16 @@ bool Scene::Render(
     DirectX::XMMATRIX projectionMatrix)
 {
 	// Main Camera가 설정되어 있지 않으면 렌더링하지 않음
-    if (!m_MainCamera)
+    if (!m_ActiveCamera)
     {
         return false;
     }
 
 	// Main Camera의 Transform을 기준으로 View Matrix를 가져옴
-    m_MainCamera->Render();
+    m_ActiveCamera->Render();
 
 	XMMATRIX viewMatrix;
-    m_MainCamera->GetViewMatrix(viewMatrix);
+    m_ActiveCamera->GetViewMatrix(viewMatrix);
 
     // 기존 GameObject 랜더링
     for (GameObject* gameObject : gameObjects)
@@ -94,7 +94,20 @@ void Scene::Initialize(ResourceManager* resourceManager)
     
 }
 
-void Scene::SetMainCamera(CameraComponent* camera)
+void Scene::SetActiveCamera(CameraComponent* camera)
 {
-    m_MainCamera = camera;
+    // 기존 카메라 비활성화
+    if (m_ActiveCamera)
+    {
+        m_ActiveCamera->SetActive(false);
+    }
+
+    // 새로운 카메라 지정
+    m_ActiveCamera = camera;
+
+    // 새로운 카메라 활성화
+    if (m_ActiveCamera)
+    {
+        m_ActiveCamera->SetActive(true);
+    }
 }

@@ -28,7 +28,7 @@ public:
     void AddGameObject(GameObject* gameObject);
 
     // Scene 안의 모든 GameObject를 매 프레임 업데이트
-    void Update(float deltaTime);
+    virtual void Update(float deltaTime);
 
     // Scene 안의 GameObject들을 순회하면서
     // ModelRenderer가 있는 오브젝트를 렌더링
@@ -39,10 +39,10 @@ public:
     );
 
 protected:
-    CameraComponent* m_MainCamera;
+    CameraComponent* m_ActiveCamera;
 
 public:
-    void SetMainCamera(CameraComponent* camera);
+    void SetActiveCamera(CameraComponent* camera);
 
 private:
     // 현재 Scene에 들어있는 GameObject 목록

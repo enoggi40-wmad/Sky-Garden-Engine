@@ -10,6 +10,7 @@
 #include "CameraComponent.h"
 
 #include "FreeCameraController.h"
+#include <Windows.h>
 
 
 MainScene::MainScene()
@@ -18,6 +19,24 @@ MainScene::MainScene()
 
 MainScene::~MainScene()
 {
+}
+
+void MainScene::Update(float deltaTime)
+{
+    // 기존 GameObject / Component들의 Update 실행
+    Scene::Update(deltaTime);
+
+    // 1번 키 : MainCamera
+    if (GetAsyncKeyState('1') & 0x8000)
+    {
+        SetActiveCamera(m_MainCamera);
+    }
+
+    // 2번 키 : CutsceneCamera
+    if (GetAsyncKeyState('2') & 0x8000)
+    {
+        SetActiveCamera(m_CutsceneCamera);
+    }
 }
 
 void MainScene::Initialize(ResourceManager* resourceManager)
@@ -41,13 +60,39 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         0.0f
     };
 
-    CameraComponent* camera =
+    m_MainCamera =
         mainCamera->AddComponent<CameraComponent>();
         mainCamera->AddComponent<FreeCameraController>();
 
-    SetMainCamera(camera);
+    SetActiveCamera(m_MainCamera);
 
     AddGameObject(mainCamera);
+
+    // =====================================================
+    // CutScene Camera
+    // =====================================================
+    GameObject* cutsceneCamera =
+        new GameObject("CutsceneCamera");
+
+    cutsceneCamera->transform.position =
+    {
+        0.0f,
+        300.0f,
+        -500.0f
+    };
+
+    cutsceneCamera->transform.rotation =
+    {
+        35.0f,
+        0.0f,
+        0.0f
+    };
+
+    m_CutsceneCamera =
+        cutsceneCamera->AddComponent<CameraComponent>();
+	    cutsceneCamera->AddComponent<FreeCameraController>();
+
+    AddGameObject(cutsceneCamera);
 
     // =====================================================
     // Guardian Lion

@@ -5,6 +5,8 @@
 #include <DirectXMath.h>
 #include "InputManager.h"
 
+#include "CameraComponent.h"
+
 using namespace DirectX;
 
 FreeCameraController::FreeCameraController(GameObject* owner)
@@ -18,8 +20,16 @@ FreeCameraController::~FreeCameraController()
 
 void FreeCameraController::Update(float deltaTime)
 {
+    CameraComponent* camera =
+        gameObject->GetComponent<CameraComponent>();
+
+    if (!camera || !camera->IsActive())
+    {
+        return;
+    }
+
     // 초당 이동 속도
-    const float moveSpeed = 75.0f;
+    const float moveSpeed = 275.0f;
     float moveDistance = moveSpeed * deltaTime;
 
     // 현재 카메라의 회전값을 가져온다.

@@ -7,6 +7,7 @@ CameraComponent::CameraComponent(GameObject* owner)
     : Component(owner)
 {
     m_ViewMatrix = XMMatrixIdentity();
+    m_IsActive = false;
 }
 
 CameraComponent::~CameraComponent()
@@ -15,6 +16,16 @@ CameraComponent::~CameraComponent()
 
 void CameraComponent::Update(float deltaTime)
 {
+}
+
+void CameraComponent::SetActive(bool active)
+{
+    m_IsActive = active;
+}
+
+bool CameraComponent::IsActive() const
+{
+    return m_IsActive;
 }
 
 void CameraComponent::Render()

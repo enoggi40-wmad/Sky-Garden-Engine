@@ -16,6 +16,12 @@ void ResourceManager::Initialize(ID3D11Device* device)
 {
     m_Device = device;
 
+    m_ModelInfos["MagicBillboard"] =
+    {
+        L"./data/Magic_Billboard.obj",
+        L"./data/Magic_Billboard.dds"
+    };
+
     m_ModelInfos["GuardianLion"] =
     {
         L"./data/Guardian_Lion.obj",

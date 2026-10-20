@@ -17,7 +17,7 @@ public:
 	void GetViewMatrix(
 		DirectX::XMMATRIX& viewMatrix
 	);
-
+	DirectX::XMFLOAT3 GetPosition() const;
 private:
 	DirectX::XMMATRIX m_ViewMatrix;
 

@@ -6,11 +6,15 @@
 class GameObject;
 class ModelClass;
 class TextureShaderClass;
+
 class ResourceManager;
+class RendererManager;
+
 struct ID3D11DeviceContext;
 struct ID3D11Device;
 
 class CameraComponent;
+class D3DClass;
 
 
 class Scene
@@ -31,8 +35,9 @@ public:
     virtual void Update(float deltaTime);
 
     // Scene 안의 GameObject들을 순회하면서
-    // ModelRenderer가 있는 오브젝트를 렌더링
+    
     bool Render(
+        D3DClass* d3d,
         ID3D11DeviceContext* deviceContext,
         TextureShaderClass* textureShader,
         DirectX::XMMATRIX projectionMatrix
@@ -40,6 +45,7 @@ public:
 
 protected:
     CameraComponent* m_ActiveCamera;
+	RendererManager* m_RendererManager;
 
 public:
     void SetActiveCamera(CameraComponent* camera);

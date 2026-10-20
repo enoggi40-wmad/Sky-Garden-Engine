@@ -10,14 +10,26 @@
 #include "Orbiter.h"
 #include "Floater.h"
 #include "CameraComponent.h"
+#include "Renderer.h"
+#include "RendererManager.h"
 
 Scene::Scene()
 {
     m_ActiveCamera = nullptr;
+
+    m_RendererManager =
+        new RendererManager;
 }
 
 Scene::~Scene()
 {
+    // RendererManager는 Renderer를 소유하지 않음
+    if (m_RendererManager)
+    {
+        delete m_RendererManager;
+        m_RendererManager = nullptr;
+    }
+
     // Scene이 GameObject의 소유권을 가진다고 가정
     for (GameObject* gameObject : gameObjects)
     {
@@ -30,6 +42,14 @@ Scene::~Scene()
 void Scene::AddGameObject(GameObject* gameObject)
 {
     gameObjects.push_back(gameObject);
+
+    Renderer* renderer =
+        gameObject->GetComponent<Renderer>();
+
+    if (renderer)
+    {
+        m_RendererManager->AddRenderer(renderer);
+    }
 }
 
 void Scene::Update(float deltaTime)
@@ -41,6 +61,7 @@ void Scene::Update(float deltaTime)
 }
 
 bool Scene::Render(
+    D3DClass* d3d,
     ID3D11DeviceContext* deviceContext,
     TextureShaderClass* textureShader,
     DirectX::XMMATRIX projectionMatrix)
@@ -57,28 +78,21 @@ bool Scene::Render(
 	XMMATRIX viewMatrix;
     m_ActiveCamera->GetViewMatrix(viewMatrix);
 
-    // 기존 GameObject 랜더링
-    for (GameObject* gameObject : gameObjects)
+    XMFLOAT3 cameraPosition =
+        m_ActiveCamera->GetPosition();
+
+	// RendererManager를 통해 Scene 안의 모든 Renderer를 렌더링
+    if (!m_RendererManager->Render(
+        d3d,
+        deviceContext,
+        textureShader,
+        viewMatrix,
+        projectionMatrix,
+        cameraPosition
+    ))
     {
-        ModelRenderer* renderer =
-            gameObject->GetComponent<ModelRenderer>();
-        if (!renderer)
-        {
-            continue;
-        }
-
-        bool result = renderer->Render(
-            deviceContext,
-            textureShader,
-            viewMatrix,
-            projectionMatrix
-        );
-
-        if (!result)
-        {
-            continue;
-        }
-    }
+        return false;
+	}
 
     return true;
 

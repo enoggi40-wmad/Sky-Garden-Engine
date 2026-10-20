@@ -128,6 +128,15 @@
     <ClCompile Include="InputManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="BillboardRenderer.cpp">
+      <Filter>Renderers_소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="RendererManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dclass.h">
@@ -221,6 +230,15 @@
       <Filter>Components_헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="InputManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="BillboardRenderer.h">
+      <Filter>Renderers_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="RendererManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

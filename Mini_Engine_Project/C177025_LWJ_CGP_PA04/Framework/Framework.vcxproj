@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BillboardRenderer.cpp" />
     <ClCompile Include="bitmapclass.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="Component.cpp" />
@@ -160,6 +161,8 @@
     <ClCompile Include="modelclass.cpp" />
     <ClCompile Include="ModelRenderer.cpp" />
     <ClCompile Include="Orbiter.cpp" />
+    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="RendererManager.cpp" />
     <ClCompile Include="ResouceManager.cpp" />
     <ClCompile Include="Rotator.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -174,6 +177,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlignedAllocationPolicy.h" />
+    <ClInclude Include="BillboardRenderer.h" />
     <ClInclude Include="bitmapclass.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="Component.h" />
@@ -193,6 +197,8 @@
     <ClInclude Include="modelclass.h" />
     <ClInclude Include="ModelRenderer.h" />
     <ClInclude Include="Orbiter.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="RendererManager.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Rotator.h" />
     <ClInclude Include="Scene.h" />

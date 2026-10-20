@@ -6,6 +6,7 @@ class Scene;
 class TextureShaderClass;
 class ResourceManager;
 struct ID3D11DeviceContext;
+class D3DClass;
 
 enum class SceneType
 {
@@ -26,6 +27,7 @@ public:
 	void Update(float deltaTime);
 
 	bool Render(
+		D3DClass* d3d,
 		ID3D11DeviceContext* deviceContext,
 		TextureShaderClass* textureShader,
 		DirectX::XMMATRIX projectionMatrix

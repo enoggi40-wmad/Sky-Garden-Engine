@@ -28,6 +28,11 @@ bool CameraComponent::IsActive() const
     return m_IsActive;
 }
 
+DirectX::XMFLOAT3 CameraComponent::GetPosition() const
+{
+    return gameObject->transform.position;
+}
+
 void CameraComponent::Render()
 {
     XMVECTOR up, position, lookAt;

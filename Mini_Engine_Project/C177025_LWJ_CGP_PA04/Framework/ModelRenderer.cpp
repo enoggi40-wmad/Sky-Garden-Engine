@@ -5,6 +5,7 @@
 #include "textureshaderclass.h"
 
 
+
 // ModelRenderer 생성자
 //
 // ownerObject:
@@ -15,17 +16,7 @@
 ModelRenderer::ModelRenderer(
     GameObject* ownerObject,
     ModelClass* model)
-
-    // 부모 클래스인 Component 생성자에
-    // ownerObject를 전달한다.
-    //
-    // 이를 통해 Component가
-    // "나는 어떤 GameObject에 붙어있는가"를 기억한다.
-    : Component(ownerObject),
-
-    // 전달받은 ModelClass의 주소를
-    // 멤버 변수 m_Model에 저장한다.
-    m_Model(model)
+    : Renderer(ownerObject), m_Model(model)
 {
 }
 
@@ -40,7 +31,8 @@ bool ModelRenderer::Render(
     ID3D11DeviceContext* deviceContext,
     TextureShaderClass* textureShader,
     XMMATRIX viewMatrix,
-    XMMATRIX projectionMatrix)
+    XMMATRIX projectionMatrix,
+    XMFLOAT3 cameraPosition)
 {
     if (!m_Model)
     {

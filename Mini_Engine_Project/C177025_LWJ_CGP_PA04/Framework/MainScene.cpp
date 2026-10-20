@@ -1,6 +1,7 @@
 #include "MainScene.h"
 
 #include "ModelRenderer.h"
+#include "BillboardRenderer.h"
 #include "ResourceManager.h"
 #include "modelclass.h"
 #include "Rotator.h"
@@ -93,6 +94,68 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 	    cutsceneCamera->AddComponent<FreeCameraController>();
 
     AddGameObject(cutsceneCamera);
+
+    // =====================================================
+    // Magic Billboard2
+    // =====================================================
+
+    ModelClass* magicBillboardModel2 =
+        resourceManager->GetModel("MagicBillboard");
+
+    GameObject* magicBillboard2 =
+        new GameObject("MagicBillboard");
+
+    magicBillboard2->transform.position =
+    {
+        0.0f,
+        200.0f,
+        100.0f
+    };
+
+    magicBillboard2->transform.scale =
+    {
+        75.0f,
+        75.0f,
+        75.0f
+    };
+
+    magicBillboard2->AddComponent<BillboardRenderer>(
+        magicBillboardModel2
+    );
+
+    AddGameObject(magicBillboard2);
+
+    // =====================================================
+	// Magic Billboard
+    // =====================================================
+
+    ModelClass* magicBillboardModel =
+        resourceManager->GetModel("MagicBillboard");
+
+    GameObject* magicBillboard =
+        new GameObject("MagicBillboard");
+
+    magicBillboard->transform.position =
+    {
+        0.0f,
+        200.0f,
+        0.0f
+    };
+
+    magicBillboard->transform.scale =
+    {
+        75.0f,
+        75.0f,
+        75.0f
+    };
+
+    magicBillboard->AddComponent<BillboardRenderer>(
+        magicBillboardModel
+    );
+
+    AddGameObject(magicBillboard);
+
+    
 
     // =====================================================
     // Guardian Lion

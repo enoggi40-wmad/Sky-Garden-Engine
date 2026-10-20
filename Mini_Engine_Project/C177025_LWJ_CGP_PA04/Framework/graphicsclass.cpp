@@ -320,6 +320,7 @@ bool GraphicsClass::Render()
 	// SceneManager를 통해 현재 Scene 렌더링
     // =====================================================
     result = m_SceneManager->Render(
+        m_D3D,
         m_D3D->GetDeviceContext(),
         m_TextureShader,
         projectionMatrix

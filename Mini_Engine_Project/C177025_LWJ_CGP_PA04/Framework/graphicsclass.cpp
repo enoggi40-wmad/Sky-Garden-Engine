@@ -105,7 +105,9 @@ bool GraphicsClass::Initialize(
     }
 
     m_ResourceManager->Initialize(
-        m_D3D->GetDevice()
+        m_D3D->GetDevice(),
+        screenWidth,
+        screenHeight
     );
 
     // =====================================================
@@ -149,76 +151,6 @@ bool GraphicsClass::Initialize(
         MessageBox(
             hwnd,
             L"Could not initialize the texture shader object.",
-            L"Error",
-            MB_OK
-        );
-
-        return false;
-    }
-
-
-
-    // =====================================================
-    // Title Bitmap
-    // =====================================================
-
-    m_Bitmap = new BitmapClass;
-
-    if (!m_Bitmap)
-    {
-        return false;
-    }
-
-
-    result = m_Bitmap->Initialize(
-        m_D3D->GetDevice(),
-        screenWidth,
-        screenHeight,
-        L"./data/Title.dds",
-        800,
-        600
-    );
-
-    if (!result)
-    {
-        MessageBox(
-            hwnd,
-            L"Could not initialize the bitmap object.",
-            L"Error",
-            MB_OK
-        );
-
-        return false;
-    }
-
-
-
-    // =====================================================
-    // Info Bitmap
-    // =====================================================
-
-    m_InfoBitmap = new BitmapClass;
-
-    if (!m_InfoBitmap)
-    {
-        return false;
-    }
-
-
-    result = m_InfoBitmap->Initialize(
-        m_D3D->GetDevice(),
-        screenWidth,
-        screenHeight,
-        L"./data/Panel.dds",
-        380,
-        32
-    );
-
-    if (!result)
-    {
-        MessageBox(
-            hwnd,
-            L"Could not initialize the info bitmap object.",
             L"Error",
             MB_OK
         );
@@ -323,7 +255,8 @@ bool GraphicsClass::Render()
         m_D3D,
         m_D3D->GetDeviceContext(),
         m_TextureShader,
-        projectionMatrix
+        projectionMatrix,
+        orthoMatrix
     );
 
     if (!result)

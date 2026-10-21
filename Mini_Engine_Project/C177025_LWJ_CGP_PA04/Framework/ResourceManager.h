@@ -5,6 +5,7 @@
 
 class ModelClass;
 struct ID3D11Device;
+class BitmapClass;
 
 class ResourceManager
 {
@@ -12,7 +13,9 @@ public:
     ResourceManager();
     ~ResourceManager();
 
-    void Initialize(ID3D11Device* device);
+    void Initialize(ID3D11Device* device,
+        int screenWidth,
+        int screenHeight);
 
     // 모델 리소스를 로드하고 ResourceManager 내부에 저장
     // 같은 이름의 모델이 이미 존재하면 기존 모델 반환
@@ -32,6 +35,18 @@ public:
     // ResourceManager가 소유한 모든 모델 리소스 해제
     void Shutdown();
 
+	// Bitmap 리소스를 로드하고 ResourceManager 내부에 저장
+    BitmapClass* LoadBitmapResource(
+        const std::string& name,
+        const wchar_t* texturePath,
+        int bitmapWidth,
+        int bitmapHeight
+    );
+
+    BitmapClass* GetBitmap(
+        const std::string& name
+    );
+
 private:
     struct ModelResourceInfo
     {
@@ -47,4 +62,10 @@ private:
 
 
     std::unordered_map<std::string, ModelResourceInfo> m_ModelInfos;
+    std::unordered_map<std::string, BitmapClass*> m_Bitmaps;
+
+private:
+   
+    int m_ScreenWidth;
+    int m_ScreenHeight;
 };

@@ -1,5 +1,6 @@
 #include "ResourceManager.h"
 #include "modelclass.h"
+#include "BitmapClass.h"
 
 
 ResourceManager::ResourceManager()
@@ -12,9 +13,91 @@ ResourceManager::~ResourceManager()
 {
 }
 
-void ResourceManager::Initialize(ID3D11Device* device)
+BitmapClass* ResourceManager::GetBitmap(
+    const std::string& name)
+{
+    auto it = m_Bitmaps.find(name);
+
+    if (it != m_Bitmaps.end())
+    {
+        return it->second;
+    }
+
+    return nullptr;
+}
+
+BitmapClass* ResourceManager::LoadBitmapResource(
+    const std::string& name,
+    const wchar_t* texturePath,
+    int bitmapWidth,
+    int bitmapHeight)
+{
+    // 이미 로드된 Bitmap이 있으면 기존 것을 반환
+    auto it = m_Bitmaps.find(name);
+
+    if (it != m_Bitmaps.end())
+    {
+        return it->second;
+    }
+
+
+    // 새로운 Bitmap 생성
+    BitmapClass* bitmap = new BitmapClass;
+
+    if (!bitmap)
+    {
+        return nullptr;
+    }
+
+
+    // Bitmap 초기화
+    bool result = bitmap->Initialize(
+        m_Device,
+        m_ScreenWidth,
+        m_ScreenHeight,
+        texturePath,
+        bitmapWidth,
+        bitmapHeight
+    );
+
+    if (!result)
+    {
+        delete bitmap;
+        return nullptr;
+    }
+
+
+    // ResourceManager에 저장
+    m_Bitmaps[name] = bitmap;
+
+    return bitmap;
+}
+
+void ResourceManager::Initialize(ID3D11Device* device,
+    int screenWidth,
+    int screenHeight)
 {
     m_Device = device;
+    m_ScreenWidth = screenWidth;
+    m_ScreenHeight = screenHeight;
+
+    BitmapClass* title =
+        LoadBitmapResource(
+            "Title",
+            L"./data/Title.dds",
+            800,
+            600
+        );
+
+    if (!title)
+    {
+        MessageBox(
+            NULL,
+            L"Title.dds Load Failed",
+            L"Resource Error",
+            MB_OK
+        );
+    }
 
     m_ModelInfos["MagicBillboard"] =
     {
@@ -68,12 +151,6 @@ void ResourceManager::Initialize(ID3D11Device* device)
     {
        L"./data/Crystal_Prism2.obj",
        L"./data/Crystal_Prism2.dds"
-    };
-
-    m_ModelInfos["Lantern"] =
-    {
-       L"./data/Lantern.obj",
-       L"./data/Lantern.dds"
     };
 
     m_ModelInfos["Lantern"] =

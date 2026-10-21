@@ -24,6 +24,7 @@ public:
         TextureShaderClass* textureShader,
         DirectX::XMMATRIX viewMatrix,
         DirectX::XMMATRIX projectionMatrix,
+        DirectX::XMMATRIX orthoMatrix,
         DirectX::XMFLOAT3 cameraPosition
     );
 

@@ -26,6 +26,32 @@ bool BitmapClass::Initialize(ID3D11Device* device, int screenWidth, int screenHe
 {
 	bool result;
 
+	result = InitializeBuffers(device);
+	if (!result)
+	{
+		MessageBox(
+			NULL,
+			L"InitializeBuffers Failed",
+			L"Bitmap Error",
+			MB_OK
+		);
+
+		return false;
+	}
+
+	result = LoadTexture(device, textureFilename);
+	if (!result)
+	{
+		MessageBox(
+			NULL,
+			L"LoadTexture Failed",
+			L"Bitmap Error",
+			MB_OK
+		);
+
+		return false;
+	}
+
 
 	// Store the screen size.
 	m_screenWidth = screenWidth;

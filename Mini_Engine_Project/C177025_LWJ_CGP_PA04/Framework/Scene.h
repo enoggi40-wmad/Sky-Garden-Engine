@@ -40,7 +40,8 @@ public:
         D3DClass* d3d,
         ID3D11DeviceContext* deviceContext,
         TextureShaderClass* textureShader,
-        DirectX::XMMATRIX projectionMatrix
+        DirectX::XMMATRIX projectionMatrix,
+        DirectX::XMMATRIX orthoMatrix
     );
 
 protected:

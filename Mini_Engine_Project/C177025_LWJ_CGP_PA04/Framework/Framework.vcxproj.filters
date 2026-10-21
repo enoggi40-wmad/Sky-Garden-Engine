@@ -137,6 +137,9 @@
     <ClCompile Include="RendererManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="UIRenderer.cpp">
+      <Filter>Renderers_소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dclass.h">
@@ -244,6 +247,9 @@
     <ClInclude Include="RenderContext.h">
       <Filter>Renderers_헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="UIRenderer.h">
+      <Filter>Renderers_헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="data\font.dds">
@@ -256,6 +262,12 @@
       <Filter>_리소스 파일</Filter>
     </Image>
     <Image Include="data\WaterPlane.dds">
+      <Filter>_리소스 파일</Filter>
+    </Image>
+    <Image Include="data\Panel.dds">
+      <Filter>_리소스 파일</Filter>
+    </Image>
+    <Image Include="data\Title_Scene.dds">
       <Filter>_리소스 파일</Filter>
     </Image>
   </ItemGroup>

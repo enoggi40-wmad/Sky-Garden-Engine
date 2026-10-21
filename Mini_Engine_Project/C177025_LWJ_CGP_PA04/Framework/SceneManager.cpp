@@ -55,7 +55,8 @@ bool SceneManager::Render(
     D3DClass* d3d,
     ID3D11DeviceContext* deviceContext,
     TextureShaderClass* textureShader,
-    DirectX::XMMATRIX projectionMatrix)
+    DirectX::XMMATRIX projectionMatrix,
+    DirectX::XMMATRIX orthoMatrix)
 {
     if (!m_CurrentScene)
     {
@@ -66,7 +67,8 @@ bool SceneManager::Render(
         d3d,
         deviceContext,
         textureShader,
-        projectionMatrix
+        projectionMatrix,
+		orthoMatrix
     );
 }
 
@@ -75,7 +77,7 @@ bool SceneManager::Initialize(
 {
     m_ResourceManager = resourceManager;
 	
-    LoadScene(SceneType::Main);
+    LoadScene(SceneType::Title);
 
     return true;
 }

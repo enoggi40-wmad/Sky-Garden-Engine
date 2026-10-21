@@ -55,6 +55,7 @@ bool RendererManager::Render(
     TextureShaderClass* textureShader,
     DirectX::XMMATRIX viewMatrix,
     DirectX::XMMATRIX projectionMatrix,
+    DirectX::XMMATRIX orthoMatrix,
     DirectX::XMFLOAT3 cameraPosition)
 {
     RenderContext context{};
@@ -67,8 +68,7 @@ bool RendererManager::Render(
 
     context.cameraPosition = cameraPosition;
 
-    // UI는 아직 구현 전이므로 일단 Identity
-    context.orthoMatrix = DirectX::XMMatrixIdentity();
+	context.orthoMatrix = orthoMatrix;
 
     // 불투명 오브젝트 렌더링
     for (Renderer* renderer : m_OpaqueRenderers)

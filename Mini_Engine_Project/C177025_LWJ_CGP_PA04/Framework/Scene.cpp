@@ -64,38 +64,34 @@ bool Scene::Render(
     D3DClass* d3d,
     ID3D11DeviceContext* deviceContext,
     TextureShaderClass* textureShader,
-    DirectX::XMMATRIX projectionMatrix)
+    XMMATRIX projectionMatrix,
+    XMMATRIX orthoMatrix)
 {
-	// Main Camera가 설정되어 있지 않으면 렌더링하지 않음
-    if (!m_ActiveCamera)
+    XMMATRIX viewMatrix = XMMatrixIdentity();
+    XMFLOAT3 cameraPosition = { 0.0f, 0.0f, 0.0f };
+
+    // 카메라가 있는 Scene이면 카메라 정보 사용
+    if (m_ActiveCamera)
     {
-        return false;
+        m_ActiveCamera->Render();
+
+        m_ActiveCamera->GetViewMatrix(
+            viewMatrix
+        );
+
+        cameraPosition =
+            m_ActiveCamera->GetPosition();
     }
 
-	// Main Camera의 Transform을 기준으로 View Matrix를 가져옴
-    m_ActiveCamera->Render();
-
-	XMMATRIX viewMatrix;
-    m_ActiveCamera->GetViewMatrix(viewMatrix);
-
-    XMFLOAT3 cameraPosition =
-        m_ActiveCamera->GetPosition();
-
-	// RendererManager를 통해 Scene 안의 모든 Renderer를 렌더링
-    if (!m_RendererManager->Render(
+    return m_RendererManager->Render(
         d3d,
         deviceContext,
         textureShader,
         viewMatrix,
         projectionMatrix,
+        orthoMatrix,
         cameraPosition
-    ))
-    {
-        return false;
-	}
-
-    return true;
-
+    );
 }
 
 void Scene::InitializeAssignment(ResourceManager* resourceManager)

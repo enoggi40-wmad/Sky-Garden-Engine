@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "textureclass.h"
 #include "DDSTextureLoader.h"
+#include <corecrt_wstdio.h>
 
 using namespace DirectX;
 
@@ -22,18 +23,41 @@ TextureClass::~TextureClass()
 }
 
 
-bool TextureClass::Initialize(ID3D11Device* device, const WCHAR* filename)
+bool TextureClass::Initialize(
+    ID3D11Device* device,
+    const WCHAR* filename)
 {
-	HRESULT result;
+    HRESULT result;
 
-	// Load texture data from a file by using DDS texture loader.
-	result = CreateDDSTextureFromFile(device, filename, nullptr, &m_texture);
-	if (FAILED(result))
-	{
-		return false;
-	}
+    // Load texture data from a file by using DDS texture loader.
+    result = CreateDDSTextureFromFile(
+        device,
+        filename,
+        nullptr,
+        &m_texture
+    );
 
-	return true;
+    if (FAILED(result))
+    {
+        wchar_t message[256];
+
+        swprintf_s(
+            message,
+            L"CreateDDSTextureFromFile Failed\nHRESULT: 0x%08X",
+            result
+        );
+
+        MessageBox(
+            NULL,
+            message,
+            L"Texture Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+    return true;
 }
 
 

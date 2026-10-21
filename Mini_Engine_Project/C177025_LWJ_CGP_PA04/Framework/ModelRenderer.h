@@ -25,11 +25,7 @@ public:
     ModelClass* GetModel() const;
         
     bool Render(
-        ID3D11DeviceContext* deviceContext,
-        TextureShaderClass* textureShader,
-        DirectX::XMMATRIX viewMatrix,
-        DirectX::XMMATRIX projectionMatrix,
-        DirectX::XMFLOAT3 cameraPosition
+        const RenderContext& context
     ) override;
 
 

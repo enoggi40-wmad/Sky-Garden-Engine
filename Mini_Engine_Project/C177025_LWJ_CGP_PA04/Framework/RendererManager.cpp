@@ -2,7 +2,7 @@
 #include "Renderer.h"
 #include "D3DClass.h"
 #include <algorithm>
-
+#include "RenderContext.h"
 
 RendererManager::RendererManager()
 {
@@ -57,6 +57,19 @@ bool RendererManager::Render(
     DirectX::XMMATRIX projectionMatrix,
     DirectX::XMFLOAT3 cameraPosition)
 {
+    RenderContext context{};
+
+    context.deviceContext = deviceContext;
+    context.textureShader = textureShader;
+
+    context.viewMatrix = viewMatrix;
+    context.projectionMatrix = projectionMatrix;
+
+    context.cameraPosition = cameraPosition;
+
+    // UI는 아직 구현 전이므로 일단 Identity
+    context.orthoMatrix = DirectX::XMMatrixIdentity();
+
     // 불투명 오브젝트 렌더링
     for (Renderer* renderer : m_OpaqueRenderers)
     {
@@ -65,13 +78,7 @@ bool RendererManager::Render(
             continue;
         }
 
-        bool result = renderer->Render(
-            deviceContext,
-            textureShader,
-            viewMatrix,
-            projectionMatrix,
-            cameraPosition
-        );
+        bool result = renderer->Render(context);
 
         if (!result)
         {
@@ -112,13 +119,8 @@ bool RendererManager::Render(
             continue;
         }
 
-        bool result = renderer->Render(
-            deviceContext,
-            textureShader,
-            viewMatrix,
-            projectionMatrix,
-            cameraPosition
-        );
+        bool result = renderer->Render(context);
+            
 
         if (!result)
         {

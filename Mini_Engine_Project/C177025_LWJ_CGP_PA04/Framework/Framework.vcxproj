@@ -197,6 +197,7 @@
     <ClInclude Include="modelclass.h" />
     <ClInclude Include="ModelRenderer.h" />
     <ClInclude Include="Orbiter.h" />
+    <ClInclude Include="RenderContext.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RendererManager.h" />
     <ClInclude Include="ResourceManager.h" />

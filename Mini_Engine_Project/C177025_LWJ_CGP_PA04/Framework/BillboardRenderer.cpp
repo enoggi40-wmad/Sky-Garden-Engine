@@ -20,11 +20,7 @@ BillboardRenderer::~BillboardRenderer()
 }
 
 bool BillboardRenderer::Render(
-    ID3D11DeviceContext* deviceContext,
-    TextureShaderClass* textureShader,
-    DirectX::XMMATRIX viewMatrix,
-    DirectX::XMMATRIX projectionMatrix,
-    DirectX::XMFLOAT3 cameraPosition)
+    const RenderContext& context)
 {
     if(!m_Model)
     {
@@ -37,8 +33,8 @@ bool BillboardRenderer::Render(
 
     float angle =
         atan2f(
-            cameraPosition.x - position.x,
-            cameraPosition.z - position.z
+            context.cameraPosition.x - position.x,
+            context.cameraPosition.z - position.z
         );
 
     XMMATRIX scaleMatrix =
@@ -64,15 +60,15 @@ bool BillboardRenderer::Render(
         translationMatrix;
 
     // ¸ðµ¨ÀÇ Vertex / Index Buffer ¼³Á¤
-    m_Model->Render(deviceContext);
+    m_Model->Render(context.deviceContext);
 
     // Shader¸¦ »ç¿ëÇØ ¸ðµ¨ ·»´õ¸µ
-    bool result = textureShader->Render(
-        deviceContext,
+    bool result = context.textureShader->Render(
+        context.deviceContext,
         m_Model->GetIndexCount(),
         worldMatrix,
-        viewMatrix,
-        projectionMatrix,
+        context.viewMatrix,
+        context.projectionMatrix,
         m_Model->GetTexture()
     );
 

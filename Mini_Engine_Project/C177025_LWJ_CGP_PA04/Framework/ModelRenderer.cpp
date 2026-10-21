@@ -28,11 +28,7 @@ ModelClass* ModelRenderer::GetModel() const
 }
 
 bool ModelRenderer::Render(
-    ID3D11DeviceContext* deviceContext,
-    TextureShaderClass* textureShader,
-    XMMATRIX viewMatrix,
-    XMMATRIX projectionMatrix,
-    XMFLOAT3 cameraPosition)
+    const RenderContext& context)
 {
     if (!m_Model)
     {
@@ -50,19 +46,19 @@ bool ModelRenderer::Render(
 
     // ModelClass가 가지고 있는 Vertex / Index Buffer를
     // Direct3D 렌더링 파이프라인에 준비한다.
-    m_Model->Render(deviceContext);
+    m_Model->Render(context.deviceContext);
 
 
     // Texture Shader를 이용해서 실제 모델을 화면에 그린다.
     //
     // 기존에는 GraphicsClass에서 직접 하던 작업이었지만,
     // 이제 ModelRenderer가 담당하게 된다.
-    bool result = textureShader->Render(
-        deviceContext,
+    bool result = context.textureShader->Render(
+        context.deviceContext,
         m_Model->GetIndexCount(),
         worldMatrix,
-        viewMatrix,
-        projectionMatrix,
+        context.viewMatrix,
+        context.projectionMatrix,
         m_Model->GetTexture()
     );
 

@@ -3,6 +3,7 @@
 #include "Component.h"
 #include <DirectXMath.h>
 #include <d3d11.h>
+#include "RenderContext.h"
 
 class GameObject;
 class TextureShaderClass;
@@ -14,11 +15,7 @@ public:
 	virtual ~Renderer();
 
     virtual bool Render(
-        ID3D11DeviceContext* deviceContext,
-        TextureShaderClass* textureShader,
-        DirectX::XMMATRIX viewMatrix,
-        DirectX::XMMATRIX projectionMatrix,
-        DirectX::XMFLOAT3 cameraPosition
+        const RenderContext& context
     ) = 0;
 
 public:

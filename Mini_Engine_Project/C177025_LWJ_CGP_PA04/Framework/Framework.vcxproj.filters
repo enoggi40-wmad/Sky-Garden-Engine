@@ -241,6 +241,9 @@
     <ClInclude Include="RendererManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="RenderContext.h">
+      <Filter>Renderers_헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="data\font.dds">

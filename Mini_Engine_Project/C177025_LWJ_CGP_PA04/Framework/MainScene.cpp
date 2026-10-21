@@ -125,35 +125,6 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
     AddGameObject(magicBillboard);
 
-    // =====================================================
-    // Magic Billboard2
-    // =====================================================
-
-    ModelClass* magicBillboardModel2 =
-        resourceManager->GetModel("MagicBillboard");
-
-    GameObject* magicBillboard2 =
-        new GameObject("MagicBillboard");
-
-    magicBillboard2->transform.position =
-    {
-        0.0f,
-        200.0f,
-        100.0f
-    };
-
-    magicBillboard2->transform.scale =
-    {
-        75.0f,
-        75.0f,
-        75.0f
-    };
-
-    magicBillboard2->AddComponent<BillboardRenderer>(
-        magicBillboardModel2
-    );
-
-    AddGameObject(magicBillboard2);
 
     // =====================================================
     // Guardian Lion

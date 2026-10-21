@@ -10,34 +10,21 @@
 
 GraphicsClass::GraphicsClass()
 {
-	m_D3D = 0;
+    m_D3D = nullptr;
 
-	//
-	m_TextureShader = 0;
-	m_Bitmap = 0;
-	m_InfoBitmap = 0;
+    // Texture Shader
+    m_TextureShader = nullptr;
 
-	m_Text = 0;
+    // Scene Manager
+    m_SceneManager = nullptr;
 
-	m_ShowTitleScene = false;
-
-	m_hwnd = 0;
-
-	
-	
-
-	// Scene
-	m_Scene = nullptr;
-
-    //Resource Manager
+    // Resource Manager
     m_ResourceManager = nullptr;
 }
 
 
 GraphicsClass::GraphicsClass(const GraphicsClass& other)
 {
-	
-	
 }
 
 
@@ -53,7 +40,6 @@ bool GraphicsClass::Initialize(
 {
     bool result;
 
-    m_hwnd = hwnd;
     InputManager::SetWindowHandle(hwnd);
 
 
@@ -61,7 +47,6 @@ bool GraphicsClass::Initialize(
     // Direct3D
     // =====================================================
 
-    // Direct3D 객체 생성
     m_D3D = new D3DClass;
 
     if (!m_D3D)
@@ -70,7 +55,6 @@ bool GraphicsClass::Initialize(
     }
 
 
-    // Direct3D 초기화
     result = m_D3D->Initialize(
         screenWidth,
         screenHeight,
@@ -93,8 +77,9 @@ bool GraphicsClass::Initialize(
         return false;
     }
 
+
     // =====================================================
-	// Resource Manager 생성
+    // Resource Manager
     // =====================================================
 
     m_ResourceManager = new ResourceManager;
@@ -104,15 +89,18 @@ bool GraphicsClass::Initialize(
         return false;
     }
 
+
     m_ResourceManager->Initialize(
         m_D3D->GetDevice(),
         screenWidth,
         screenHeight
     );
 
+
     // =====================================================
     // Scene Manager
     // =====================================================
+
     m_SceneManager = new SceneManager;
 
     if (!m_SceneManager)
@@ -120,15 +108,14 @@ bool GraphicsClass::Initialize(
         return false;
     }
 
+
     if (!m_SceneManager->Initialize(
         m_ResourceManager))
     {
         return false;
     }
 
-    
-        
-        
+
     // =====================================================
     // Texture Shader
     // =====================================================
@@ -158,48 +145,13 @@ bool GraphicsClass::Initialize(
         return false;
     }
 
-    // =====================================================
-    // Text
-    // =====================================================
-
-    m_Text = new TextClass;
-
-    if (!m_Text)
-    {
-        return false;
-    }
-
-
-    result = m_Text->Initialize(
-        m_D3D->GetDevice(),
-        m_D3D->GetDeviceContext(),
-        hwnd,
-        screenWidth,
-        screenHeight,
-        m_BaseViewMatrix
-    );
-
-    if (!result)
-    {
-        MessageBox(
-            hwnd,
-            L"Could not initialize the text object.",
-            L"Error",
-            MB_OK
-        );
-
-        return false;
-    }
-
 
     return true;
 }
 
-///
+
 bool GraphicsClass::Frame(int fps, int cpu)
 {
-    bool result;
-
     static auto previousTime =
         std::chrono::high_resolution_clock::now();
 
@@ -221,43 +173,61 @@ bool GraphicsClass::Frame(int fps, int cpu)
     );
 
 
-    result = Render();
+    bool result = Render();
 
     if (!result)
     {
         return false;
     }
 
+
     return true;
 }
 
+
 bool GraphicsClass::Render()
 {
-    XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
-    bool result;
+    XMMATRIX projectionMatrix;
+    XMMATRIX orthoMatrix;
 
-    // 화면 초기화
-    // 하늘색
-    m_D3D->BeginScene(0.60f, 0.82f, 1.0f, 1.0f);
-    // 검정색 
-    //_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
-
-
-    // 렌더링에 필요한 Matrix 가져오기
-    m_D3D->GetWorldMatrix(worldMatrix);
-    m_D3D->GetProjectionMatrix(projectionMatrix);
-    m_D3D->GetOrthoMatrix(orthoMatrix);
 
     // =====================================================
-	// SceneManager를 통해 현재 Scene 렌더링
+    // Scene Begin
     // =====================================================
-    result = m_SceneManager->Render(
-        m_D3D,
-        m_D3D->GetDeviceContext(),
-        m_TextureShader,
-        projectionMatrix,
+
+    m_D3D->BeginScene(
+        0.60f,
+        0.82f,
+        1.0f,
+        1.0f
+    );
+
+
+    // =====================================================
+    // Render Matrix
+    // =====================================================
+
+    m_D3D->GetProjectionMatrix(
+        projectionMatrix
+    );
+
+    m_D3D->GetOrthoMatrix(
         orthoMatrix
     );
+
+
+    // =====================================================
+    // Scene Render
+    // =====================================================
+
+    bool result =
+        m_SceneManager->Render(
+            m_D3D,
+            m_D3D->GetDeviceContext(),
+            m_TextureShader,
+            projectionMatrix,
+            orthoMatrix
+        );
 
     if (!result)
     {
@@ -271,26 +241,11 @@ bool GraphicsClass::Render()
         return false;
     }
 
+
     // =====================================================
-    // 2D UI
+    // Scene End
     // =====================================================
 
-    // UI는 깊이 검사를 사용하지 않음
-    m_D3D->TurnZBufferOff();
-
-    // Panel의 투명도 처리를 위해 Alpha Blending 활성화
-    m_D3D->TurnOnAlphaBlending();
-
-
-    worldMatrix = XMMatrixIdentity();
-
-
-    // 렌더링 상태 복구
-    m_D3D->TurnOffAlphaBlending();
-    m_D3D->TurnZBufferOn();
-
-
-    // 한 프레임 렌더링 종료
     m_D3D->EndScene();
 
 
@@ -300,14 +255,10 @@ bool GraphicsClass::Render()
 
 void GraphicsClass::Shutdown()
 {
-    // Scene 제거
-    if (m_Scene)
-    {
-        delete m_Scene;
-        m_Scene = nullptr;
-    }
+    // =====================================================
+    // Scene Manager
+    // =====================================================
 
-	// SceneManager 제거
     if (m_SceneManager)
     {
         m_SceneManager->Shutdown();
@@ -316,43 +267,17 @@ void GraphicsClass::Shutdown()
         m_SceneManager = nullptr;
     }
 
-    // 모델 리소스 제거
+
+    // =====================================================
+    // Resource Manager
+    // =====================================================
+
     if (m_ResourceManager)
     {
         m_ResourceManager->Shutdown();
+
         delete m_ResourceManager;
         m_ResourceManager = nullptr;
-    }
-
-    // 이후 Shader / Bitmap / Camera / D3D 등
-    // =====================================================
-    // Text
-    // =====================================================
-
-    if (m_Text)
-    {
-        m_Text->Shutdown();
-        delete m_Text;
-        m_Text = nullptr;
-    }
-
-
-    // =====================================================
-    // Bitmap
-    // =====================================================
-
-    if (m_Bitmap)
-    {
-        m_Bitmap->Shutdown();
-        delete m_Bitmap;
-        m_Bitmap = nullptr;
-    }
-
-    if (m_InfoBitmap)
-    {
-        m_InfoBitmap->Shutdown();
-        delete m_InfoBitmap;
-        m_InfoBitmap = nullptr;
     }
 
 
@@ -363,6 +288,7 @@ void GraphicsClass::Shutdown()
     if (m_TextureShader)
     {
         m_TextureShader->Shutdown();
+
         delete m_TextureShader;
         m_TextureShader = nullptr;
     }
@@ -375,9 +301,8 @@ void GraphicsClass::Shutdown()
     if (m_D3D)
     {
         m_D3D->Shutdown();
+
         delete m_D3D;
         m_D3D = nullptr;
     }
-
 }
-

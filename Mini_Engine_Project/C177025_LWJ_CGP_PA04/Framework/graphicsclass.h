@@ -9,18 +9,9 @@
 // MY CLASS INCLUDES //
 ///////////////////////
 #include "d3dclass.h"
-#include "cameraclass.h"
-#include "modelclass.h"
-
 #include "textureshaderclass.h"
-#include "bitmapclass.h"
-#include "textclass.h"
-
-#include "GameObject.h"
-#include "Scene.h"
 #include "ResourceManager.h"
-#include "Rotator.h"
-#include "ModelRenderer.h"
+
 
 /////////////
 // GLOBALS //
@@ -36,43 +27,33 @@ const float SCREEN_NEAR = 0.1f;
 ////////////////////////////////////////////////////////////////////////////////
 class SceneManager;
 
+
 class GraphicsClass
 {
 public:
-	GraphicsClass();
-	GraphicsClass(const GraphicsClass&);
-	~GraphicsClass();
+    GraphicsClass();
+    GraphicsClass(const GraphicsClass&);
+    ~GraphicsClass();
 
-	bool Initialize(int, int, HWND);
-	void Shutdown();
-	bool Frame(int, int);
-
-private:
-	bool Render();
+    bool Initialize(int, int, HWND);
+    void Shutdown();
+    bool Frame(int, int);
 
 private:
-	D3DClass* m_D3D;
-	XMMATRIX m_BaseViewMatrix;
-	
+    bool Render();
 
-	TextureShaderClass* m_TextureShader;
-	BitmapClass* m_Bitmap;
-	BitmapClass* m_InfoBitmap;
+private:
+    // Direct3D
+    D3DClass* m_D3D;
 
-	TextClass* m_Text;
+    // Texture Shader
+    TextureShaderClass* m_TextureShader;
 
-	HWND m_hwnd;
+    // Scene Manager
+    SceneManager* m_SceneManager;
 
-	bool m_ShowTitleScene;
-
-	// SceneManager
-	SceneManager* m_SceneManager;
-
-	// Scene
-	Scene* m_Scene;
-
-	//Resource Manager
-	ResourceManager* m_ResourceManager;
+    // Resource Manager
+    ResourceManager* m_ResourceManager;
 };
 
 #endif

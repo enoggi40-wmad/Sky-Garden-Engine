@@ -4,11 +4,13 @@
 Component::Component(GameObject* ownerObject)
     : gameObject(ownerObject)
 {
+
 }
 
 // 소멸자
 Component::~Component()
 {
+
 }
 
 // 초기화 함수

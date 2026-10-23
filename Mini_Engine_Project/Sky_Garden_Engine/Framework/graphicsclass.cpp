@@ -12,8 +12,8 @@ GraphicsClass::GraphicsClass()
 {
     m_D3D = nullptr;
 
-    // Texture Shader
-    m_TextureShader = nullptr;
+    // ShaderManager
+    m_ShaderManager = nullptr;
 
     // Scene Manager
     m_SceneManager = nullptr;
@@ -120,15 +120,15 @@ bool GraphicsClass::Initialize(
     // Texture Shader
     // =====================================================
 
-    m_TextureShader = new TextureShaderClass;
+    m_ShaderManager = new ShaderManager;
 
-    if (!m_TextureShader)
+    if (!m_ShaderManager)
     {
         return false;
     }
 
 
-    result = m_TextureShader->Initialize(
+    result = m_ShaderManager->Initialize(
         m_D3D->GetDevice(),
         hwnd
     );
@@ -224,7 +224,7 @@ bool GraphicsClass::Render()
         m_SceneManager->Render(
             m_D3D,
             m_D3D->GetDeviceContext(),
-            m_TextureShader,
+            m_ShaderManager->GetTextureShader(),
             projectionMatrix,
             orthoMatrix
         );
@@ -282,15 +282,15 @@ void GraphicsClass::Shutdown()
 
 
     // =====================================================
-    // Texture Shader
+    // ShaderManager
     // =====================================================
 
-    if (m_TextureShader)
+    if (m_ShaderManager)
     {
-        m_TextureShader->Shutdown();
+        m_ShaderManager->Shutdown();
 
-        delete m_TextureShader;
-        m_TextureShader = nullptr;
+        delete m_ShaderManager;
+        m_ShaderManager = nullptr;
     }
 
 

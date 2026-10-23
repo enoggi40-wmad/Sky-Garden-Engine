@@ -9,7 +9,7 @@
 // MY CLASS INCLUDES //
 ///////////////////////
 #include "d3dclass.h"
-#include "textureshaderclass.h"
+#include "ShaderManager.h"
 #include "ResourceManager.h"
 
 
@@ -47,7 +47,7 @@ private:
     D3DClass* m_D3D;
 
     // Texture Shader
-    TextureShaderClass* m_TextureShader;
+    ShaderManager* m_ShaderManager;
 
     // Scene Manager
     SceneManager* m_SceneManager;

@@ -17,6 +17,8 @@ using namespace DirectX;
 // MY CLASS INCLUDES //
 ///////////////////////
 #include "textureclass.h"
+#include <vector>
+#include "ModelData.h"
 
 #include <fstream>
 using namespace std;
@@ -34,34 +36,25 @@ private:
 		XMFLOAT3 normal;
 	};
 
-	struct FaceType
-	{
-		int vIndex1, vIndex2, vIndex3;
-		int tIndex1, tIndex2, tIndex3;
-		int nIndex1, nIndex2, nIndex3;
-	};
-
-	struct ModelType
-	{
-		float x, y, z;
-		float tu, tv;
-		float nx, ny, nz;
-	};
 
 public:
 	ModelClass();
 	ModelClass(const ModelClass&);
 	~ModelClass();
 
-	bool Initialize(ID3D11Device*, const WCHAR*, const WCHAR*);
+	bool Initialize(
+		ID3D11Device*,
+		const std::vector<ModelVertexData>&,
+		const WCHAR*
+	);
+
 	void Shutdown();
 	void Render(ID3D11DeviceContext*);
 
 	int GetIndexCount();
 	ID3D11ShaderResourceView* GetTexture();
 
-	bool LoadModel(const WCHAR*);
-	void ReleaseModel();
+	
 
 
 private:
@@ -72,15 +65,14 @@ private:
 	bool LoadTexture(ID3D11Device*, const WCHAR*);
 	void ReleaseTexture();
 
-	bool ReadFileCounts(const WCHAR*);
-	bool LoadDataStructures(const WCHAR*, int, int, int, int);
+	
 
 private:
 	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;
-	int m_vertexCount, m_indexCount, m_textureCount, m_normalCount, m_faceCount;
+	int m_vertexCount, m_indexCount;
 	TextureClass* m_Texture;
 
-	ModelType* m_model;
+	ModelVertexData* m_model;
 };
 
 #endif

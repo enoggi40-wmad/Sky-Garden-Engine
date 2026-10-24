@@ -47,9 +47,6 @@
     <ClCompile Include="systemclass.cpp">
       <Filter>_Framework</Filter>
     </ClCompile>
-    <ClCompile Include="modelclass.cpp">
-      <Filter>_Framework</Filter>
-    </ClCompile>
     <ClCompile Include="textureclass.cpp">
       <Filter>_Framework</Filter>
     </ClCompile>
@@ -143,6 +140,15 @@
     <ClCompile Include="graphicsclass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="modelclass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjLoader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="FbxLoader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dclass.h">
@@ -155,9 +161,6 @@
       <Filter>_Framework</Filter>
     </ClInclude>
     <ClInclude Include="AlignedAllocationPolicy.h">
-      <Filter>_Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="modelclass.h">
       <Filter>_Framework</Filter>
     </ClInclude>
     <ClInclude Include="textureclass.h">
@@ -254,6 +257,18 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="graphicsclass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelData.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="modelclass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjLoader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="FbxLoader.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

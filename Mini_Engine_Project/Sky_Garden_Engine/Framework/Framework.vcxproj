@@ -103,6 +103,8 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <Optimization>Disabled</Optimization>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>./include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -147,6 +149,7 @@
     <ClCompile Include="cpuclass.cpp" />
     <ClCompile Include="d3dclass.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
+    <ClCompile Include="FbxLoader.cpp" />
     <ClCompile Include="Floater.cpp" />
     <ClCompile Include="fontclass.cpp" />
     <ClCompile Include="fontshaderclass.cpp" />
@@ -160,6 +163,7 @@
     <ClCompile Include="MainScene.cpp" />
     <ClCompile Include="modelclass.cpp" />
     <ClCompile Include="ModelRenderer.cpp" />
+    <ClCompile Include="ObjLoader.cpp" />
     <ClCompile Include="Orbiter.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RendererManager.cpp" />
@@ -186,6 +190,7 @@
     <ClInclude Include="cpuclass.h" />
     <ClInclude Include="d3dclass.h" />
     <ClInclude Include="DDSTextureLoader.h" />
+    <ClInclude Include="FbxLoader.h" />
     <ClInclude Include="Floater.h" />
     <ClInclude Include="fontclass.h" />
     <ClInclude Include="fontshaderclass.h" />
@@ -197,7 +202,9 @@
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="MainScene.h" />
     <ClInclude Include="modelclass.h" />
+    <ClInclude Include="ModelData.h" />
     <ClInclude Include="ModelRenderer.h" />
+    <ClInclude Include="ObjLoader.h" />
     <ClInclude Include="Orbiter.h" />
     <ClInclude Include="RenderContext.h" />
     <ClInclude Include="Renderer.h" />

@@ -2,6 +2,12 @@
 #include "modelclass.h"
 #include "BitmapClass.h"
 
+#include "ObjLoader.h"
+#include "ModelData.h"
+
+#include <filesystem>
+#include <vector>
+
 
 ResourceManager::ResourceManager()
 {
@@ -184,12 +190,70 @@ ModelClass* ResourceManager::LoadModel(
 
     if (it != m_Models.end())
     {
-        // 이미 존재하면 새로 만들지 않고 기존 모델 반환
         return it->second;
     }
 
 
-    // 새로운 모델 리소스 생성
+    // =====================================================
+    // 모델 파일 확장자 확인
+    // =====================================================
+
+    std::filesystem::path path(modelPath);
+
+    std::wstring extension =
+        path.extension().wstring();
+
+
+    // Loader가 생성할 공통 모델 데이터
+    std::vector<ModelVertexData> modelData;
+
+
+    // =====================================================
+    // OBJ
+    // =====================================================
+
+    if (extension == L".obj")
+    {
+        ObjLoader loader;
+
+        bool result =
+            loader.Load(
+                modelPath,
+                modelData
+            );
+
+        if (!result)
+        {
+            return nullptr;
+        }
+    }
+
+
+    // =====================================================
+    // FBX
+    // =====================================================
+
+    else if (extension == L".fbx")
+    {
+        // FbxLoader는 나중에 구현
+        return nullptr;
+    }
+
+
+    // =====================================================
+    // 지원하지 않는 파일 형식
+    // =====================================================
+
+    else
+    {
+        return nullptr;
+    }
+
+
+    // =====================================================
+    // ModelClass 생성
+    // =====================================================
+
     ModelClass* model =
         new ModelClass;
 
@@ -198,11 +262,12 @@ ModelClass* ResourceManager::LoadModel(
         return nullptr;
     }
 
-    // 모델 / 텍스처 초기화
+
+    // Loader가 만든 공통 데이터를 ModelClass에 전달
     bool result =
         model->Initialize(
             m_Device,
-            modelPath,
+            modelData,
             texturePath
         );
 
@@ -211,6 +276,7 @@ ModelClass* ResourceManager::LoadModel(
         delete model;
         return nullptr;
     }
+
 
     // ResourceManager 내부에 저장
     m_Models[name] = model;

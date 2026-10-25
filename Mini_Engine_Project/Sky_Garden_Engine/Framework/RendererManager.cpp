@@ -3,6 +3,7 @@
 #include "D3DClass.h"
 #include <algorithm>
 #include "RenderContext.h"
+#include "ShaderManager.h"
 
 RendererManager::RendererManager()
 {
@@ -52,7 +53,7 @@ float RendererManager::GetDistanceSquared(
 bool RendererManager::Render(
     D3DClass* d3d,
     ID3D11DeviceContext* deviceContext,
-    TextureShaderClass* textureShader,
+    ShaderManager* shaderManager,
     DirectX::XMMATRIX viewMatrix,
     DirectX::XMMATRIX projectionMatrix,
     DirectX::XMMATRIX orthoMatrix,
@@ -61,7 +62,7 @@ bool RendererManager::Render(
     RenderContext context{};
 
     context.deviceContext = deviceContext;
-    context.textureShader = textureShader;
+    context.shaderManager = shaderManager;
 
     context.viewMatrix = viewMatrix;
     context.projectionMatrix = projectionMatrix;

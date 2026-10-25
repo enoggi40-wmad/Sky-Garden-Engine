@@ -2,7 +2,7 @@
 
 #include <d3d11.h>
 #include "textureshaderclass.h"
-
+#include "PhongLightShaderClass.h"
 
 class ShaderManager
 {
@@ -18,8 +18,10 @@ public:
     void Shutdown();
 
     TextureShaderClass* GetTextureShader();
+    PhongLightShaderClass* GetPhongLightShader();
 
 
 private:
     TextureShaderClass* m_TextureShader;
+    PhongLightShaderClass* m_PhongLightShader;
 };

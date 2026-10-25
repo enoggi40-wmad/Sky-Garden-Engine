@@ -161,6 +161,9 @@
     <ClCompile Include="textureshaderclass.cpp">
       <Filter>Shaders_소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="PhongLightShaderClass.cpp">
+      <Filter>Shaders_소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inputclass.h">
@@ -283,6 +286,9 @@
     <ClInclude Include="textureshaderclass.h">
       <Filter>Shaders_헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="PhongLightShaderClass.h">
+      <Filter>Shaders_헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="data\WaterPlane.dds">
@@ -294,6 +300,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="data\textureShader.hlsl">
+      <Filter>_리소스 파일</Filter>
+    </None>
+    <None Include="data\phongLightShader.hlsl">
       <Filter>_리소스 파일</Filter>
     </None>
   </ItemGroup>

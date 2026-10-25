@@ -4,6 +4,7 @@
 ShaderManager::ShaderManager()
 {
     m_TextureShader = nullptr;
+    m_PhongLightShader = nullptr;
 }
 
 
@@ -42,6 +43,23 @@ bool ShaderManager::Initialize(
     }
 
 
+	// Phong Light Shader 생성
+    m_PhongLightShader = new PhongLightShaderClass;
+    if (!m_PhongLightShader)
+    {
+        return false;
+    }
+
+	// Phong Light Shader 초기화
+    result = m_PhongLightShader->Initialize(device, hwnd);
+    if (!result)
+    {
+        delete m_PhongLightShader;
+        m_PhongLightShader = nullptr;
+
+        return false;
+    }
+
     return true;
 }
 
@@ -52,9 +70,21 @@ ShaderManager::GetTextureShader()
     return m_TextureShader;
 }
 
+PhongLightShaderClass* ShaderManager::GetPhongLightShader()
+{
+    return m_PhongLightShader;
+}
+
 
 void ShaderManager::Shutdown()
 {
+    if (m_PhongLightShader)
+    {
+        m_PhongLightShader->Shutdown();
+        delete m_PhongLightShader;
+        m_PhongLightShader = nullptr;
+    }
+
     if (m_TextureShader)
     {
         m_TextureShader->Shutdown();

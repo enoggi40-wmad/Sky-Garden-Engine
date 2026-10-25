@@ -192,8 +192,9 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         60.0f
     };
 
-    guardianLion->AddComponent<Rotator>(1.0f);
+    //guardianLion->AddComponent<Rotator>(1.0f);
     guardianLion->AddComponent<ModelRenderer>(guardianLionModel);
+
 
     // Scene¿¡ µî·Ï
     AddGameObject(guardianLion);

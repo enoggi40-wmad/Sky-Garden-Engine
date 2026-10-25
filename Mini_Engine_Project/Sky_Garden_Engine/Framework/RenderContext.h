@@ -3,12 +3,13 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 
-class TextureShaderClass;
+class ShaderManager;
 
 struct RenderContext
 {
     ID3D11DeviceContext* deviceContext;
-    TextureShaderClass* textureShader;
+
+    ShaderManager* shaderManager;
 
     DirectX::XMMATRIX viewMatrix;
     DirectX::XMMATRIX projectionMatrix;

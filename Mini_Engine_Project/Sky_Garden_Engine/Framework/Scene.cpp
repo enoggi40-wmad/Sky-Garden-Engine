@@ -63,7 +63,7 @@ void Scene::Update(float deltaTime)
 bool Scene::Render(
     D3DClass* d3d,
     ID3D11DeviceContext* deviceContext,
-    TextureShaderClass* textureShader,
+    ShaderManager* shaderManager,
     XMMATRIX projectionMatrix,
     XMMATRIX orthoMatrix)
 {
@@ -86,7 +86,7 @@ bool Scene::Render(
     return m_RendererManager->Render(
         d3d,
         deviceContext,
-        textureShader,
+        shaderManager,
         viewMatrix,
         projectionMatrix,
         orthoMatrix,

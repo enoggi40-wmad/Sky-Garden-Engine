@@ -3,7 +3,7 @@
 #include <DirectXMath.h>
 
 class Scene;
-class TextureShaderClass;
+class ShaderManager;
 class ResourceManager;
 struct ID3D11DeviceContext;
 class D3DClass;
@@ -29,7 +29,7 @@ public:
 	bool Render(
 		D3DClass* d3d,
 		ID3D11DeviceContext* deviceContext,
-		TextureShaderClass* textureShader,
+		ShaderManager* shaderManager,
 		DirectX::XMMATRIX projectionMatrix,
 		DirectX::XMMATRIX orthoMatrix
 	);

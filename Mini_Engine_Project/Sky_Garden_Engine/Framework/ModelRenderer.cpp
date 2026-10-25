@@ -4,6 +4,7 @@
 #include "modelclass.h"
 #include "textureshaderclass.h"
 
+#include "ShaderManager.h"
 
 
 // ModelRenderer 생성자
@@ -18,6 +19,8 @@ ModelRenderer::ModelRenderer(
     ModelClass* model)
     : Renderer(ownerObject), m_Model(model)
 {
+    m_Model = model;
+    m_ShaderType = ShaderType::PhongLight;
 }
 
 
@@ -25,6 +28,17 @@ ModelRenderer::ModelRenderer(
 ModelClass* ModelRenderer::GetModel() const
 {
     return m_Model;
+}
+
+// ModelRenderer가 사용할 ShaderType 설정
+void ModelRenderer::SetShaderType(ShaderType type)
+{
+    m_ShaderType = type;
+}
+
+ShaderType ModelRenderer::GetShaderType() const
+{
+    return m_ShaderType;
 }
 
 bool ModelRenderer::Render(
@@ -49,19 +63,73 @@ bool ModelRenderer::Render(
     m_Model->Render(context.deviceContext);
 
 
-    // Texture Shader를 이용해서 실제 모델을 화면에 그린다.
-    //
-    // 기존에는 GraphicsClass에서 직접 하던 작업이었지만,
-    // 이제 ModelRenderer가 담당하게 된다.
-    bool result = context.textureShader->Render(
-        context.deviceContext,
-        m_Model->GetIndexCount(),
-        worldMatrix,
-        context.viewMatrix,
-        context.projectionMatrix,
-        m_Model->GetTexture()
-    );
+    // Shader를 이용해서 실제 모델을 화면에 그린다.
+    bool result = false;
 
+    if (m_ShaderType == ShaderType::Texture)
+    {
+        result = context.shaderManager->GetTextureShader()->Render(
+            context.deviceContext,
+            m_Model->GetIndexCount(),
+            worldMatrix,
+            context.viewMatrix,
+            context.projectionMatrix,
+            m_Model->GetTexture()
+        );
+    }
+    else if (m_ShaderType == ShaderType::PhongLight)
+    {
+        XMFLOAT3 lightDirection =
+        {
+            0.0f, -1.0f, 1.0f
+        };
+
+        XMFLOAT4 ambientColor =
+        {
+            0.3f, 0.3f, 0.3f, 1.0f
+        };
+
+        XMFLOAT4 diffuseColor =
+        {
+            1.0f, 1.0f, 1.0f, 1.0f
+        };
+
+        XMFLOAT4 specularColor =
+        {
+            1.0f, 1.0f, 1.0f, 1.0f
+        };
+
+        float specularPower = 32.0f;
+
+        XMFLOAT4 pointLightColor[2] =
+        {
+            XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f),
+            XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f)
+        };
+
+        XMFLOAT4 pointLightPosition[2] =
+        {
+            XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f),
+            XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f)
+        };
+
+        result = context.shaderManager->GetPhongLightShader()->Render(
+            context.deviceContext,
+            m_Model->GetIndexCount(),
+            worldMatrix,
+            context.viewMatrix,
+            context.projectionMatrix,
+            m_Model->GetTexture(),
+            lightDirection,
+            ambientColor,
+            diffuseColor,
+            context.cameraPosition,
+            specularColor,
+            specularPower,
+            pointLightColor,
+            pointLightPosition
+        );
+    }
 
     // Shader 렌더링에 실패한 경우
     if (!result)

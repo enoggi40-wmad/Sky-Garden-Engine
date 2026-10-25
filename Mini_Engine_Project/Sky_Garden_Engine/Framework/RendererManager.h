@@ -8,6 +8,7 @@
 
 
 class D3DClass;
+class ShaderManager;
 
 class RendererManager
 {
@@ -21,7 +22,7 @@ public:
     bool Render(
         D3DClass* d3d,
         ID3D11DeviceContext* deviceContext,
-        TextureShaderClass* textureShader,
+        ShaderManager* shaderManager,
         DirectX::XMMATRIX viewMatrix,
         DirectX::XMMATRIX projectionMatrix,
         DirectX::XMMATRIX orthoMatrix,

@@ -3,6 +3,8 @@
 #include "textureshaderclass.h"
 #include <DirectXMath.h>
 
+#include "ShaderManager.h"
+
 using namespace DirectX;
 
 UIRenderer::UIRenderer(GameObject* owner, BitmapClass* bitmap)
@@ -55,7 +57,7 @@ bool UIRenderer::Render(
 
     // UI는 일반 3D Projection 대신
     // Ortho Matrix를 사용해 화면에 출력한다.
-    result = context.textureShader->Render(
+    result = context.shaderManager->GetTextureShader()->Render(
         context.deviceContext,
         m_Bitmap->GetIndexCount(),
         worldMatrix,

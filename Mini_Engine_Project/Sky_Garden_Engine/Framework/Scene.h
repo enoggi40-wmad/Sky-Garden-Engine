@@ -5,7 +5,7 @@
 
 class GameObject;
 class ModelClass;
-class TextureShaderClass;
+class ShaderManager;
 
 class ResourceManager;
 class RendererManager;
@@ -39,7 +39,7 @@ public:
     bool Render(
         D3DClass* d3d,
         ID3D11DeviceContext* deviceContext,
-        TextureShaderClass* textureShader,
+        ShaderManager* shaderManager,
         DirectX::XMMATRIX projectionMatrix,
         DirectX::XMMATRIX orthoMatrix
     );

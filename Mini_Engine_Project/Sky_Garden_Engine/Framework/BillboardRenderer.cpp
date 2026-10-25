@@ -4,6 +4,8 @@
 #include "TextureShaderClass.h"
 #include <cmath>
 
+#include "ShaderManager.h"
+
 using namespace DirectX;
 
 
@@ -63,7 +65,7 @@ bool BillboardRenderer::Render(
     m_Model->Render(context.deviceContext);
 
     // Shader¸¦ »ç¿ëÇØ ¸ðµ¨ ·»´õ¸µ
-    bool result = context.textureShader->Render(
+    bool result = context.shaderManager->GetTextureShader()->Render(
         context.deviceContext,
         m_Model->GetIndexCount(),
         worldMatrix,

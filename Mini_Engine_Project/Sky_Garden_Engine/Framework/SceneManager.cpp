@@ -7,6 +7,8 @@
 #include "TitleScene.h"
 #include "MainScene.h"
 
+#include "ShaderManager.h"
+
 
 
 
@@ -54,7 +56,7 @@ void SceneManager::Update(float deltaTime)
 bool SceneManager::Render(
     D3DClass* d3d,
     ID3D11DeviceContext* deviceContext,
-    TextureShaderClass* textureShader,
+    ShaderManager* shaderManager,
     DirectX::XMMATRIX projectionMatrix,
     DirectX::XMMATRIX orthoMatrix)
 {
@@ -66,7 +68,7 @@ bool SceneManager::Render(
     return m_CurrentScene->Render(
         d3d,
         deviceContext,
-        textureShader,
+        shaderManager,
         projectionMatrix,
 		orthoMatrix
     );

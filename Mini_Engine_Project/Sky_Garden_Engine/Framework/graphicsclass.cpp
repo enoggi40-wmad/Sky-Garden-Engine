@@ -224,7 +224,7 @@ bool GraphicsClass::Render()
         m_SceneManager->Render(
             m_D3D,
             m_D3D->GetDeviceContext(),
-            m_ShaderManager->GetTextureShader(),
+            m_ShaderManager,
             projectionMatrix,
             orthoMatrix
         );

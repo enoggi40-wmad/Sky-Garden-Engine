@@ -11,6 +11,12 @@ struct ID3D11DeviceContext;
 
 class ModelClass;
 
+enum class ShaderType
+{
+    Texture,
+    PhongLight
+};
+
 
 class ModelRenderer : public Renderer
 {
@@ -28,9 +34,11 @@ public:
         const RenderContext& context
     ) override;
 
+    void SetShaderType(ShaderType type);
+    ShaderType GetShaderType() const;
 
 private:
-
-    // 실제 모델 데이터를 가지고 있는 ModelClass의 주소
+        
     ModelClass* m_Model;
+    ShaderType m_ShaderType;
 };

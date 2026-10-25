@@ -96,6 +96,41 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     AddGameObject(cutsceneCamera);
 
     // =====================================================
+    // Magic Orb
+    // =====================================================
+
+    ModelClass* magicOrbModel =
+        resourceManager->GetModel("MagicOrb");
+
+    if (!magicOrbModel)
+    {
+        return;
+    }
+
+    GameObject* magicOrb =
+        new GameObject("MagicOrb");
+
+    magicOrb->transform.position =
+    {
+        0.0f,
+        300.0f,
+        0.0f
+    };
+
+    magicOrb->transform.scale =
+    {
+        10.0f,
+        10.0f,
+        10.0f
+    };
+
+    magicOrb->AddComponent<ModelRenderer>(
+        magicOrbModel
+    );
+
+    AddGameObject(magicOrb);
+
+    // =====================================================
 	// Magic Billboard
     // =====================================================
 
@@ -745,5 +780,6 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
 
         AddGameObject(cloud);
+                
     }
 }

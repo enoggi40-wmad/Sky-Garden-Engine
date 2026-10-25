@@ -3,6 +3,7 @@
 #include "BitmapClass.h"
 
 #include "ObjLoader.h"
+#include "FbxLoader.h"
 #include "ModelData.h"
 
 #include <filesystem>
@@ -177,7 +178,12 @@ void ResourceManager::Initialize(ID3D11Device* device,
        L"./data/Cloud.dds"
     };
 
-    
+    m_ModelInfos["MagicOrb"] =
+    {
+        L"./data/Magic_Orb.fbx",
+        L"./data/Magic_Orb.dds"
+    };
+        
 }
 
 ModelClass* ResourceManager::LoadModel(
@@ -235,8 +241,18 @@ ModelClass* ResourceManager::LoadModel(
 
     else if (extension == L".fbx")
     {
-        // FbxLoader는 나중에 구현
-        return nullptr;
+        FbxLoader loader;
+
+        bool result = loader.Load(
+            modelPath,
+            modelData
+        );
+
+        if (!result)
+        {
+            return nullptr;
+        }
+                
     }
 
 

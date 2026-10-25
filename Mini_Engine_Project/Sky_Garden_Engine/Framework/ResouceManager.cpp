@@ -348,4 +348,19 @@ void ResourceManager::Shutdown()
     }
 
     m_Models.clear();
+
+	// ResourceManager가 소유한 모든 Bitmap 리소스 정리
+    for (auto& pair : m_Bitmaps)
+    {
+        BitmapClass* bitmap = pair.second;
+
+        if (bitmap)
+        {
+            bitmap->Shutdown();
+            delete bitmap;
+        }
+    }
+
+    m_Bitmaps.clear();
+
 }

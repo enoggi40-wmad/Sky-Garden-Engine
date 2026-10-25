@@ -2,7 +2,6 @@
 // Filename: modelclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
 #include "modelclass.h"
-#include "ObjLoader.h"
 #include <vector>
 
 
@@ -96,8 +95,13 @@ void ModelClass::Shutdown()
 	// Shutdown the vertex and index buffers.
 	ShutdownBuffers();
 
+	// Release the model data.
+	if (m_model)
+	{
+		delete[] m_model;
+		m_model = 0;
+	}
 	
-
 	return;
 }
 

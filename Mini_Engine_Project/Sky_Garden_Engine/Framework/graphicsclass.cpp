@@ -117,7 +117,7 @@ bool GraphicsClass::Initialize(
 
 
     // =====================================================
-    // Texture Shader
+    // Shader Manager
     // =====================================================
 
     m_ShaderManager = new ShaderManager;
@@ -137,7 +137,7 @@ bool GraphicsClass::Initialize(
     {
         MessageBox(
             hwnd,
-            L"Could not initialize the texture shader object.",
+            L"Could not initialize the shader manager.",
             L"Error",
             MB_OK
         );

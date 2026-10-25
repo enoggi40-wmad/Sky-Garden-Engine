@@ -22,9 +22,6 @@
     <Filter Include="Components_헤더 파일">
       <UniqueIdentifier>{8021df4a-3ea3-4622-a362-c922fb5407c2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Components_소스파일">
-      <UniqueIdentifier>{3233f694-5382-49a5-a7fd-8ca134c61ea3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="_Framework">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
@@ -33,24 +30,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ModelLoaders_헤더 파일">
+      <UniqueIdentifier>{9eb60fe4-8d00-4ef8-847f-4bb392a8e901}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ModelLoaders_소스 파일">
+      <UniqueIdentifier>{124f04a6-3d57-4bd0-8656-1dbffee30ce0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components_소스 파일">
+      <UniqueIdentifier>{3233f694-5382-49a5-a7fd-8ca134c61ea3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders_소스 파일">
+      <UniqueIdentifier>{a2d2e181-da89-4658-a090-71cfdc20cd03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders_헤더 파일">
+      <UniqueIdentifier>{aa6b857a-8f26-44af-b0d7-9f1feecb1286}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="d3dclass.cpp">
-      <Filter>_Framework</Filter>
-    </ClCompile>
     <ClCompile Include="inputclass.cpp">
-      <Filter>_Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>_Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="systemclass.cpp">
-      <Filter>_Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="textureclass.cpp">
-      <Filter>_Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="bitmapclass.cpp">
       <Filter>_Framework</Filter>
     </ClCompile>
     <ClCompile Include="fontclass.cpp">
@@ -102,19 +99,19 @@
       <Filter>Renderers_소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Floater.cpp">
-      <Filter>Components_소스파일</Filter>
+      <Filter>Components_소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Orbiter.cpp">
-      <Filter>Components_소스파일</Filter>
+      <Filter>Components_소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Rotator.cpp">
-      <Filter>Components_소스파일</Filter>
+      <Filter>Components_소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="CameraComponent.cpp">
-      <Filter>Components_소스파일</Filter>
+      <Filter>Components_소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="FreeCameraConroller.cpp">
-      <Filter>Components_소스파일</Filter>
+      <Filter>Components_소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="InputManager.cpp">
       <Filter>소스 파일</Filter>
@@ -131,9 +128,6 @@
     <ClCompile Include="UIRenderer.cpp">
       <Filter>Renderers_소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="textureshaderclass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="ShaderManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -143,30 +137,36 @@
     <ClCompile Include="modelclass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="FbxLoader.cpp">
+      <Filter>ModelLoaders_소스 파일</Filter>
+    </ClCompile>
     <ClCompile Include="ObjLoader.cpp">
+      <Filter>ModelLoaders_소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="bitmapclass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="FbxLoader.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="d3dclass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="systemclass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="textureclass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="textureshaderclass.cpp">
+      <Filter>Shaders_소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="d3dclass.h">
-      <Filter>_Framework</Filter>
-    </ClInclude>
     <ClInclude Include="inputclass.h">
       <Filter>_Framework</Filter>
     </ClInclude>
-    <ClInclude Include="systemclass.h">
-      <Filter>_Framework</Filter>
-    </ClInclude>
     <ClInclude Include="AlignedAllocationPolicy.h">
-      <Filter>_Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="textureclass.h">
-      <Filter>_Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="bitmapclass.h">
       <Filter>_Framework</Filter>
     </ClInclude>
     <ClInclude Include="fontclass.h">
@@ -250,9 +250,6 @@
     <ClInclude Include="UIRenderer.h">
       <Filter>Renderers_헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="textureshaderclass.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -266,26 +263,29 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="ObjLoader.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>ModelLoaders_헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="FbxLoader.h">
+      <Filter>ModelLoaders_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="bitmapclass.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="d3dclass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="systemclass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="textureclass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="textureshaderclass.h">
+      <Filter>Shaders_헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="data\font.dds">
-      <Filter>_리소스 파일</Filter>
-    </Image>
-    <Image Include="data\bluesky.dds">
-      <Filter>_리소스 파일</Filter>
-    </Image>
-    <Image Include="data\CloudPlane.dds">
-      <Filter>_리소스 파일</Filter>
-    </Image>
     <Image Include="data\WaterPlane.dds">
-      <Filter>_리소스 파일</Filter>
-    </Image>
-    <Image Include="data\Panel.dds">
       <Filter>_리소스 파일</Filter>
     </Image>
     <Image Include="data\Title_Scene.dds">
@@ -293,14 +293,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="data\fontdata.txt">
-      <Filter>_리소스 파일</Filter>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="data\fontShader.hlsl">
-      <Filter>_리소스 파일</Filter>
-    </None>
     <None Include="data\textureShader.hlsl">
       <Filter>_리소스 파일</Filter>
     </None>

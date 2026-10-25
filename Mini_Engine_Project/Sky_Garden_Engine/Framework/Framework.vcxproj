@@ -224,20 +224,10 @@
     <ClInclude Include="UIRenderer.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="data\bluesky.dds" />
-    <Image Include="data\CloudPlane.dds" />
-    <Image Include="data\font.dds" />
-    <Image Include="data\Panel.dds" />
     <Image Include="data\Title_Scene.dds" />
     <Image Include="data\WaterPlane.dds" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="data\fontdata.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="data\fontShader.hlsl">
-      <FileType>Document</FileType>
-    </None>
     <None Include="data\textureShader.hlsl">
       <FileType>Document</FileType>
     </None>

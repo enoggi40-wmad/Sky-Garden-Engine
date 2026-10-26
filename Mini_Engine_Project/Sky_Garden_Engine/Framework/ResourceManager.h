@@ -2,6 +2,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <d3d11.h>
 
 class ModelClass;
 struct ID3D11Device;
@@ -47,6 +48,18 @@ public:
         const std::string& name
     );
 
+    ID3D11ShaderResourceView* LoadCubeMap(
+        const std::string& name,
+        const wchar_t* texturePath
+    );
+
+    ID3D11ShaderResourceView* GetCubeMap(
+        const std::string& name
+    );
+
+    ID3D11Device* GetDevice() const;
+    
+
 private:
     struct ModelResourceInfo
     {
@@ -63,6 +76,11 @@ private:
 
     std::unordered_map<std::string, ModelResourceInfo> m_ModelInfos;
     std::unordered_map<std::string, BitmapClass*> m_Bitmaps;
+
+    std::unordered_map<std::string, ID3D11ShaderResourceView*> m_CubeMaps;
+        
+        
+    
 
 private:
    

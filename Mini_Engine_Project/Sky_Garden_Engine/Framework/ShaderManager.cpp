@@ -5,6 +5,7 @@ ShaderManager::ShaderManager()
 {
     m_TextureShader = nullptr;
     m_PhongLightShader = nullptr;
+    m_SkyMapShader = 0;
 }
 
 
@@ -60,12 +61,32 @@ bool ShaderManager::Initialize(
         return false;
     }
 
+    
+
+    // Sky Map Shader 생성
+    m_SkyMapShader = new SkyMapShaderClass;
+
+    if (!m_SkyMapShader)
+    {
+        return false;
+    }
+
+    // Sky Map Shader 초기화
+    result = m_SkyMapShader->Initialize(
+        device,
+        hwnd
+    );
+
+    if (!result)
+    {
+        return false;
+    }
+
     return true;
 }
 
 
-TextureShaderClass*
-ShaderManager::GetTextureShader()
+TextureShaderClass* ShaderManager::GetTextureShader()
 {
     return m_TextureShader;
 }
@@ -75,9 +96,21 @@ PhongLightShaderClass* ShaderManager::GetPhongLightShader()
     return m_PhongLightShader;
 }
 
+SkyMapShaderClass* ShaderManager::GetSkyMapShader()
+{
+    return m_SkyMapShader;
+}
 
 void ShaderManager::Shutdown()
 {
+    if (m_SkyMapShader)
+    {
+        m_SkyMapShader->Shutdown();
+
+        delete m_SkyMapShader;
+        m_SkyMapShader = 0;
+    }
+
     if (m_PhongLightShader)
     {
         m_PhongLightShader->Shutdown();

@@ -195,9 +195,16 @@ bool GraphicsClass::Render()
     // Scene Begin
     // =====================================================
 
-    m_D3D->BeginScene(
+    /*m_D3D->BeginScene(
         0.60f,
         0.82f,
+        1.0f,
+        1.0f
+    );*/
+
+    m_D3D->BeginScene(
+        1.0f,
+        0.0f,
         1.0f,
         1.0f
     );

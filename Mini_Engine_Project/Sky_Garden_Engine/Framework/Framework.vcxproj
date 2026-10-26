@@ -173,6 +173,9 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
+    <ClCompile Include="SkyBoxRenderer.cpp" />
+    <ClCompile Include="SkyMapShaderClass.cpp" />
+    <ClCompile Include="SkySphereClass.cpp" />
     <ClCompile Include="systemclass.cpp" />
     <ClCompile Include="textclass.cpp" />
     <ClCompile Include="textureclass.cpp" />
@@ -216,6 +219,9 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="SkyBoxRenderer.h" />
+    <ClInclude Include="SkyMapShaderClass.h" />
+    <ClInclude Include="SkySphereClass.h" />
     <ClInclude Include="systemclass.h" />
     <ClInclude Include="textclass.h" />
     <ClInclude Include="textureclass.h" />
@@ -226,16 +232,21 @@
     <ClInclude Include="UIRenderer.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="data\Title_Scene.dds" />
-    <Image Include="data\WaterPlane.dds" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="data\textureShader.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\phongLightShader.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="skyMapShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

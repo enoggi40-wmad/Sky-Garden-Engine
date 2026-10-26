@@ -9,7 +9,7 @@
 #include "Floater.h"
 #include "GameObject.h"
 #include "CameraComponent.h"
-
+#include "SkyBoxRenderer.h"
 #include "FreeCameraController.h"
 #include <Windows.h>
 
@@ -94,6 +94,43 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 	    cutsceneCamera->AddComponent<FreeCameraController>();
 
     AddGameObject(cutsceneCamera);
+
+
+    // =====================================================
+    // SkyBox
+    // =====================================================
+
+    GameObject* sky =
+        new GameObject("skymap");
+
+    SkyBoxRenderer* skyRenderer =
+        sky->AddComponent<SkyBoxRenderer>(
+            resourceManager->GetCubeMap("skymap")
+        );
+
+    bool result =
+        skyRenderer->Initialize(
+            resourceManager->GetDevice()
+        );
+
+    if (!result)
+    {
+        MessageBox(
+            NULL,
+            L"SkyBoxRenderer Initialize Failed",
+            L"SkyBox Error",
+            MB_OK
+        );
+
+        delete sky;
+        return;
+    }
+
+    
+    // Scene에 등록
+    AddGameObject(sky);
+
+
 
     // =====================================================
     // Magic Orb
@@ -230,51 +267,11 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         180.0f
     };
 
-    // 렌더링 Component 추가
-    /*ModelRenderer* sakuraRenderer =
-        new ModelRenderer(
-            sakuraTree,
-            sakuraTreeModel
-        );*/
 
     sakuraTree->AddComponent<ModelRenderer>(sakuraTreeModel);
 
     AddGameObject(sakuraTree);
 
-    // =====================================================
-    // Water Plane
-    // =====================================================
-
-    ModelClass* waterPlaneModel =
-        resourceManager->GetModel("WaterPlane");
-
-    if (!waterPlaneModel)
-    {
-        return;
-    }
-
-    GameObject* waterPlane =
-        new GameObject("WaterPlane");
-
-    // 기존 GraphicsClass의 WorldMatrix 값을 Transform으로 이동
-    waterPlane->transform.scale =
-    {
-        5.0f,
-        1.0f,
-        5.0f
-    };
-
-    waterPlane->transform.position =
-    {
-        0.0f,
-        -100.0f,
-        0.0f
-    };
-
-    
-    waterPlane->AddComponent<ModelRenderer>(waterPlaneModel);
-
-    AddGameObject(waterPlane);
 
     // =====================================================
     // Floating Alter
@@ -659,12 +656,6 @@ void MainScene::Initialize(ResourceManager* resourceManager)
             i * 0.6f;
 
 
-        ModelRenderer* floatingIslandRenderer =
-            new ModelRenderer(
-                floatingIsland,
-                floatingIslandModel
-            );
-
         floatingIsland->AddComponent<ModelRenderer>(floatingIslandModel);
 
 
@@ -732,14 +723,6 @@ void MainScene::Initialize(ResourceManager* resourceManager)
             cloudPositions[i].y,
             cloudPositions[i].z
         };
-
-
-        // 모델 렌더링 Component
-        ModelRenderer* cloudRenderer =
-            new ModelRenderer(
-                cloud,
-                cloudModel
-            );
 
         cloud->AddComponent<ModelRenderer>(cloudModel);
 

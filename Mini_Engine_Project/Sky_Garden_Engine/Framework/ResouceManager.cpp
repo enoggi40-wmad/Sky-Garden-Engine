@@ -9,6 +9,7 @@
 #include <filesystem>
 #include <vector>
 
+#include "DDSTextureLoader.h"
 
 ResourceManager::ResourceManager()
 {
@@ -18,6 +19,109 @@ ResourceManager::ResourceManager()
 
 ResourceManager::~ResourceManager()
 {
+}
+
+ID3D11Device* ResourceManager::GetDevice() const
+{
+    return m_Device;
+}
+
+ID3D11ShaderResourceView* ResourceManager::GetCubeMap(
+    const std::string& name)
+{
+    auto it = m_CubeMaps.find(name);
+
+    if (it != m_CubeMaps.end())
+    {
+        return it->second;
+    }
+
+    return nullptr;
+}
+
+ID3D11ShaderResourceView* ResourceManager::LoadCubeMap(
+    const std::string& name,
+    const wchar_t* texturePath)
+{
+    // 이미 로드된 CubeMap이 있으면 기존 것을 반환
+    auto it = m_CubeMaps.find(name);
+
+    if (it != m_CubeMaps.end())
+    {
+        return it->second;
+    }
+
+
+    ID3D11Resource* textureResource = nullptr;
+    ID3D11ShaderResourceView* cubeMapView = nullptr;
+
+
+    HRESULT result =
+        DirectX::CreateDDSTextureFromFile(
+            m_Device,
+            texturePath,
+            &textureResource,
+            &cubeMapView
+        );
+
+
+    if (FAILED(result))
+    {
+        if (textureResource)
+        {
+            textureResource->Release();
+        }
+
+        return nullptr;
+    }
+
+
+    // 실제 CubeMap인지 확인
+    ID3D11Texture2D* texture2D = nullptr;
+
+    result = textureResource->QueryInterface(
+        __uuidof(ID3D11Texture2D),
+        (void**)&texture2D
+    );
+
+    if (FAILED(result))
+    {
+        textureResource->Release();
+
+        if (cubeMapView)
+        {
+            cubeMapView->Release();
+        }
+
+        return nullptr;
+    }
+
+
+    D3D11_TEXTURE2D_DESC textureDesc;
+    texture2D->GetDesc(&textureDesc);
+
+
+    // CubeMap이 아니라면 실패
+    if (!(textureDesc.MiscFlags &
+        D3D11_RESOURCE_MISC_TEXTURECUBE))
+    {
+        texture2D->Release();
+        textureResource->Release();
+        cubeMapView->Release();
+
+        return nullptr;
+    }
+
+
+    texture2D->Release();
+    textureResource->Release();
+
+
+    // ResourceManager 내부에 저장
+    m_CubeMaps[name] = cubeMapView;
+
+
+    return cubeMapView;
 }
 
 BitmapClass* ResourceManager::GetBitmap(
@@ -78,112 +182,6 @@ BitmapClass* ResourceManager::LoadBitmapResource(
     m_Bitmaps[name] = bitmap;
 
     return bitmap;
-}
-
-void ResourceManager::Initialize(ID3D11Device* device,
-    int screenWidth,
-    int screenHeight)
-{
-    m_Device = device;
-    m_ScreenWidth = screenWidth;
-    m_ScreenHeight = screenHeight;
-
-    BitmapClass* title =
-        LoadBitmapResource(
-            "Title",
-            L"./data/Title.dds",
-            800,
-            600
-        );
-
-    if (!title)
-    {
-        MessageBox(
-            NULL,
-            L"Title.dds Load Failed",
-            L"Resource Error",
-            MB_OK
-        );
-    }
-
-    m_ModelInfos["MagicBillboard"] =
-    {
-        L"./data/Magic_Billboard.obj",
-        L"./data/Magic_Billboard.dds"
-    };
-
-    m_ModelInfos["GuardianLion"] =
-    {
-        L"./data/Guardian_Lion.obj",
-        L"./data/Guardian_Lion.dds"
-    };
-
-    m_ModelInfos["SakuraTree"] =
-    {
-       L"./data/Sakura_Tree.obj",
-       L"./data/Sakura_Tree.dds"
-    };
-
-    m_ModelInfos["WaterPlane"] =
-    {
-       L"./data/WaterPlane.obj",
-       L"./data/WaterPlane.dds"
-    };
-
-    m_ModelInfos["FloatingAlter"] =
-    {
-       L"./data/Floating_Alter.obj",
-       L"./data/Floating_Alter.dds"
-    };
-
-    m_ModelInfos["GoldenSpire"] =
-    {
-       L"./data/Golden_Spire.obj",
-       L"./data/Golden_Spire.dds"
-    };
-
-    m_ModelInfos["CircleStone"] =
-    {
-       L"./data/Circle_Stone.obj",
-       L"./data/Circle_Stone.dds"
-    };
-
-    m_ModelInfos["CrystalPrism"] =
-    {
-       L"./data/Crystal_Prism.obj",
-       L"./data/Crystal_Prism.dds"
-    };
-
-    m_ModelInfos["CrystalPrism2"] =
-    {
-       L"./data/Crystal_Prism2.obj",
-       L"./data/Crystal_Prism2.dds"
-    };
-
-    m_ModelInfos["Lantern"] =
-    {
-       L"./data/Lantern.obj",
-       L"./data/Lantern.dds"
-    };
-
-    m_ModelInfos["FloatingIsland"] =
-    {
-       L"./data/Floating_Island.obj",
-       L"./data/Floating_Island.dds"
-    };
-
-    m_ModelInfos["Cloud"] =
-    {
-       L"./data/Cloud.obj",
-       L"./data/Cloud.dds"
-    };
-
-    m_ModelInfos["MagicOrb"] =
-    {
-        L"./data/Magic_Orb.fbx",
-        L"./data/Magic_Orb.dds"
-    };
-        
 }
 
 ModelClass* ResourceManager::LoadModel(
@@ -252,7 +250,7 @@ ModelClass* ResourceManager::LoadModel(
         {
             return nullptr;
         }
-                
+
     }
 
 
@@ -349,7 +347,7 @@ void ResourceManager::Shutdown()
 
     m_Models.clear();
 
-	// ResourceManager가 소유한 모든 Bitmap 리소스 정리
+    // ResourceManager가 소유한 모든 Bitmap 리소스 정리
     for (auto& pair : m_Bitmaps)
     {
         BitmapClass* bitmap = pair.second;
@@ -363,4 +361,143 @@ void ResourceManager::Shutdown()
 
     m_Bitmaps.clear();
 
+    // ResourceManager가 소유한 모든 CubeMap 리소스 정리
+    for (auto& pair : m_CubeMaps)
+    {
+        ID3D11ShaderResourceView* cubeMap =
+            pair.second;
+
+        if (cubeMap)
+        {
+            cubeMap->Release();
+        }
+    }
+
+    m_CubeMaps.clear();
+
 }
+
+void ResourceManager::Initialize(ID3D11Device* device,
+    int screenWidth,
+    int screenHeight)
+{
+    m_Device = device;
+    m_ScreenWidth = screenWidth;
+    m_ScreenHeight = screenHeight;
+
+    BitmapClass* title =
+        LoadBitmapResource(
+            "Title",
+            L"./data/Title.dds",
+            800,
+            600
+        );
+
+    if (!title)
+    {
+        MessageBox(
+            NULL,
+            L"Title.dds Load Failed",
+            L"Resource Error",
+            MB_OK
+        );
+    }
+
+    
+
+    m_ModelInfos["MagicBillboard"] =
+    {
+        L"./data/Magic_Billboard.obj",
+        L"./data/Magic_Billboard.dds"
+    };
+
+    m_ModelInfos["GuardianLion"] =
+    {
+        L"./data/Guardian_Lion.obj",
+        L"./data/Guardian_Lion.dds"
+    };
+
+    m_ModelInfos["SakuraTree"] =
+    {
+       L"./data/Sakura_Tree.obj",
+       L"./data/Sakura_Tree.dds"
+    };
+
+    m_ModelInfos["WaterPlane"] =
+    {
+       L"./data/WaterPlane.obj",
+       L"./data/WaterPlane.dds"
+    };
+
+    m_ModelInfos["FloatingAlter"] =
+    {
+       L"./data/Floating_Alter.obj",
+       L"./data/Floating_Alter.dds"
+    };
+
+    m_ModelInfos["GoldenSpire"] =
+    {
+       L"./data/Golden_Spire.obj",
+       L"./data/Golden_Spire.dds"
+    };
+
+    m_ModelInfos["CircleStone"] =
+    {
+       L"./data/Circle_Stone.obj",
+       L"./data/Circle_Stone.dds"
+    };
+
+    m_ModelInfos["CrystalPrism"] =
+    {
+       L"./data/Crystal_Prism.obj",
+       L"./data/Crystal_Prism.dds"
+    };
+
+    m_ModelInfos["CrystalPrism2"] =
+    {
+       L"./data/Crystal_Prism2.obj",
+       L"./data/Crystal_Prism2.dds"
+    };
+
+    m_ModelInfos["Lantern"] =
+    {
+       L"./data/Lantern.obj",
+       L"./data/Lantern.dds"
+    };
+
+    m_ModelInfos["FloatingIsland"] =
+    {
+       L"./data/Floating_Island.obj",
+       L"./data/Floating_Island.dds"
+    };
+
+    m_ModelInfos["Cloud"] =
+    {
+       L"./data/Cloud.obj",
+       L"./data/Cloud.dds"
+    };
+
+    m_ModelInfos["MagicOrb"] =
+    {
+        L"./data/Magic_Orb.fbx",
+        L"./data/Magic_Orb.dds"
+    };
+
+    ID3D11ShaderResourceView* skyMap =
+        LoadCubeMap(
+            "skymap",
+            L"./data/skymap.dds"
+        );
+
+    if (!skyMap)
+    {
+        MessageBox(
+            NULL,
+            L"skymap.dds Load Failed",
+            L"Resource Error",
+            MB_OK
+        );
+    }
+        
+}
+

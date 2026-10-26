@@ -164,6 +164,15 @@
     <ClCompile Include="PhongLightShaderClass.cpp">
       <Filter>Shaders_소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="SkyMapShaderClass.cpp">
+      <Filter>Shaders_소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SkySphereClass.cpp">
+      <Filter>Shaders_소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyBoxRenderer.cpp">
+      <Filter>Renderers_소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inputclass.h">
@@ -289,20 +298,24 @@
     <ClInclude Include="PhongLightShaderClass.h">
       <Filter>Shaders_헤더 파일</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="data\WaterPlane.dds">
-      <Filter>_리소스 파일</Filter>
-    </Image>
-    <Image Include="data\Title_Scene.dds">
-      <Filter>_리소스 파일</Filter>
-    </Image>
+    <ClInclude Include="SkyMapShaderClass.h">
+      <Filter>Shaders_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SkySphereClass.h">
+      <Filter>Shaders_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyBoxRenderer.h">
+      <Filter>Renderers_헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\textureShader.hlsl">
       <Filter>_리소스 파일</Filter>
     </None>
     <None Include="data\phongLightShader.hlsl">
+      <Filter>_리소스 파일</Filter>
+    </None>
+    <None Include="skyMapShader.hlsl">
       <Filter>_리소스 파일</Filter>
     </None>
   </ItemGroup>

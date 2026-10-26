@@ -3,6 +3,7 @@
 #include <d3d11.h>
 #include "textureshaderclass.h"
 #include "PhongLightShaderClass.h"
+#include "SkyMapShaderClass.h"
 
 class ShaderManager
 {
@@ -19,9 +20,11 @@ public:
 
     TextureShaderClass* GetTextureShader();
     PhongLightShaderClass* GetPhongLightShader();
+    SkyMapShaderClass* GetSkyMapShader();
 
 
 private:
     TextureShaderClass* m_TextureShader;
     PhongLightShaderClass* m_PhongLightShader;
+    SkyMapShaderClass* m_SkyMapShader;
 };

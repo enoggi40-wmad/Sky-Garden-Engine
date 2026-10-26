@@ -271,13 +271,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         0.0f
     };
 
-    // WaterPlane 모델을 렌더링하도록 Component 추가
-    ModelRenderer* waterPlaneRenderer =
-        new ModelRenderer(
-            waterPlane,
-            waterPlaneModel
-        );
-
+    
     waterPlane->AddComponent<ModelRenderer>(waterPlaneModel);
 
     AddGameObject(waterPlane);

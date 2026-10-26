@@ -20,7 +20,8 @@ ModelRenderer::ModelRenderer(
     : Renderer(ownerObject), m_Model(model)
 {
     m_Model = model;
-    m_ShaderType = ShaderType::Texture;
+    //m_ShaderType = ShaderType::Texture;
+    m_ShaderType = ShaderType::PhongLight;
 }
 
 

@@ -72,8 +72,8 @@ bool SkyBoxRenderer::Initialize(
     bool result =
         m_SkySphere->Initialize(
             device,
-            10,
-            10
+            5,
+            5
         );
 
     if (!result)

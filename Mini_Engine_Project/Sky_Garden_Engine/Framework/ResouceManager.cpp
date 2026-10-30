@@ -403,7 +403,17 @@ void ResourceManager::Initialize(ID3D11Device* device,
         );
     }
 
-    
+    m_ModelInfos["Ground"] =
+    {
+        L"./data/Ground.obj",
+        L"./data/grass.dds"
+	};
+
+    m_ModelInfos["StoneSphere"] =
+    {
+        L"./data/Sphere.obj",
+        L"./data/Stone.dds"
+    };
 
     m_ModelInfos["MagicBillboard"] =
     {

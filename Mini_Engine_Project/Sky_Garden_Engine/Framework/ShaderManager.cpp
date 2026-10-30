@@ -6,6 +6,7 @@ ShaderManager::ShaderManager()
     m_TextureShader = nullptr;
     m_PhongLightShader = nullptr;
     m_SkyMapShader = 0;
+    m_BumpMapShader = nullptr;
 }
 
 
@@ -82,8 +83,49 @@ bool ShaderManager::Initialize(
         return false;
     }
 
+    // AlphaMap 셰이더 생성
+    m_AlphaMapShader = new AlphaMapShaderClass;
+
+    // AlphaMap 셰이더 초기화
+    result = m_AlphaMapShader->Initialize(device, hwnd);
+
+    if (!result)
+    {
+        m_AlphaMapShader->Shutdown();
+        delete m_AlphaMapShader;
+        m_AlphaMapShader = nullptr;
+
+        MessageBoxW(
+            hwnd,
+            L"AlphaMap Shader 초기화 실패",
+            L"Shader Error",
+            MB_OK
+        );
+
+        return false;
+    }
+
+    // Bump Map Shader 생성
+    m_BumpMapShader = new BumpMapShaderClass;
+
+    // Bump Map Shader 초기화
+    result = m_BumpMapShader->Initialize(device, hwnd);
+
+    if (!result)
+    {
+        m_BumpMapShader->Shutdown();
+
+        delete m_BumpMapShader;
+        m_BumpMapShader = nullptr;
+
+        return false;
+    }
+
     return true;
 }
+
+    
+
 
 
 TextureShaderClass* ShaderManager::GetTextureShader()
@@ -101,8 +143,26 @@ SkyMapShaderClass* ShaderManager::GetSkyMapShader()
     return m_SkyMapShader;
 }
 
+AlphaMapShaderClass* ShaderManager::GetAlphaMapShader()
+{
+    return m_AlphaMapShader;
+}
+
+BumpMapShaderClass* ShaderManager::GetBumpMapShader()
+{
+    return m_BumpMapShader;
+}
+
 void ShaderManager::Shutdown()
 {
+    if (m_BumpMapShader)
+    {
+        m_BumpMapShader->Shutdown();
+
+        delete m_BumpMapShader;
+        m_BumpMapShader = nullptr;
+    }
+
     if (m_SkyMapShader)
     {
         m_SkyMapShader->Shutdown();

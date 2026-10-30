@@ -14,7 +14,9 @@ class ModelClass;
 enum class ShaderType
 {
     Texture,
-    PhongLight
+    PhongLight,
+    AlphaMap,
+	BumpMap
 };
 
 

@@ -6,6 +6,7 @@
 
 #include "TitleScene.h"
 #include "MainScene.h"
+#include "TestScene.h"
 
 #include "ShaderManager.h"
 
@@ -17,7 +18,7 @@ SceneManager::SceneManager()
     m_CurrentScene = nullptr;
     m_ResourceManager = nullptr;
 
-    m_CurrentSceneType = SceneType::Title;
+    m_CurrentSceneType = SceneType::Test;
 
     m_EnterPressed = false;
 }
@@ -79,7 +80,8 @@ bool SceneManager::Initialize(
 {
     m_ResourceManager = resourceManager;
 	
-    LoadScene(SceneType::Title);
+    //LoadScene(SceneType::Title);
+    LoadScene(SceneType::Test);
 
     return true;
 }
@@ -101,6 +103,10 @@ void SceneManager::LoadScene(SceneType type)
     case SceneType::Main:
         m_CurrentScene = new MainScene;
         break;
+    
+    case SceneType::Test:
+        m_CurrentScene = new TestScene;
+		break;
     }
 
     m_CurrentSceneType = type;

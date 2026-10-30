@@ -34,7 +34,7 @@ ModelClass* ModelRenderer::GetModel() const
 // ModelRenderer가 사용할 ShaderType 설정
 void ModelRenderer::SetShaderType(ShaderType type)
 {
-    m_ShaderType = type;
+    m_ShaderType = type; 
 }
 
 ShaderType ModelRenderer::GetShaderType() const
@@ -129,6 +129,120 @@ bool ModelRenderer::Render(
             specularPower,
             pointLightColor,
             pointLightPosition
+        );
+
+
+
+    }
+    else if (m_ShaderType == ShaderType::AlphaMap)
+    {
+        // HLSL의 shaderTextures[0], [1], [2] 순서
+        ID3D11ShaderResourceView* textures[3] =
+        {
+            m_Model->GetTexture(),        // 풀
+            m_Model->GetSecondTexture(),  // 흙
+            m_Model->GetAlphaMap()        // S자 마스크
+        };
+
+        auto* shader =
+            context.shaderManager->GetAlphaMapShader();
+
+        // 필요한 셰이더와 텍스처가 모두 준비됐는지 확인
+        if (!shader)
+        {
+            OutputDebugStringA("[AlphaMap] Shader is null\n");
+            return false;
+        }
+
+        if (!textures[0])
+        {
+            OutputDebugStringA("[AlphaMap] Grass texture is null\n");
+            return false;
+        }
+
+        if (!textures[1])
+        {
+            OutputDebugStringA("[AlphaMap] Dirt texture is null\n");
+            return false;
+        }
+
+        if (!textures[2])
+        {
+            OutputDebugStringA("[AlphaMap] Alpha map is null\n");
+            return false;
+        }
+
+        result = shader->Render(
+            context.deviceContext,
+            m_Model->GetIndexCount(),
+            worldMatrix,
+            context.viewMatrix,
+            context.projectionMatrix,
+            textures
+        );
+
+
+    }
+    else if (m_ShaderType == ShaderType::BumpMap)
+    {
+        // 사용할 셰이더 가져오기
+        BumpMapShaderClass* shader =
+            context.shaderManager->GetBumpMapShader();
+
+        if (!shader)
+        {
+            return false;
+        }
+
+        // HLSL의 shaderTextures[0], shaderTextures[1]에 대응
+        ID3D11ShaderResourceView* textures[2] =
+        {
+            m_Model->GetTexture(),
+            m_Model->GetNormalMap()
+        };
+
+        if (!textures[0] || !textures[1])
+        {
+            return false;
+        }
+
+        // 기존 Phong 분기와 같은 조명 설정
+        XMFLOAT3 lightDirection =
+        {
+            0.0f, -1.0f, 1.0f
+        };
+
+        XMFLOAT4 diffuseColor =
+        {
+            1.0f, 1.0f, 1.0f, 1.0f
+        };
+
+        XMFLOAT4 ambientColor =
+        {
+            0.3f, 0.3f, 0.3f, 1.0f
+        };
+
+        XMFLOAT4 specularColor =
+        {
+            1.0f, 1.0f, 1.0f, 1.0f
+        };
+
+        float specularPower = 32.0f;
+
+        // 노멀맵 + Phong 조명으로 렌더링
+        result = shader->Render(
+            context.deviceContext,
+            m_Model->GetIndexCount(),
+            worldMatrix,
+            context.viewMatrix,
+            context.projectionMatrix,
+            textures,
+            lightDirection,
+            diffuseColor,
+            ambientColor,
+            context.cameraPosition,
+            specularColor,
+            specularPower
         );
     }
 

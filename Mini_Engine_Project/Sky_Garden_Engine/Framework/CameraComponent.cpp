@@ -30,7 +30,7 @@ bool CameraComponent::IsActive() const
 
 DirectX::XMFLOAT3 CameraComponent::GetPosition() const
 {
-    return gameObject->transform.position;
+    return gameObject->transform.GetLocalPosition();
 }
 
 void CameraComponent::Render()
@@ -52,7 +52,7 @@ void CameraComponent::Render()
     // CameraComponent가 붙어있는 GameObject의
     // Transform 위치를 가져온다.
     XMFLOAT3 cameraPosition =
-        gameObject->transform.position;
+        gameObject->transform.GetLocalPosition();
 
     // XMFLOAT3 형태의 위치 값을
     // DirectX 연산에 사용할 XMVECTOR 형태로 변환한다.

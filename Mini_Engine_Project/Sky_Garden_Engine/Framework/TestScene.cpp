@@ -33,7 +33,7 @@ void TestScene::Initialize(ResourceManager* resourceManager)
     // =====================================================
     GameObject* camera = new GameObject("TestCamera");
 
-    camera->transform.position =
+    camera->transform.GetLocalPosition() =
     {
         0.0f, 1000.0f, -700.0f
     };
@@ -121,7 +121,7 @@ void TestScene::Initialize(ResourceManager* resourceManager)
 
     GameObject* ground = new GameObject("Ground");
 
-    ground->transform.position =
+    ground->transform.GetLocalPosition() =
     {
         0.0f, 0.0f, 0.0f
     };
@@ -180,7 +180,7 @@ void TestScene::Initialize(ResourceManager* resourceManager)
     GameObject* textureSphere =
         new GameObject("TextureSphere");
 
-    textureSphere->transform.position =
+    textureSphere->transform.GetLocalPosition() =
     {
         -300.0f, 100.0f, 0.0f
     };
@@ -205,7 +205,7 @@ void TestScene::Initialize(ResourceManager* resourceManager)
     GameObject* phongSphere =
         new GameObject("PhongSphere");
 
-    phongSphere->transform.position =
+    phongSphere->transform.GetLocalPosition() =
     {
         0.0f, 100.0f, 0.0f
     };
@@ -230,7 +230,7 @@ void TestScene::Initialize(ResourceManager* resourceManager)
     GameObject* bumpSphere =
         new GameObject("BumpMapSphere");
 
-    bumpSphere->transform.position =
+    bumpSphere->transform.GetLocalPosition() =
     {
         300.0f, 100.0f, 0.0f
     };

@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <utility>
 
 #include "Transform.h"
 #include "Component.h"
@@ -62,6 +63,12 @@ public:
         return nullptr;
     }
 
+    // 부모 설정. 연결할 수 없으면 false 반환
+    bool SetParent(
+        GameObject* newParent,
+        bool keepWorldTransform = true
+    );
+
 public:
     // 모든 GameObject가 기본으로 가지는 Transform
     Transform transform;
@@ -72,4 +79,10 @@ private:
 
     // 이 GameObject에 붙어있는 Component 목록
     std::vector<Component*> components;
+
+	// 부모 GameObject
+	GameObject* m_Parent = nullptr;
+
+	// 자식 GameObject 목록
+	std::vector<GameObject*> m_Children;
 };

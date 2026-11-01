@@ -23,5 +23,5 @@ bool Renderer::IsTransparent() const
 
 DirectX::XMFLOAT3 Renderer::GetPosition() const
 {
-	return gameObject->transform.position;
+	return gameObject->transform.GetLocalPosition();
 }

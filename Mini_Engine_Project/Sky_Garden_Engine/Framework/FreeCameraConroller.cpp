@@ -80,7 +80,7 @@ void FreeCameraController::Update(float deltaTime)
 
     // Transform의 현재 위치
     XMFLOAT3 position =
-        gameObject->transform.position;
+        gameObject->transform.GetLocalPosition();
 
     XMVECTOR positionVector =
         XMLoadFloat3(&position);
@@ -111,11 +111,12 @@ void FreeCameraController::Update(float deltaTime)
     }
 
 
-    // 계산된 위치를 다시 Transform에 저장
-    XMStoreFloat3(
-        &gameObject->transform.position,
-        positionVector
-    );
+    // 계산된 위치를 XMFLOAT3에 저장
+    XMFLOAT3 newPosition;
+    XMStoreFloat3(&newPosition, positionVector);
+
+    // 계산된 위치를 Transform에 저장
+    gameObject->transform.SetLocalPosition(newPosition);
 
    
     HWND hwnd = InputManager::GetWindowHandle();

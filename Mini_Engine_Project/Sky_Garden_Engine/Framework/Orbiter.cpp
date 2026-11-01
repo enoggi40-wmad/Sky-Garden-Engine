@@ -3,7 +3,6 @@
 
 #include <cmath>
 
-
 Orbiter::Orbiter(
     GameObject* ownerObject,
     DirectX::XMFLOAT3 center,
@@ -16,31 +15,24 @@ Orbiter::Orbiter(
     m_OrbitSpeed(orbitSpeed),
     m_Angle(startAngle)
 {
-    // GameObject가 처음 가지고 있던 Y 위치를 저장
-    m_Height = gameObject->transform.position.y;
+    // 컴포넌트를 붙인 순간의 로컬 높이를 저장한다.
+    m_Height =
+        gameObject->transform.GetLocalPosition().y;
 }
-
 
 void Orbiter::Update(float deltaTime)
 {
-    // 시간에 따라 공전 각도 증가
+    // 공전 각도 증가 ? 라디안 기준
     m_Angle += m_OrbitSpeed * deltaTime;
 
+    // 부모 기준으로 원 위의 위치를 계산한다.
+    DirectX::XMFLOAT3 localPosition =
+    {
+        m_Center.x + cosf(m_Angle) * m_Radius,
+        m_Height,
+        m_Center.z + sinf(m_Angle) * m_Radius
+    };
 
-    // 원형 궤도상의 X, Z 위치 계산
-    float x =
-        m_Center.x +
-        cosf(m_Angle) * m_Radius;
-
-    float z =
-        m_Center.z +
-        sinf(m_Angle) * m_Radius;
-
-
-    // 계산된 위치를 Transform에 적용
-    gameObject->transform.position.x = x;
-    gameObject->transform.position.z = z;
-
-    // Y축 위치는 기존 높이 유지
-    gameObject->transform.position.y = m_Height;
+    // 부모 기준 위치로 적용한다.
+    gameObject->transform.SetLocalPosition(localPosition);
 }

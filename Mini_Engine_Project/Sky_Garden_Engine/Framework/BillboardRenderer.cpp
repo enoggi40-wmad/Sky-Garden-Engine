@@ -31,7 +31,7 @@ bool BillboardRenderer::Render(
 
 	// World Matrix °è»ê
     XMFLOAT3 position =
-        gameObject->transform.position;
+        gameObject->transform.GetLocalPosition();
 
     float angle =
         atan2f(

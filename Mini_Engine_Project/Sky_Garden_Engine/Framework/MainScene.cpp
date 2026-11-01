@@ -12,6 +12,8 @@
 #include "SkyBoxRenderer.h"
 #include "FreeCameraController.h"
 #include <Windows.h>
+#include <cmath>
+#include <string>
 
 
 MainScene::MainScene()
@@ -47,12 +49,11 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     // =====================================================
     GameObject* mainCamera = new GameObject("MainCamera");
 
-    mainCamera->transform.position =
-    {
+    mainCamera->transform.SetLocalPosition({
         500.0f,
         500.0f,
         500.0f
-    };
+        });
 
     mainCamera->transform.rotation =
     {
@@ -63,7 +64,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
     m_MainCamera =
         mainCamera->AddComponent<CameraComponent>();
-        mainCamera->AddComponent<FreeCameraController>();
+    mainCamera->AddComponent<FreeCameraController>();
 
     SetActiveCamera(m_MainCamera);
 
@@ -75,23 +76,22 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     GameObject* cutsceneCamera =
         new GameObject("CutsceneCamera");
 
-    cutsceneCamera->transform.position =
-    {
+    cutsceneCamera->transform.SetLocalPosition({
         0.0f,
-        300.0f,
-        -500.0f
-    };
+        -200.0f,
+        -1500.0f
+        });
 
     cutsceneCamera->transform.rotation =
     {
-        35.0f,
+        0.0f,
         0.0f,
         0.0f
     };
 
     m_CutsceneCamera =
         cutsceneCamera->AddComponent<CameraComponent>();
-	    cutsceneCamera->AddComponent<FreeCameraController>();
+    cutsceneCamera->AddComponent<FreeCameraController>();
 
     AddGameObject(cutsceneCamera);
 
@@ -126,7 +126,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         return;
     }
 
-    
+
     // Scene에 등록
     AddGameObject(sky);
 
@@ -147,12 +147,11 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     GameObject* magicOrb =
         new GameObject("MagicOrb");
 
-    magicOrb->transform.position =
-    {
+    magicOrb->transform.SetLocalPosition({
         0.0f,
         300.0f,
         0.0f
-    };
+        });
 
     magicOrb->transform.scale =
     {
@@ -168,7 +167,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     AddGameObject(magicOrb);
 
     // =====================================================
-	// Magic Billboard
+    // Magic Billboard
     // =====================================================
 
     ModelClass* magicBillboardModel =
@@ -177,12 +176,11 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     GameObject* magicBillboard =
         new GameObject("MagicBillboard");
 
-    magicBillboard->transform.position =
-    {
+    magicBillboard->transform.SetLocalPosition({
         0.0f,
         200.0f,
         0.0f
-    };
+        });
 
     magicBillboard->transform.scale =
     {
@@ -222,12 +220,11 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         80.0f
     };
 
-    guardianLion->transform.position =
-    {
+    guardianLion->transform.SetLocalPosition({
         0.0f,
         0.0f,
         60.0f
-    };
+        });
 
     //guardianLion->AddComponent<Rotator>(1.0f);
     guardianLion->AddComponent<ModelRenderer>(guardianLionModel);
@@ -260,12 +257,11 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         150.0f
     };
 
-    sakuraTree->transform.position =
-    {
+    sakuraTree->transform.SetLocalPosition({
         -160.0f,
         50.0f,
         180.0f
-    };
+        });
 
 
     sakuraTree->AddComponent<ModelRenderer>(sakuraTreeModel);
@@ -294,12 +290,11 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         320.0f
     };
 
-    floatingAlter->transform.position =
-    {
+    floatingAlter->transform.SetLocalPosition({
         0.0f,
         -80.0f,
         0.0f
-    };
+        });
 
     floatingAlter->AddComponent<ModelRenderer>(floatingAlterModel);
 
@@ -326,120 +321,146 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         100.0f
     };
 
-    goldenSpire->transform.position =
-    {
+    goldenSpire->transform.SetLocalPosition({
         0.0f,
         -300.0f,
         0.0f
-    };
+        });
 
     goldenSpire->AddComponent<ModelRenderer>(goldenSpireModel);
 
     AddGameObject(goldenSpire);
 
     // =====================================================
-    // Circle Stone
+    // CircleStone
     // =====================================================
     ModelClass* circleStoneModel =
         resourceManager->GetModel("CircleStone");
 
-    if (!circleStoneModel)
+    ModelClass* crystalPrismModel =
+        resourceManager->GetModel("CrystalPrism");
+
+    if (!circleStoneModel || !crystalPrismModel)
     {
+        MessageBoxW(
+            nullptr,
+            L"CircleStone 또는 CrystalPrism 로드 실패",
+            L"MainScene",
+            MB_OK
+        );
+
         return;
     }
 
     GameObject* circleStone =
         new GameObject("CircleStone");
 
+    // 기존 위치와 크기
+    circleStone->transform.SetLocalPosition({
+        0.0f, -500.0f, 0.0f
+        });
+
     circleStone->transform.scale =
     {
-        1000.0f,
-        120.0f,
-        1000.0f
-    };
-
-    circleStone->transform.position =
-    {
-        0.0f,
-        -500.0f,
-        0.0f
+        1000.0f, 120.0f, 1000.0f
     };
 
     circleStone->AddComponent<ModelRenderer>(circleStoneModel);
 
+    // 부모가 움직이면 아래의 수정들도 함께 움직인다.
+    circleStone->AddComponent<Floater>(
+        20.0f,
+        0.5f,
+        1.0f
+    );
+
     AddGameObject(circleStone);
 
+
+
+
     // =====================================================
-    // Crystal Prism
+    // Crystal Prism (CircleStone 자식 12개)
     // =====================================================
-    //
-    // 하나의 ModelClass를 공유하는 10개의 GameObject 생성
-    // 각 GameObject는 서로 다른 시작 각도에서 공전
-    // =====================================================
-    ModelClass* crystalPrismModel =
+
+    ModelClass* crystalModel =
         resourceManager->GetModel("CrystalPrism");
 
-    if (!crystalPrismModel)
+    if (!crystalModel)
     {
         return;
     }
 
-    const int crystalCount = 10;
+    // 생성할 수정 개수
+    const int crystalCount = 12;
 
-    const float radius = 700.0f;
+    // 공전 중심과 반지름
+    const float orbitRadius = 700.0f;
 
-    // 공전 중심점
-    DirectX::XMFLOAT3 orbitCenter =
-    {
-        0.0f,
-        -300.0f,
-        0.0f
-    };
-
+    // CircleStone의 스케일
+    const float parentScaleX = 1000.0f;
+    const float parentScaleY = 120.0f;
+    const float parentScaleZ = 1000.0f;
 
     for (int i = 0; i < crystalCount; i++)
     {
         GameObject* crystal =
-            new GameObject("CrystalPrism");
+            new GameObject(
+                "CrystalPrism_" + std::to_string(i + 1)
+            );
 
-
-        // 수정 크기 설정
-        crystal->transform.scale =
-        {
-            50.0f,
-            50.0f,
-            50.0f
-        };
-
-
-        // 각 수정이 원 둘레에서 서로 다른 위치에서 시작하도록
-        // 시작 각도를 균등하게 배치
-        // DirectX::XM_2PI는 360도에 해당하는 라디안 값
+        // 12개를 30도 간격으로 배치
         float startAngle =
-            (DirectX::XM_2PI / crystalCount) * i;
+            (XM_2PI / crystalCount) * i;
 
+        // 부모 스케일을 고려한 로컬 위치
+        float localX =
+            cosf(startAngle) * orbitRadius / parentScaleX;
 
-        // 최초 위치 설정
-        crystal->transform.position =
-        {
-            orbitCenter.x + cosf(startAngle) * radius,
-            orbitCenter.y,
-            orbitCenter.z + sinf(startAngle) * radius
+        float localZ =
+            sinf(startAngle) * orbitRadius / parentScaleZ;
+
+        // 기존 수정 높이 -300, CircleStone 높이 -500
+        // 두 위치의 차이인 200을 부모 Y 스케일로 보정
+        float localY = 200.0f / parentScaleY;
+
+        // CircleStone을 부모로 설정
+        // false: 로컬 변환 유지 방식이라고 가정
+        crystal->SetParent(circleStone);
+
+        crystal->transform.SetLocalPosition({
+            localX,
+            localY,
+            localZ
+            });
+
+        // 부모 스케일을 역으로 보정
+        crystal->transform.scale = {
+            50.0f / parentScaleX,
+            50.0f / parentScaleY,
+            50.0f / parentScaleZ
         };
 
-        crystal->AddComponent<ModelRenderer>(crystalPrismModel);
+        crystal->AddComponent<ModelRenderer>(
+            crystalModel
+        );
 
+        // CircleStone을 중심으로 공전
         crystal->AddComponent<Orbiter>(
-            orbitCenter,
-            radius,
+            XMFLOAT3{
+                0.0f,
+                200.0f / parentScaleY,
+                0.0f
+            },
+            orbitRadius / parentScaleX,
             0.03f,
             startAngle
         );
 
-        crystal->AddComponent<Rotator>(1.0f);
-
         AddGameObject(crystal);
     }
+
+
 
     // =====================================================
     // Crystal Prism2
@@ -484,12 +505,11 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
 
         // 각 CrystalPrism2의 기본 위치 설정
-        crystal2->transform.position =
-        {
+        crystal2->transform.SetLocalPosition({
             crystal2Positions[i].x,
             crystal2Positions[i].y,
             crystal2Positions[i].z
-        };
+            });
 
 
         // 4개의 GameObject가 하나의 CrystalPrism2 ModelClass를 공유
@@ -558,12 +578,11 @@ void MainScene::Initialize(ResourceManager* resourceManager)
             50.0f
         };
 
-        lantern->transform.position =
-        {
+        lantern->transform.SetLocalPosition({
             lanternPositions[i].x,
             lanternPositions[i].y,
             lanternPositions[i].z
-        };
+            });
 
 
         // 모델 렌더링 Component
@@ -642,12 +661,11 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         };
 
 
-        floatingIsland->transform.position =
-        {
+        floatingIsland->transform.SetLocalPosition({
             floatingIslandPositions[i].x,
             floatingIslandPositions[i].y,
             floatingIslandPositions[i].z
-        };
+            });
 
 
         // 기존 GraphicsClass에서 사용하던
@@ -717,12 +735,11 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
 
         // 기존 위치 설정
-        cloud->transform.position =
-        {
+        cloud->transform.SetLocalPosition({
             cloudPositions[i].x,
             cloudPositions[i].y,
             cloudPositions[i].z
-        };
+            });
 
         cloud->AddComponent<ModelRenderer>(cloudModel);
 
@@ -758,6 +775,6 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
 
         AddGameObject(cloud);
-                
+
     }
 }

@@ -22,6 +22,8 @@ ModelRenderer::ModelRenderer(
     m_Model = model;
     m_ShaderType = ShaderType::Texture;
     //m_ShaderType = ShaderType::PhongLight;
+	//m_ShaderType = ShaderType::AlphaMap;
+	//m_ShaderType = ShaderType::BumpMap;
 }
 
 

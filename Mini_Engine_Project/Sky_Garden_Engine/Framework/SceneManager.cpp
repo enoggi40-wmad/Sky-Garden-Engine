@@ -18,7 +18,7 @@ SceneManager::SceneManager()
     m_CurrentScene = nullptr;
     m_ResourceManager = nullptr;
 
-    m_CurrentSceneType = SceneType::Test;
+    m_CurrentSceneType = SceneType::Title;
 
     m_EnterPressed = false;
 }
@@ -80,8 +80,8 @@ bool SceneManager::Initialize(
 {
     m_ResourceManager = resourceManager;
 	
-    //LoadScene(SceneType::Title);
-    LoadScene(SceneType::Test);
+    LoadScene(SceneType::Title);
+    //LoadScene(SceneType::Test);
 
     return true;
 }

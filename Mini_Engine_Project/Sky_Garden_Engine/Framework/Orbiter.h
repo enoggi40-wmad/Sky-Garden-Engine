@@ -3,6 +3,7 @@
 #include "Component.h"
 #include <DirectXMath.h>
 
+// center,radius, orbitSpeed, startAngle
 class Orbiter : public Component
 {
 public:

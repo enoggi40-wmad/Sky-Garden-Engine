@@ -182,6 +182,9 @@
     <ClCompile Include="BumpMapShaderClass.cpp">
       <Filter>Shaders_소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="InputController.cpp">
+      <Filter>Components_소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inputclass.h">
@@ -324,6 +327,9 @@
     </ClInclude>
     <ClInclude Include="BumpMapShaderClass.h">
       <Filter>Shaders_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="InputController.h">
+      <Filter>Components_헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

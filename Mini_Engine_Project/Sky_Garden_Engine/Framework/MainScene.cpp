@@ -11,6 +11,7 @@
 #include "CameraComponent.h"
 #include "SkyBoxRenderer.h"
 #include "FreeCameraController.h"
+#include "InputController.h"
 #include <Windows.h>
 #include <cmath>
 #include <string>
@@ -64,7 +65,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
     m_MainCamera =
         mainCamera->AddComponent<CameraComponent>();
-    mainCamera->AddComponent<FreeCameraController>();
+        //mainCamera->AddComponent<FreeCameraController>();
 
     SetActiveCamera(m_MainCamera);
 
@@ -91,7 +92,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
     m_CutsceneCamera =
         cutsceneCamera->AddComponent<CameraComponent>();
-    cutsceneCamera->AddComponent<FreeCameraController>();
+        //cutsceneCamera->AddComponent<FreeCameraController>();
 
     AddGameObject(cutsceneCamera);
 
@@ -164,7 +165,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         magicOrbModel
     );
 
-    AddGameObject(magicOrb);
+    //AddGameObject(magicOrb);
 
     // =====================================================
     // Magic Billboard
@@ -332,6 +333,28 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     AddGameObject(goldenSpire);
 
     // =====================================================
+    // CircleStone Root
+    // =====================================================
+
+    GameObject* circleStoneRoot =
+		new GameObject("CircleStoneRoot");
+
+    circleStoneRoot->transform.SetLocalPosition({
+        0.0f,
+        0.0f,
+        0.0f
+		});
+    circleStoneRoot->transform.scale =
+    {
+        1.0f,
+        1.0f,
+        1.0f
+	};
+	circleStoneRoot->AddComponent<InputController>(300.0f);
+
+	AddGameObject(circleStoneRoot);
+
+    // =====================================================
     // CircleStone
     // =====================================================
     ModelClass* circleStoneModel =
@@ -373,6 +396,8 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         0.5f,
         1.0f
     );
+
+	circleStone->SetParent(circleStoneRoot);
 
     AddGameObject(circleStone);
 
@@ -453,7 +478,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
                 0.0f
             },
             orbitRadius / parentScaleX,
-            0.03f,
+            0.3f,
             startAngle
         );
 

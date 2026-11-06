@@ -1,9 +1,9 @@
+
 #pragma once
 
 #include "Component.h"
 #include <DirectXMath.h>
 
-// center,radius, orbitSpeed, startAngle
 class Orbiter : public Component
 {
 public:
@@ -18,18 +18,15 @@ public:
     void Update(float deltaTime) override;
 
 private:
-    // 공전 중심점
+    // 부모 원점 기준 공전 중심 오프셋 (월드 단위)
     DirectX::XMFLOAT3 m_Center;
 
-    // 중심점으로부터의 거리
+    // 월드 단위 공전 반지름
     float m_Radius;
 
-    // 공전 속도
+    // 공전 속도 (라디안/초)
     float m_OrbitSpeed;
 
     // 현재 공전 각도
     float m_Angle;
-
-    // 원래 Y 위치 유지용
-    float m_Height;
 };

@@ -156,7 +156,7 @@
     <ClCompile Include="fontclass.cpp" />
     <ClCompile Include="fontshaderclass.cpp" />
     <ClCompile Include="fpsclass.cpp" />
-    <ClCompile Include="FreeCameraConroller.cpp" />
+    <ClCompile Include="FreeCameraController.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="graphicsclass.cpp" />
     <ClCompile Include="inputclass.cpp" />
@@ -180,7 +180,6 @@
     <ClCompile Include="SkyMapShaderClass.cpp" />
     <ClCompile Include="SkySphereClass.cpp" />
     <ClCompile Include="systemclass.cpp" />
-    <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="textclass.cpp" />
     <ClCompile Include="textureclass.cpp" />
     <ClCompile Include="textureshaderclass.cpp" />

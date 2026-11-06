@@ -110,7 +110,7 @@
     <ClCompile Include="CameraComponent.cpp">
       <Filter>Components_소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="FreeCameraConroller.cpp">
+    <ClCompile Include="FreeCameraController.cpp">
       <Filter>Components_소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="InputManager.cpp">
@@ -175,9 +175,6 @@
     </ClCompile>
     <ClCompile Include="AlphaMapShaderClass.cpp">
       <Filter>Shaders_소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="TestScene.cpp">
-      <Filter>Scenes_소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="BumpMapShaderClass.cpp">
       <Filter>Shaders_소스 파일</Filter>

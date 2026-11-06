@@ -29,6 +29,11 @@ GameObject::~GameObject()
 }
 
 
+GameObject* GameObject::GetParent() const
+{
+    return m_Parent;
+}
+
 
 bool GameObject::SetParent(
     GameObject* newParent,

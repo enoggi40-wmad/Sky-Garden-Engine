@@ -36,7 +36,7 @@ DirectX::XMFLOAT3 CameraComponent::GetPosition() const
 void CameraComponent::Render()
 {
     XMVECTOR up, position, lookAt;
-    float yaw, pitch, roll;
+    
     XMMATRIX rotationMatrix;
 
     // 카메라의 위쪽 방향 벡터 설정
@@ -72,30 +72,17 @@ void CameraComponent::Render()
 
     // CameraComponent가 붙어있는 GameObject의
     // Transform 회전 값을 가져온다.
-    XMFLOAT3 cameraRotation =
-        gameObject->transform.rotation;
 
+    // Transform에 저장된 Quaternion 가져오기
+    XMFLOAT4 cameraRotation =
+        gameObject->transform.GetLocalRotation();
 
-    // Transform의 회전 값은 Degree 단위이므로
-    // DirectX 회전 함수에서 사용할 수 있도록 Radian으로 변환한다.
-    pitch =
-        cameraRotation.x * 0.0174532925f;
-
-    yaw =
-        cameraRotation.y * 0.0174532925f;
-
-    roll =
-        cameraRotation.z * 0.0174532925f;
-
-
-    // Pitch, Yaw, Roll 값을 이용해
-    // 카메라의 회전 행렬을 생성한다.
+    // Quaternion을 회전 행렬로 변환
     rotationMatrix =
-        XMMatrixRotationRollPitchYaw(
-            pitch,
-            yaw,
-            roll
+        XMMatrixRotationQuaternion(
+            XMLoadFloat4(&cameraRotation)
         );
+
 
 
     // 기본 Forward 방향에 회전을 적용해

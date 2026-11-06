@@ -15,4 +15,7 @@ public:
     void Update(float deltaTime) override;
 
 private:
+    // 카메라 회전각 (Degree)
+    float m_Pitch = 0.0f;
+    float m_Yaw = 0.0f;
 };

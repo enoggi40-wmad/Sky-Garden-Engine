@@ -1,11 +1,14 @@
+
 #include "Orbiter.h"
 #include "GameObject.h"
 
 #include <cmath>
 
+using namespace DirectX;
+
 Orbiter::Orbiter(
     GameObject* ownerObject,
-    DirectX::XMFLOAT3 center,
+    XMFLOAT3 center,
     float radius,
     float orbitSpeed,
     float startAngle)
@@ -15,24 +18,28 @@ Orbiter::Orbiter(
     m_OrbitSpeed(orbitSpeed),
     m_Angle(startAngle)
 {
-    // 컴포넌트를 붙인 순간의 로컬 높이를 저장한다.
-    m_Height =
-        gameObject->transform.GetLocalPosition().y;
 }
+
 
 void Orbiter::Update(float deltaTime)
 {
-    // 공전 각도 증가 ? 라디안 기준
-    m_Angle += m_OrbitSpeed * deltaTime;
+    // 기본 공전 중심
+    XMFLOAT3 center = m_Center;
 
-    // 부모 기준으로 원 위의 위치를 계산한다.
-    DirectX::XMFLOAT3 localPosition =
+    GameObject* parent = gameObject->GetParent();
+
+    if (parent)
     {
-        m_Center.x + cosf(m_Angle) * m_Radius,
-        m_Height,
-        m_Center.z + sinf(m_Angle) * m_Radius
-    };
+        // 부모의 현재 월드 위치 가져오기
+        XMFLOAT3 parentPosition =
+            parent->transform.GetWorldPosition();
 
-    // 부모 기준 위치로 적용한다.
-    gameObject->transform.SetLocalPosition(localPosition);
+        // 부모 위치에 공전 중심 오프셋 추가
+        center.x += parentPosition.x;
+        center.y += parentPosition.y;
+        center.z += parentPosition.z;
+    }
+
+    
 }
+

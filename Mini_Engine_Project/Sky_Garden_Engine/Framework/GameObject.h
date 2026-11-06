@@ -63,6 +63,10 @@ public:
         return nullptr;
     }
 
+	// 부모 GameObject 반환
+    GameObject* GetParent() const;
+    
+
     // 부모 설정. 연결할 수 없으면 false 반환
     bool SetParent(
         GameObject* newParent,

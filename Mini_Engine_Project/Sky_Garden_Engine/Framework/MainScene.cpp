@@ -19,6 +19,8 @@
 
 MainScene::MainScene()
 {
+    m_MainCamera = nullptr;
+    m_CutsceneCamera = nullptr;
 }
 
 MainScene::~MainScene()
@@ -50,22 +52,15 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     // =====================================================
     GameObject* mainCamera = new GameObject("MainCamera");
 
-    mainCamera->transform.SetLocalPosition({
-        500.0f,
-        500.0f,
-        500.0f
-        });
-
-    mainCamera->transform.rotation =
-    {
-        45.0f,
-        -135.0f,
-        0.0f
-    };
+    mainCamera->transform.SetWorldPosition({
+        0.0f,
+        -200.0f,
+        -1500.0f 
+    });
 
     m_MainCamera =
         mainCamera->AddComponent<CameraComponent>();
-        //mainCamera->AddComponent<FreeCameraController>();
+    //mainCamera->AddComponent<FreeCameraController>();
 
     SetActiveCamera(m_MainCamera);
 
@@ -77,22 +72,17 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     GameObject* cutsceneCamera =
         new GameObject("CutsceneCamera");
 
-    cutsceneCamera->transform.SetLocalPosition({
-        0.0f,
-        -200.0f,
-        -1500.0f
+    cutsceneCamera->transform.SetWorldPosition({
+        500.0f,
+        500.0f,
+        500.0f
         });
 
-    cutsceneCamera->transform.rotation =
-    {
-        0.0f,
-        0.0f,
-        0.0f
-    };
+    cutsceneCamera->transform.SetLocalEulerAngles({ 45.0f, -135.0f, 0.0f });
 
     m_CutsceneCamera =
         cutsceneCamera->AddComponent<CameraComponent>();
-        //cutsceneCamera->AddComponent<FreeCameraController>();
+    //cutsceneCamera->AddComponent<FreeCameraController>();
 
     AddGameObject(cutsceneCamera);
 
@@ -148,18 +138,18 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     GameObject* magicOrb =
         new GameObject("MagicOrb");
 
-    magicOrb->transform.SetLocalPosition({
+    magicOrb->transform.SetWorldPosition({
         0.0f,
         300.0f,
         0.0f
         });
 
-    magicOrb->transform.scale =
-    {
+    magicOrb->transform.SetWorldScale({
         10.0f,
         10.0f,
         10.0f
-    };
+        });
+    
 
     magicOrb->AddComponent<ModelRenderer>(
         magicOrbModel
@@ -177,18 +167,18 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     GameObject* magicBillboard =
         new GameObject("MagicBillboard");
 
-    magicBillboard->transform.SetLocalPosition({
+    magicBillboard->transform.SetWorldPosition({
         0.0f,
         200.0f,
         0.0f
         });
 
-    magicBillboard->transform.scale =
-    {
+    magicBillboard->transform.SetWorldScale({
         75.0f,
         75.0f,
         75.0f
-    };
+        });
+    
 
     magicBillboard->AddComponent<BillboardRenderer>(
         magicBillboardModel
@@ -214,14 +204,14 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         new GameObject("GuardianLion");
 
     // 위치 / 크기 설정
-    guardianLion->transform.scale =
-    {
+    guardianLion->transform.SetWorldScale({
         80.0f,
         80.0f,
         80.0f
-    };
+        });
+    
 
-    guardianLion->transform.SetLocalPosition({
+    guardianLion->transform.SetWorldPosition({
         0.0f,
         0.0f,
         60.0f
@@ -251,14 +241,14 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         new GameObject("SakuraTree");
 
     // Transform 설정
-    sakuraTree->transform.scale =
-    {
+    sakuraTree->transform.SetWorldScale({
         150.0f,
         150.0f,
         150.0f
-    };
+        });
+    
 
-    sakuraTree->transform.SetLocalPosition({
+    sakuraTree->transform.SetWorldPosition({
         -160.0f,
         50.0f,
         180.0f
@@ -284,14 +274,13 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     GameObject* floatingAlter =
         new GameObject("FloatingAlter");
 
-    floatingAlter->transform.scale =
-    {
+    floatingAlter->transform.SetWorldScale({
         320.0f,
         120.0f,
         320.0f
-    };
+        });
 
-    floatingAlter->transform.SetLocalPosition({
+    floatingAlter->transform.SetWorldPosition({
         0.0f,
         -80.0f,
         0.0f
@@ -315,14 +304,14 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     GameObject* goldenSpire =
         new GameObject("GoldenSpire");
 
-    goldenSpire->transform.scale =
-    {
+    goldenSpire->transform.SetWorldScale({
         100.0f,
         100.0f,
         100.0f
-    };
+        });
+    
 
-    goldenSpire->transform.SetLocalPosition({
+    goldenSpire->transform.SetWorldPosition({
         0.0f,
         -300.0f,
         0.0f
@@ -337,22 +326,22 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     // =====================================================
 
     GameObject* circleStoneRoot =
-		new GameObject("CircleStoneRoot");
+        new GameObject("CircleStoneRoot");
 
-    circleStoneRoot->transform.SetLocalPosition({
+    circleStoneRoot->transform.SetWorldPosition({
         0.0f,
         0.0f,
         0.0f
-		});
-    circleStoneRoot->transform.scale =
-    {
+        });
+    circleStoneRoot->transform.SetWorldScale({
         1.0f,
         1.0f,
         1.0f
-	};
-	circleStoneRoot->AddComponent<InputController>(300.0f);
+        });
+    
+    circleStoneRoot->AddComponent<InputController>(300.0f);
 
-	AddGameObject(circleStoneRoot);
+    AddGameObject(circleStoneRoot);
 
     // =====================================================
     // CircleStone
@@ -379,14 +368,14 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         new GameObject("CircleStone");
 
     // 기존 위치와 크기
-    circleStone->transform.SetLocalPosition({
+    circleStone->transform.SetWorldPosition({
         0.0f, -500.0f, 0.0f
         });
 
-    circleStone->transform.scale =
-    {
+    circleStone->transform.SetWorldScale({
         1000.0f, 120.0f, 1000.0f
-    };
+        });
+    
 
     circleStone->AddComponent<ModelRenderer>(circleStoneModel);
 
@@ -397,7 +386,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         1.0f
     );
 
-	circleStone->SetParent(circleStoneRoot);
+    circleStone->SetParent(circleStoneRoot);
 
     AddGameObject(circleStone);
 
@@ -420,12 +409,9 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     const int crystalCount = 12;
 
     // 공전 중심과 반지름
-    const float orbitRadius = 700.0f;
+    const float crystal_orbitRadius = 700.0f;
 
-    // CircleStone의 스케일
-    const float parentScaleX = 1000.0f;
-    const float parentScaleY = 120.0f;
-    const float parentScaleZ = 1000.0f;
+    
 
     for (int i = 0; i < crystalCount; i++)
     {
@@ -438,33 +424,17 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         float startAngle =
             (XM_2PI / crystalCount) * i;
 
-        // 부모 스케일을 고려한 로컬 위치
-        float localX =
-            cosf(startAngle) * orbitRadius / parentScaleX;
+        // 부모 연결
+        crystal->SetParent(circleStone, false);
 
-        float localZ =
-            sinf(startAngle) * orbitRadius / parentScaleZ;
-
-        // 기존 수정 높이 -300, CircleStone 높이 -500
-        // 두 위치의 차이인 200을 부모 Y 스케일로 보정
-        float localY = 200.0f / parentScaleY;
-
-        // CircleStone을 부모로 설정
-        // false: 로컬 변환 유지 방식이라고 가정
-        crystal->SetParent(circleStone);
-
-        crystal->transform.SetLocalPosition({
-            localX,
-            localY,
-            localZ
+        // 월드 기준으로 위치와 크기 설정
+        crystal->transform.SetWorldPosition({
+            100.0f, -300.0f, 0.0f
             });
 
-        // 부모 스케일을 역으로 보정
-        crystal->transform.scale = {
-            50.0f / parentScaleX,
-            50.0f / parentScaleY,
-            50.0f / parentScaleZ
-        };
+        crystal->transform.SetWorldScale({
+            50.0f, 50.0f, 50.0f
+            });
 
         crystal->AddComponent<ModelRenderer>(
             crystalModel
@@ -472,12 +442,8 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
         // CircleStone을 중심으로 공전
         crystal->AddComponent<Orbiter>(
-            XMFLOAT3{
-                0.0f,
-                200.0f / parentScaleY,
-                0.0f
-            },
-            orbitRadius / parentScaleX,
+            XMFLOAT3{ 0.0f, 200.0f, 0.0f },
+            700.0f,
             0.3f,
             startAngle
         );
@@ -521,16 +487,16 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
 
         // 크기 설정
-        crystal2->transform.scale =
-        {
+        crystal2->transform.SetWorldScale({
             50.0f,
             50.0f,
             50.0f
-        };
+            });
+        
 
 
         // 각 CrystalPrism2의 기본 위치 설정
-        crystal2->transform.SetLocalPosition({
+        crystal2->transform.SetWorldPosition({
             crystal2Positions[i].x,
             crystal2Positions[i].y,
             crystal2Positions[i].z
@@ -596,14 +562,14 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
 
         // Transform 설정
-        lantern->transform.scale =
-        {
+        lantern->transform.SetWorldScale({
             50.0f,
             50.0f,
             50.0f
-        };
+            });
+        
 
-        lantern->transform.SetLocalPosition({
+        lantern->transform.SetWorldPosition({
             lanternPositions[i].x,
             lanternPositions[i].y,
             lanternPositions[i].z
@@ -635,13 +601,11 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         AddGameObject(lantern);
     }
 
+
     // =====================================================
-    // Floating Island
+    // Floating Island (원형 배치 + 공전)
     // =====================================================
-    //
-    // 12개의 FloatingIsland GameObject 생성
-    // 현재 움직임이 없으므로 Transform + ModelRenderer만 사용
-    // =====================================================
+
     ModelClass* floatingIslandModel =
         resourceManager->GetModel("FloatingIsland");
 
@@ -650,60 +614,62 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         return;
     }
 
+    // 생성할 섬 개수
     const int floatingIslandCount = 12;
 
-    DirectX::XMFLOAT3 floatingIslandPositions[floatingIslandCount] =
-    {
-        DirectX::XMFLOAT3(-2200.0f, -330.0f, -1400.0f),
-        DirectX::XMFLOAT3(-2100.0f, -280.0f,   800.0f),
-        DirectX::XMFLOAT3(-1400.0f, -360.0f,  2100.0f),
-        DirectX::XMFLOAT3(-600.0f,  -300.0f, -2300.0f),
-
-        DirectX::XMFLOAT3(800.0f,   -270.0f,  2200.0f),
-        DirectX::XMFLOAT3(1500.0f,  -340.0f, -2000.0f),
-        DirectX::XMFLOAT3(2200.0f,  -290.0f,  1100.0f),
-        DirectX::XMFLOAT3(2400.0f,  -320.0f,  -600.0f),
-
-        DirectX::XMFLOAT3(-2500.0f, -370.0f,   100.0f),
-        DirectX::XMFLOAT3(2500.0f,  -300.0f,   300.0f),
-        DirectX::XMFLOAT3(1100.0f,  -390.0f,  2400.0f),
-        DirectX::XMFLOAT3(-1100.0f, -310.0f, -2500.0f)
+    // 공전 중심과 반지름
+    const XMFLOAT3 orbitCenter = {
+        0.0f, -330.0f, 0.0f
     };
 
+    const float floatingisland_orbitRadius = 2200.0f;
+    const float orbitSpeed = 0.05f;
 
     for (int i = 0; i < floatingIslandCount; i++)
     {
-        // GameObject 생성
         GameObject* floatingIsland =
-            new GameObject("FloatingIsland");
+            new GameObject("FloatingIsland_" + std::to_string(i + 1));
 
+        // 12개를 30도 간격으로 배치
+        float startAngle =
+            (XM_2PI / floatingIslandCount) * i;
 
-        floatingIsland->transform.scale =
-        {
-            45.0f,
-            45.0f,
-            45.0f
-        };
+        // 원형 배치 위치 계산
+        float x =
+            orbitCenter.x + cosf(startAngle) * floatingisland_orbitRadius;
 
+        float z =
+            orbitCenter.z + sinf(startAngle) * floatingisland_orbitRadius;
 
-        floatingIsland->transform.SetLocalPosition({
-            floatingIslandPositions[i].x,
-            floatingIslandPositions[i].y,
-            floatingIslandPositions[i].z
+        floatingIsland->transform.SetWorldPosition({
+            x,
+            orbitCenter.y,
+            z
             });
 
+        // 크기 설정
+        floatingIsland->transform.SetWorldScale({
+            45.0f, 45.0f, 45.0f
+            });
 
-        // 기존 GraphicsClass에서 사용하던
-        // XMMatrixRotationY(i * 0.6f)를 Transform으로 이동
-        floatingIsland->transform.rotation.y =
-            i * 0.6f;
+        // 섬마다 초기 Y축 회전 설정 (Degree)
+        floatingIsland->transform.SetLocalEulerAngles({
+            0.0f,
+            XMConvertToDegrees(i * 0.6f),
+            0.0f
+            });
 
+        // 모델 렌더링
+        floatingIsland->AddComponent<ModelRenderer>(
+            floatingIslandModel
+        );
 
-        floatingIsland->AddComponent<ModelRenderer>(floatingIslandModel);
-
+        // 원형 궤도를 따라 공전
+        
 
         AddGameObject(floatingIsland);
     }
+
 
     // =====================================================
     // Cloud
@@ -751,16 +717,16 @@ void MainScene::Initialize(ResourceManager* resourceManager)
             new GameObject("Cloud");
 
 
-        cloud->transform.scale =
-        {
+        cloud->transform.SetWorldScale({
             100.0f,
             100.0f,
             100.0f
-        };
+            });
+        
 
 
         // 기존 위치 설정
-        cloud->transform.SetLocalPosition({
+        cloud->transform.SetWorldPosition({
             cloudPositions[i].x,
             cloudPositions[i].y,
             cloudPositions[i].z

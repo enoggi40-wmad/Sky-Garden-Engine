@@ -1,3 +1,4 @@
+
 #include "FreeCameraController.h"
 #include "GameObject.h"
 
@@ -12,6 +13,7 @@ using namespace DirectX;
 FreeCameraController::FreeCameraController(GameObject* owner)
     : Component(owner)
 {
+    // 기존 Transform의 회전은 기본값(회전 없음)을 가정
 }
 
 FreeCameraController::~FreeCameraController()
@@ -32,19 +34,14 @@ void FreeCameraController::Update(float deltaTime)
     const float moveSpeed = 275.0f;
     float moveDistance = moveSpeed * deltaTime;
 
-    // 현재 카메라의 회전값을 가져온다.
-    XMFLOAT3 rotation = gameObject->transform.rotation;
+    // 현재 Transform에 저장된 Quaternion 가져오기
+    XMFLOAT4 rotation =
+        gameObject->transform.GetLocalRotation();
 
-    // Degree → Radian
-    float pitch = XMConvertToRadians(rotation.x);
-    float yaw = XMConvertToRadians(rotation.y);
-
-    // 카메라 회전에 사용할 회전 행렬 생성
+    // Quaternion으로 회전 행렬 생성
     XMMATRIX rotationMatrix =
-        XMMatrixRotationRollPitchYaw(
-            pitch,
-            yaw,
-            0.0f
+        XMMatrixRotationQuaternion(
+            XMLoadFloat4(&rotation)
         );
 
     // 기본 전방(+Z) 방향
@@ -65,7 +62,7 @@ void FreeCameraController::Update(float deltaTime)
             0.0f
         );
 
-    // 현재 카메라 회전을 방향 벡터에 적용
+    // 현재 카메라 회전을 이동 방향에 적용
     forward =
         XMVector3TransformNormal(
             forward,
@@ -78,13 +75,12 @@ void FreeCameraController::Update(float deltaTime)
             rotationMatrix
         );
 
-    // Transform의 현재 위치
+    // 현재 카메라 위치 가져오기
     XMFLOAT3 position =
         gameObject->transform.GetLocalPosition();
 
     XMVECTOR positionVector =
         XMLoadFloat3(&position);
-
 
     // W : 앞으로
     if (GetAsyncKeyState('W') & 0x8000)
@@ -110,15 +106,13 @@ void FreeCameraController::Update(float deltaTime)
         positionVector += right * moveDistance;
     }
 
-
-    // 계산된 위치를 XMFLOAT3에 저장
+    // 계산한 위치 저장
     XMFLOAT3 newPosition;
     XMStoreFloat3(&newPosition, positionVector);
 
-    // 계산된 위치를 Transform에 저장
     gameObject->transform.SetLocalPosition(newPosition);
 
-   
+    // 마우스 우클릭 시 카메라 회전
     HWND hwnd = InputManager::GetWindowHandle();
 
     if (hwnd && (GetAsyncKeyState(VK_RBUTTON) & 0x8000))
@@ -137,22 +131,20 @@ void FreeCameraController::Update(float deltaTime)
         POINT mousePosition;
         GetCursorPos(&mousePosition);
 
-        // Screen 좌표 → Client 좌표
         ScreenToClient(hwnd, &mousePosition);
 
-        // 화면 중앙으로부터 마우스가 얼마나 움직였는지 계산
+        // 화면 중앙으로부터 마우스 이동량
         int deltaX = mousePosition.x - center.x;
         int deltaY = mousePosition.y - center.y;
 
-        // 좌우 회전
-        gameObject->transform.rotation.y +=
-            deltaX * mouseSensitivity;
+        // 기존처럼 Degree 단위로 회전각 누적
+        m_Yaw += deltaX * mouseSensitivity;
+        m_Pitch += deltaY * mouseSensitivity;
 
-        // 상하 회전
-        gameObject->transform.rotation.x +=
-            deltaY * mouseSensitivity;
+        // Euler Angle을 Quaternion으로 변환
+        gameObject->transform.SetLocalEulerAngles({ m_Pitch,m_Yaw,0.0f });
 
-        // 마우스를 다시 화면 중앙으로 이동
+        // 마우스를 화면 중앙으로 이동
         POINT screenCenter = center;
         ClientToScreen(hwnd, &screenCenter);
 

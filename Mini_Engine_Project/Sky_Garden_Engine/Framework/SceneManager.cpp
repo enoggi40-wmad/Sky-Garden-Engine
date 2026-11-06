@@ -104,9 +104,9 @@ void SceneManager::LoadScene(SceneType type)
         m_CurrentScene = new MainScene;
         break;
     
-    case SceneType::Test:
+    /*case SceneType::Test:
         m_CurrentScene = new TestScene;
-		break;
+		break;*/
     }
 
     m_CurrentSceneType = type;

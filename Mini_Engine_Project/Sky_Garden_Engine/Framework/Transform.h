@@ -59,8 +59,6 @@ public:
     void TranslateLocal(const XMFLOAT3& movement);
     bool TranslateWorld(const XMFLOAT3& movement);
 
-    // 현재 Transform을 기준으로 View Matrix 생성
-    XMMATRIX GetViewMatrix() const;
 
 public:
     // 로컬 좌표축을 기준으로 회전 (라디안)

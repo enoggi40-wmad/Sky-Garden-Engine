@@ -1,33 +1,26 @@
+
 #pragma once
 
 #include "Component.h"
-#include <DirectXMath.h>
 
 class GameObject;
+class Transform;
 
 class CameraComponent : public Component
 {
 public:
-	CameraComponent(GameObject* owner);
-	~CameraComponent();
+    CameraComponent(GameObject* owner);
+    ~CameraComponent();
 
-	void Update(float deltaTime) override;
+    void Update(float deltaTime) override;
 
-	void Render();
-	void GetViewMatrix(
-		DirectX::XMMATRIX& viewMatrix
-	);
-	DirectX::XMFLOAT3 GetPosition() const;
-private:
-	DirectX::XMMATRIX m_ViewMatrix;
+    // 카메라 활성 상태
+    void SetActive(bool active);
+    bool IsActive() const;
 
-public:
-	void SetActive(bool active);
-	bool IsActive() const;
+    // 카메라가 속한 Transform 반환
+    const Transform& GetTransform() const;
 
 private:
-	bool m_IsActive;
-
-
-
+    bool m_IsActive = false;
 };

@@ -606,39 +606,6 @@ bool Transform::TranslateWorld(
 }
 
 
-XMMATRIX Transform::GetViewMatrix() const
-{
-    // 월드 위치와 회전
-    XMFLOAT3 worldPosition = GetWorldPosition();
-    XMFLOAT4 worldRotation = GetWorldRotation();
-
-    XMVECTOR position =
-        XMLoadFloat3(&worldPosition);
-
-    XMVECTOR rotation =
-        XMLoadFloat4(&worldRotation);
-
-    // 기본 전방(+Z)
-    XMVECTOR forward = XMVector3Rotate(
-        XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f),
-        rotation
-    );
-
-    // 기본 위쪽(+Y)
-    XMVECTOR up = XMVector3Rotate(
-        XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f),
-        rotation
-    );
-
-    // 현재 Transform을 기준으로 View Matrix 계산
-    return XMMatrixLookToLH(
-        position,
-        forward,
-        up
-    );
-}
-
-
 void Transform::Rotate(const XMFLOAT3& eulerRadians)
 {
     // 현재 로컬 회전 가져오기

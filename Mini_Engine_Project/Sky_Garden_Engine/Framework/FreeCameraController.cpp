@@ -36,16 +36,17 @@ void FreeCameraController::Update(float deltaTime)
     float forwardInput = 0.0f;
     float rightInput = 0.0f;
 
-    if (GetAsyncKeyState('W') & 0x8000)
+    // 방향키로 카메라 이동
+    if (GetAsyncKeyState(VK_UP) & 0x8000)
         forwardInput += 1.0f;
 
-    if (GetAsyncKeyState('S') & 0x8000)
+    if (GetAsyncKeyState(VK_DOWN) & 0x8000)
         forwardInput -= 1.0f;
 
-    if (GetAsyncKeyState('D') & 0x8000)
+    if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
         rightInput += 1.0f;
 
-    if (GetAsyncKeyState('A') & 0x8000)
+    if (GetAsyncKeyState(VK_LEFT) & 0x8000)
         rightInput -= 1.0f;
 
     // 카메라의 월드 방향 가져오기

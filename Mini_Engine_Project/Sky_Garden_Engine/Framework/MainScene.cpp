@@ -60,7 +60,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
     m_MainCamera =
         mainCamera->AddComponent<CameraComponent>();
-    //mainCamera->AddComponent<FreeCameraController>();
+        mainCamera->AddComponent<FreeCameraController>();
 
     SetActiveCamera(m_MainCamera);
 
@@ -82,7 +82,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
     m_CutsceneCamera =
         cutsceneCamera->AddComponent<CameraComponent>();
-    //cutsceneCamera->AddComponent<FreeCameraController>();
+        cutsceneCamera->AddComponent<FreeCameraController>();
 
     AddGameObject(cutsceneCamera);
 

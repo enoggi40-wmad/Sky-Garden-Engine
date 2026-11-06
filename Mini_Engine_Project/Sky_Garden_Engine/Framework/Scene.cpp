@@ -12,6 +12,7 @@
 #include "CameraComponent.h"
 #include "Renderer.h"
 #include "RendererManager.h"
+#include "Transform.h"
 //
 Scene::Scene()
 {
@@ -60,6 +61,7 @@ void Scene::Update(float deltaTime)
     }
 }
 
+
 bool Scene::Render(
     D3DClass* d3d,
     ID3D11DeviceContext* deviceContext,
@@ -67,22 +69,56 @@ bool Scene::Render(
     XMMATRIX projectionMatrix,
     XMMATRIX orthoMatrix)
 {
+    // 기본 카메라 정보
     XMMATRIX viewMatrix = XMMatrixIdentity();
-    XMFLOAT3 cameraPosition = { 0.0f, 0.0f, 0.0f };
 
-    // 카메라가 있는 Scene이면 카메라 정보 사용
+    XMFLOAT3 cameraPosition = {
+        0.0f, 0.0f, 0.0f
+    };
+
+    // 활성 카메라가 존재하는 경우
     if (m_ActiveCamera)
     {
-        m_ActiveCamera->Render();
+        // 카메라의 Transform 가져오기
+        const Transform& transform =
+            m_ActiveCamera->GetTransform();
 
-        m_ActiveCamera->GetViewMatrix(
-            viewMatrix
+        // 카메라 월드 위치
+        cameraPosition =
+            transform.GetWorldPosition();
+
+        // 카메라 월드 회전
+        XMFLOAT4 cameraRotation =
+            transform.GetWorldRotation();
+
+        // DirectX 연산용 변환
+        XMVECTOR position =
+            XMLoadFloat3(&cameraPosition);
+
+        XMVECTOR rotation =
+            XMLoadFloat4(&cameraRotation);
+
+        // 카메라 기본 전방(+Z)
+        XMVECTOR forward = XMVector3Rotate(
+            XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f),
+            rotation
         );
 
-        cameraPosition =
-            m_ActiveCamera->GetPosition();
+        // 카메라 기본 위쪽(+Y)
+        XMVECTOR up = XMVector3Rotate(
+            XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f),
+            rotation
+        );
+
+        // 최종 View Matrix 생성
+        viewMatrix = XMMatrixLookToLH(
+            position,
+            forward,
+            up
+        );
     }
 
+    // RendererManager에 카메라 정보 전달
     return m_RendererManager->Render(
         d3d,
         deviceContext,
@@ -93,6 +129,7 @@ bool Scene::Render(
         cameraPosition
     );
 }
+
 
 void Scene::InitializeAssignment(ResourceManager* resourceManager)
 {

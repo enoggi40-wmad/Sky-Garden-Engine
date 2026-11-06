@@ -402,11 +402,11 @@ void MainScene::Initialize(ResourceManager* resourceManager)
             0.0f, -300.0f, 0.0f
             });
 
-        crystal->transform.SetLocalEulerAngles({
-        45.0f,  // X축 회전
-        0.0f,
-        0.0f
-            });
+        //crystal->transform.SetLocalEulerAngles({
+        //45.0f,  // X축 회전
+        //0.0f,
+        //0.0f
+        //    });
 
         // 크리스탈 크기
         crystal->transform.SetWorldScale({

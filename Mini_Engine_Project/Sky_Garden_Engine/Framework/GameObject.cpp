@@ -29,23 +29,25 @@ GameObject::~GameObject()
 }
 
 
+
 bool GameObject::SetParent(
     GameObject* newParent,
     bool keepWorldTransform)
 {
-    // 1. 자기 자신은 부모가 될 수 없다.
+    // 1. 자기 자신을 부모로 설정하는 것을 방지
     if (newParent == this)
     {
         return false;
     }
 
-    // 2. 이미 같은 부모라면 그대로 유지
+    // 2. 이미 같은 부모라면 변경하지 않음
     if (m_Parent == newParent)
     {
         return true;
     }
 
-    // 3. 자신의 자손을 부모로 삼는 것을 방지
+    // 3. 순환 참조 방지
+    // 새 부모의 조상을 확인하여 자기 자신이 있는지 검사
     for (GameObject* ancestor = newParent;
         ancestor != nullptr;
         ancestor = ancestor->m_Parent)
@@ -57,15 +59,18 @@ bool GameObject::SetParent(
     }
 
     // 4. 부모 변경 후 사용할 로컬 행렬
-    XMMATRIX newLocalMatrix = transform.GetLocalMatrix();
+    XMMATRIX newLocalMatrix =
+        transform.GetLocalMatrix();
 
+    // 부모를 변경해도 기존 World Transform을 유지하는 경우
     if (keepWorldTransform)
     {
-        // 부모 변경 전 현재 월드 행렬 저장
+        // 부모 변경 전 자식의 World Matrix 저장
         XMMATRIX oldWorldMatrix =
             transform.GetWorldMatrix();
 
-        // 새 부모의 월드 행렬
+        // 새 부모의 World Matrix 가져오기
+        // 부모가 없으면 단위 행렬 사용
         XMMATRIX parentWorldMatrix =
             XMMatrixIdentity();
 
@@ -75,21 +80,22 @@ bool GameObject::SetParent(
                 newParent->transform.GetWorldMatrix();
         }
 
-        // 부모 월드 행렬의 행렬식 계산
+        // 부모 행렬의 역행렬을 구할 수 있는지 검사
         float determinant =
             XMVectorGetX(
                 XMMatrixDeterminant(parentWorldMatrix)
             );
 
-        // 역행렬을 만들 수 없다면 부모 변경 거부
+        // 역행렬 계산이 불가능하면 부모 변경 취소
         if (!std::isfinite(determinant) ||
             determinant == 0.0f)
         {
             return false;
         }
 
-        // 기존 월드 변환을 유지하기 위한
-        // 새 부모 기준 로컬 행렬 계산
+        // 5. 새로운 Local Matrix 계산
+        // 기존 World Transform을 유지하기 위해
+        // 새 부모의 변환을 역행렬로 제거
         newLocalMatrix =
             oldWorldMatrix *
             XMMatrixInverse(
@@ -97,15 +103,15 @@ bool GameObject::SetParent(
                 parentWorldMatrix
             );
 
-        // 새 로컬 행렬을 위치, 회전, 크기로 분해
-        // 실패하면 부모 관계를 변경하지 않는다.
+        // 6. Local Matrix를 Position, Rotation, Scale로 분해
+        // Transform은 행렬이 아닌 개별 값으로 저장하기 때문
         if (!transform.TrySetLocalMatrix(newLocalMatrix))
         {
             return false;
         }
     }
 
-    // 5. 기존 부모의 자식 목록에서 제거
+    // 7. 기존 부모의 자식 목록에서 자신을 제거
     if (m_Parent)
     {
         auto& siblings = m_Parent->m_Children;
@@ -120,16 +126,17 @@ bool GameObject::SetParent(
         );
     }
 
-    // 6. 새로운 부모의 자식 목록에 추가
+    // 8. 새 부모의 자식 목록에 자신을 추가
     if (newParent)
     {
         newParent->m_Children.push_back(this);
     }
 
-    // 7. GameObject의 부모 포인터 변경
+    // 9. GameObject의 부모 포인터 변경
     m_Parent = newParent;
 
-    // 8. Transform의 부모 포인터도 변경
+    // 10. Transform의 부모 포인터도 변경
+    // GetWorldMatrix()에서 부모 변환을 적용하기 위해 필요
     if (newParent)
     {
         transform.m_Parent =
@@ -142,6 +149,7 @@ bool GameObject::SetParent(
 
     return true;
 }
+
 
 
 // 초기화

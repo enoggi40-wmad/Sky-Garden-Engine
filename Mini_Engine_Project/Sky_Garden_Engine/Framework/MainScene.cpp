@@ -122,41 +122,6 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     AddGameObject(sky);
 
 
-
-    // =====================================================
-    // Magic Orb
-    // =====================================================
-
-    ModelClass* magicOrbModel =
-        resourceManager->GetModel("MagicOrb");
-
-    if (!magicOrbModel)
-    {
-        return;
-    }
-
-    GameObject* magicOrb =
-        new GameObject("MagicOrb");
-
-    magicOrb->transform.SetWorldPosition({
-        0.0f,
-        300.0f,
-        0.0f
-        });
-
-    magicOrb->transform.SetWorldScale({
-        10.0f,
-        10.0f,
-        10.0f
-        });
-
-
-    magicOrb->AddComponent<ModelRenderer>(
-        magicOrbModel
-    );
-
-    //AddGameObject(magicOrb);
-
     // =====================================================
     // Magic Billboard
     // =====================================================
@@ -435,6 +400,12 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         // 공전 중심
         crystal->transform.SetWorldPosition({
             0.0f, -300.0f, 0.0f
+            });
+
+        crystal->transform.SetLocalEulerAngles({
+        45.0f,  // X축 회전
+        0.0f,
+        0.0f
             });
 
         // 크리스탈 크기

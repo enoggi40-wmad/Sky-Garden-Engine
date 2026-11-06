@@ -2,6 +2,56 @@
 #include "Transform.h"
 #include <cmath>
 
+bool Transform::SetWorldMatrix(const XMMATRIX& worldMatrix)
+{
+    // 부모가 없으면 월드 행렬이 곧 로컬 행렬
+    if (!m_Parent)
+    {
+        return TrySetLocalMatrix(worldMatrix);
+    }
+
+    // 부모의 월드 행렬 가져오기
+    XMMATRIX parentWorldMatrix =
+        m_Parent->GetWorldMatrix();
+
+    // 부모 행렬의 행렬식 검사
+    float determinant =
+        XMVectorGetX(
+            XMMatrixDeterminant(parentWorldMatrix)
+        );
+
+    // 역행렬을 구할 수 없으면 실패
+    if (!std::isfinite(determinant) ||
+        std::fabs(determinant) < 0.000001f)
+    {
+        return false;
+    }
+
+    // 부모의 월드 변환을 제거해서 로컬 행렬 계산
+    XMMATRIX localMatrix =
+        worldMatrix *
+        XMMatrixInverse(nullptr, parentWorldMatrix);
+
+    // 로컬 행렬을 위치, 회전, 크기로 분해해서 저장
+    return TrySetLocalMatrix(localMatrix);
+}
+
+// 자신의 로컬 행렬에 부모의 월드 행렬을 곱해 최종 월드 행렬 계산
+XMMATRIX Transform::GetWorldMatrix() const
+{
+    // 자신의 위치, 회전, 크기로 만든 로컬 행렬
+    XMMATRIX localMatrix = GetLocalMatrix();
+
+    // 부모가 있으면 부모의 월드 변환까지 반영
+    if (m_Parent)
+    {
+        return localMatrix * m_Parent->GetWorldMatrix();
+    }
+
+    // 부모가 없으면 로컬 변환이 곧 월드 변환
+    return localMatrix;
+}
+
 // 자신의 로컬 위치, 회전, 크기로 부모 기준 변환 행렬 생성
 XMMATRIX Transform::GetLocalMatrix() const
 {
@@ -30,119 +80,6 @@ XMMATRIX Transform::GetLocalMatrix() const
         );
 
     return scaleMatrix * rotationMatrix * translationMatrix;
-}
-
-// 부모 기준 로컬 위치 반환
-XMFLOAT3 Transform::GetLocalPosition() const
-{
-    return m_LocalPosition;
-}
-
-// 부모 기준 로컬 위치 설정
-void Transform::SetLocalPosition(const XMFLOAT3& localPosition)
-{
-    m_LocalPosition = localPosition;
-}
-
-// 부모 변환까지 적용한 월드 위치 반환
-XMFLOAT3 Transform::GetWorldPosition() const
-{
-    // 부모의 위치, 회전, 크기까지 적용한 월드 행렬
-    XMMATRIX worldMatrix = GetWorldMatrix();
-
-    // 자신의 원점을 월드 좌표로 변환
-    XMVECTOR worldPosition =
-        XMVector3TransformCoord(
-            XMVectorZero(),
-            worldMatrix
-        );
-
-    // 계산 결과를 XMFLOAT3로 저장해서 반환
-    XMFLOAT3 result;
-    XMStoreFloat3(&result, worldPosition);
-
-    return result;
-}
-
-// 월드 좌표를 기준으로 위치 설정
-bool Transform::SetWorldPosition(const XMFLOAT3& worldPosition)
-{
-    // 유효하지 않은 좌표는 저장하지 않는다.
-    if (!std::isfinite(worldPosition.x) ||
-        !std::isfinite(worldPosition.y) ||
-        !std::isfinite(worldPosition.z))
-    {
-        return false;
-    }
-
-    // 부모가 없으면 월드 위치와 로컬 위치가 같다.
-    if (!m_Parent)
-    {
-        m_LocalPosition = worldPosition;
-        return true;
-    }
-
-    // 부모의 월드 행렬
-    XMMATRIX parentWorldMatrix =
-        m_Parent->GetWorldMatrix();
-
-    // 부모의 행렬식 계산
-    float determinant =
-        XMVectorGetX(
-            XMMatrixDeterminant(parentWorldMatrix)
-        );
-
-    // 역행렬을 만들 수 없는 경우 변경하지 않는다.
-    if (!std::isfinite(determinant) ||
-        std::fabs(determinant) < 0.000001f)
-    {
-        return false;
-    }
-
-    // 부모의 월드 행렬을 역행렬로 변환
-    XMMATRIX inverseParentWorld =
-        XMMatrixInverse(
-            nullptr,
-            parentWorldMatrix
-        );
-
-    // 월드 좌표를 부모 기준 로컬 좌표로 변환
-    XMVECTOR localPosition =
-        XMVector3TransformCoord(
-            XMLoadFloat3(&worldPosition),
-            inverseParentWorld
-        );
-
-    XMFLOAT3 result;
-    XMStoreFloat3(&result, localPosition);
-
-    // 변환 결과가 유효하지 않으면 기존 위치 유지
-    if (!std::isfinite(result.x) ||
-        !std::isfinite(result.y) ||
-        !std::isfinite(result.z))
-    {
-        return false;
-    }
-
-    m_LocalPosition = result;
-
-    return true;
-}
-
-// 자신의 로컬 행렬에 부모의 월드 행렬을 곱해 최종 월드 행렬 계산
-XMMATRIX Transform::GetWorldMatrix() const
-{
-    // 자신의 위치, 회전, 크기로 만든 로컬 행렬
-    XMMATRIX localMatrix = GetLocalMatrix();
-
-    // 부모가 있으면 부모의 월드 변환까지 반영
-    if (m_Parent)
-    {
-        return localMatrix * m_Parent->GetWorldMatrix();
-    }
-
-    // 부모가 없으면 로컬 변환이 곧 월드 변환
-    return localMatrix;
 }
 
 // 전달받은 행렬을 위치, 회전, 크기로 분해해서 Transform에 저장
@@ -273,3 +210,102 @@ bool Transform::TrySetLocalMatrix(const XMMATRIX& matrix)
 
     return true;
 }
+
+// 월드 좌표를 기준으로 위치 설정
+bool Transform::SetWorldPosition(const XMFLOAT3& worldPosition)
+{
+    // 유효하지 않은 좌표는 저장하지 않는다.
+    if (!std::isfinite(worldPosition.x) ||
+        !std::isfinite(worldPosition.y) ||
+        !std::isfinite(worldPosition.z))
+    {
+        return false;
+    }
+
+    // 부모가 없으면 월드 위치와 로컬 위치가 같다.
+    if (!m_Parent)
+    {
+        m_LocalPosition = worldPosition;
+        return true;
+    }
+
+    // 부모의 월드 행렬
+    XMMATRIX parentWorldMatrix =
+        m_Parent->GetWorldMatrix();
+
+    // 부모의 행렬식 계산
+    float determinant =
+        XMVectorGetX(
+            XMMatrixDeterminant(parentWorldMatrix)
+        );
+
+    // 역행렬을 만들 수 없는 경우 변경하지 않는다.
+    if (!std::isfinite(determinant) ||
+        std::fabs(determinant) < 0.000001f)
+    {
+        return false;
+    }
+
+    // 부모의 월드 행렬을 역행렬로 변환
+    XMMATRIX inverseParentWorld =
+        XMMatrixInverse(
+            nullptr,
+            parentWorldMatrix
+        );
+
+    // 월드 좌표를 부모 기준 로컬 좌표로 변환
+    XMVECTOR localPosition =
+        XMVector3TransformCoord(
+            XMLoadFloat3(&worldPosition),
+            inverseParentWorld
+        );
+
+    XMFLOAT3 result;
+    XMStoreFloat3(&result, localPosition);
+
+    // 변환 결과가 유효하지 않으면 기존 위치 유지
+    if (!std::isfinite(result.x) ||
+        !std::isfinite(result.y) ||
+        !std::isfinite(result.z))
+    {
+        return false;
+    }
+
+    m_LocalPosition = result;
+
+    return true;
+}
+
+// 부모 변환까지 적용한 월드 위치 반환
+XMFLOAT3 Transform::GetWorldPosition() const
+{
+    // 부모의 위치, 회전, 크기까지 적용한 월드 행렬
+    XMMATRIX worldMatrix = GetWorldMatrix();
+
+    // 자신의 원점을 월드 좌표로 변환
+    XMVECTOR worldPosition =
+        XMVector3TransformCoord(
+            XMVectorZero(),
+            worldMatrix
+        );
+
+    // 계산 결과를 XMFLOAT3로 저장해서 반환
+    XMFLOAT3 result;
+    XMStoreFloat3(&result, worldPosition);
+
+    return result;
+}
+
+// 부모 기준 로컬 위치 설정
+void Transform::SetLocalPosition(const XMFLOAT3& localPosition)
+{
+    m_LocalPosition = localPosition;
+}
+
+// 부모 기준 로컬 위치 반환
+XMFLOAT3 Transform::GetLocalPosition() const
+{
+    return m_LocalPosition;
+}
+
+

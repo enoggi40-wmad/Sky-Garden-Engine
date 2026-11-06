@@ -17,11 +17,14 @@ public:
     // 오브젝트의 크기
     XMFLOAT3 scale = { 1.0f, 1.0f, 1.0f };
 
-    // 부모를 기준으로 한 로컬 변환 행렬
-    XMMATRIX GetLocalMatrix() const;
+    // 월드 행렬을 기준으로 Transform 설정
+    bool SetWorldMatrix(const XMMATRIX& worldMatrix);
 
     // 부모 변환까지 적용한 월드 변환 행렬
     XMMATRIX GetWorldMatrix() const;
+
+    // 부모를 기준으로 한 로컬 변환 행렬
+    XMMATRIX GetLocalMatrix() const;
 
     // 부모 기준 위치 반환
     XMFLOAT3 GetLocalPosition() const;

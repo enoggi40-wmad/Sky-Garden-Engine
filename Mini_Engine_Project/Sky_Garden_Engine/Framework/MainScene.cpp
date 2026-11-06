@@ -55,8 +55,8 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     mainCamera->transform.SetWorldPosition({
         0.0f,
         -200.0f,
-        -1500.0f 
-    });
+        -1600.0f
+        });
 
     m_MainCamera =
         mainCamera->AddComponent<CameraComponent>();
@@ -149,7 +149,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         10.0f,
         10.0f
         });
-    
+
 
     magicOrb->AddComponent<ModelRenderer>(
         magicOrbModel
@@ -178,7 +178,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         75.0f,
         75.0f
         });
-    
+
 
     magicBillboard->AddComponent<BillboardRenderer>(
         magicBillboardModel
@@ -209,7 +209,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         80.0f,
         80.0f
         });
-    
+
 
     guardianLion->transform.SetWorldPosition({
         0.0f,
@@ -246,7 +246,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         150.0f,
         150.0f
         });
-    
+
 
     sakuraTree->transform.SetWorldPosition({
         -160.0f,
@@ -309,7 +309,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         100.0f,
         100.0f
         });
-    
+
 
     goldenSpire->transform.SetWorldPosition({
         0.0f,
@@ -338,7 +338,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         1.0f,
         1.0f
         });
-    
+
     circleStoneRoot->AddComponent<InputController>(300.0f);
 
     AddGameObject(circleStoneRoot);
@@ -375,7 +375,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     circleStone->transform.SetWorldScale({
         1000.0f, 120.0f, 1000.0f
         });
-    
+
 
     circleStone->AddComponent<ModelRenderer>(circleStoneModel);
 
@@ -390,12 +390,25 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
     AddGameObject(circleStone);
 
+    // =====================================================
+    // Crystal Prism 중심 (빈 GameObject)
+    // =====================================================
+    // 공전 중심
+    GameObject* orbitCenter =
+        new GameObject("CrystalOrbitCenter");
 
+    // CircleStone을 따라 이동
+    orbitCenter->SetParent(circleStone, false);
 
+    orbitCenter->transform.SetWorldPosition({
+        0.0f, -300.0f, 0.0f
+        });
 
     // =====================================================
     // Crystal Prism (CircleStone 자식 12개)
     // =====================================================
+
+    AddGameObject(orbitCenter);
 
     ModelClass* crystalModel =
         resourceManager->GetModel("CrystalPrism");
@@ -405,44 +418,35 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         return;
     }
 
-    // 생성할 수정 개수
     const int crystalCount = 12;
-
-    // 공전 중심과 반지름
-    const float crystal_orbitRadius = 700.0f;
-
-    
+    const float orbitRadius = 700.0f;
 
     for (int i = 0; i < crystalCount; i++)
     {
-        GameObject* crystal =
-            new GameObject(
-                "CrystalPrism_" + std::to_string(i + 1)
-            );
+        GameObject* crystal = new GameObject(
+            "CrystalPrism_" + std::to_string(i + 1)
+        );
 
-        // 12개를 30도 간격으로 배치
         float startAngle =
             (XM_2PI / crystalCount) * i;
 
-        // 부모 연결
         crystal->SetParent(circleStone, false);
 
-        // 월드 기준으로 위치와 크기 설정
+        // 공전 중심
         crystal->transform.SetWorldPosition({
-            100.0f, -300.0f, 0.0f
+            0.0f, -300.0f, 0.0f
             });
 
+        // 크리스탈 크기
         crystal->transform.SetWorldScale({
             50.0f, 50.0f, 50.0f
             });
 
-        crystal->AddComponent<ModelRenderer>(
-            crystalModel
-        );
+        crystal->AddComponent<ModelRenderer>(crystalModel);
 
-        // CircleStone을 중심으로 공전
+        // 공전 Component 추가
         crystal->AddComponent<Orbiter>(
-            XMFLOAT3{ 0.0f, 200.0f, 0.0f },
+            &orbitCenter->transform,
             700.0f,
             0.3f,
             startAngle
@@ -450,6 +454,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
         AddGameObject(crystal);
     }
+
 
 
 
@@ -472,10 +477,10 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     // 각 CrystalPrism2의 기본 위치
     DirectX::XMFLOAT3 crystal2Positions[crystal2Count] =
     {
-        DirectX::XMFLOAT3(-550.0f, 120.0f,  550.0f),
-        DirectX::XMFLOAT3(550.0f, 120.0f,  550.0f),
-        DirectX::XMFLOAT3(-550.0f, 120.0f, -550.0f),
-        DirectX::XMFLOAT3(550.0f, 120.0f, -550.0f)
+        DirectX::XMFLOAT3(-400.0f, 120.0f,  400.0f),
+        DirectX::XMFLOAT3(400.0f, 120.0f,  400.0f),
+        DirectX::XMFLOAT3(-400.0f, 120.0f, -400.0f),
+        DirectX::XMFLOAT3(400.0f, 120.0f, -400.0f)
     };
 
 
@@ -492,7 +497,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
             50.0f,
             50.0f
             });
-        
+
 
 
         // 각 CrystalPrism2의 기본 위치 설정
@@ -567,7 +572,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
             50.0f,
             50.0f
             });
-        
+
 
         lantern->transform.SetWorldPosition({
             lanternPositions[i].x,
@@ -599,173 +604,5 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
         // Scene 등록
         AddGameObject(lantern);
-    }
-
-
-    // =====================================================
-    // Floating Island (원형 배치 + 공전)
-    // =====================================================
-
-    ModelClass* floatingIslandModel =
-        resourceManager->GetModel("FloatingIsland");
-
-    if (!floatingIslandModel)
-    {
-        return;
-    }
-
-    // 생성할 섬 개수
-    const int floatingIslandCount = 12;
-
-    // 공전 중심과 반지름
-    const XMFLOAT3 orbitCenter = {
-        0.0f, -330.0f, 0.0f
-    };
-
-    const float floatingisland_orbitRadius = 2200.0f;
-    const float orbitSpeed = 0.05f;
-
-    for (int i = 0; i < floatingIslandCount; i++)
-    {
-        GameObject* floatingIsland =
-            new GameObject("FloatingIsland_" + std::to_string(i + 1));
-
-        // 12개를 30도 간격으로 배치
-        float startAngle =
-            (XM_2PI / floatingIslandCount) * i;
-
-        // 원형 배치 위치 계산
-        float x =
-            orbitCenter.x + cosf(startAngle) * floatingisland_orbitRadius;
-
-        float z =
-            orbitCenter.z + sinf(startAngle) * floatingisland_orbitRadius;
-
-        floatingIsland->transform.SetWorldPosition({
-            x,
-            orbitCenter.y,
-            z
-            });
-
-        // 크기 설정
-        floatingIsland->transform.SetWorldScale({
-            45.0f, 45.0f, 45.0f
-            });
-
-        // 섬마다 초기 Y축 회전 설정 (Degree)
-        floatingIsland->transform.SetLocalEulerAngles({
-            0.0f,
-            XMConvertToDegrees(i * 0.6f),
-            0.0f
-            });
-
-        // 모델 렌더링
-        floatingIsland->AddComponent<ModelRenderer>(
-            floatingIslandModel
-        );
-
-        // 원형 궤도를 따라 공전
-        
-
-        AddGameObject(floatingIsland);
-    }
-
-
-    // =====================================================
-    // Cloud
-    // =====================================================
-    //
-    // 8개의 Cloud GameObject 생성
-    // 기존 위치를 기준으로 공전 반지름과 시작 각도를 계산
-    // =====================================================
-    ModelClass* cloudModel =
-        resourceManager->GetModel("Cloud");
-
-    if (!cloudModel)
-    {
-        return;
-    }
-
-    const int cloudCount = 8;
-
-    DirectX::XMFLOAT3 cloudPositions[cloudCount] =
-    {
-        DirectX::XMFLOAT3(-1800.0f, -650.0f, -1200.0f),
-        DirectX::XMFLOAT3(-1200.0f, -580.0f,  1600.0f),
-        DirectX::XMFLOAT3(-500.0f,  -700.0f, -2100.0f),
-        DirectX::XMFLOAT3(700.0f,   -620.0f,  1900.0f),
-
-        DirectX::XMFLOAT3(1500.0f,  -680.0f, -1500.0f),
-        DirectX::XMFLOAT3(2100.0f,  -600.0f,   500.0f),
-        DirectX::XMFLOAT3(-2300.0f, -720.0f,   300.0f),
-        DirectX::XMFLOAT3(300.0f,   -640.0f,  2400.0f)
-    };
-
-
-    // 공전 중심
-    DirectX::XMFLOAT3 cloudOrbitCenter =
-    {
-        0.0f,
-        0.0f,
-        0.0f
-    };
-
-
-    for (int i = 0; i < cloudCount; i++)
-    {
-        GameObject* cloud =
-            new GameObject("Cloud");
-
-
-        cloud->transform.SetWorldScale({
-            100.0f,
-            100.0f,
-            100.0f
-            });
-        
-
-
-        // 기존 위치 설정
-        cloud->transform.SetWorldPosition({
-            cloudPositions[i].x,
-            cloudPositions[i].y,
-            cloudPositions[i].z
-            });
-
-        cloud->AddComponent<ModelRenderer>(cloudModel);
-
-
-        float baseX =
-            cloudPositions[i].x;
-
-        float baseZ =
-            cloudPositions[i].z;
-
-
-        // 원점으로부터 현재 Cloud까지의 거리
-        float cloudRadius =
-            sqrtf(
-                baseX * baseX +
-                baseZ * baseZ
-            );
-
-
-        // 현재 위치를 시작 각도로 변환
-        float startAngle =
-            atan2f(
-                baseZ,
-                baseX
-            );
-
-        cloud->AddComponent<Orbiter>(
-            cloudOrbitCenter,
-            cloudRadius,
-            0.01f,
-            startAngle
-        );
-
-
-        AddGameObject(cloud);
-
     }
 }

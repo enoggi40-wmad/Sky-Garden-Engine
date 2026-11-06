@@ -535,6 +535,110 @@ void Transform::SetLocalEulerAngles(const XMFLOAT3& eulerDegrees)
     SetLocalRotation(result);
 }
 
+XMFLOAT3 Transform::GetLocalEulerAngles() const
+{
+	
+}
+
+
+XMFLOAT3 Transform::Forward() const
+{
+    // 월드 회전 가져오기
+    XMFLOAT4 rotation = GetWorldRotation();
+
+    // 기본 전방(+Z)에 회전 적용
+    XMVECTOR forward = XMVector3Rotate(
+        XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f),
+        XMLoadFloat4(&rotation)
+    );
+
+    XMFLOAT3 result;
+    XMStoreFloat3(&result, forward);
+
+    return result;
+}
+
+XMFLOAT3 Transform::Right() const
+{
+    // 월드 회전 가져오기
+    XMFLOAT4 rotation = GetWorldRotation();
+
+    // 기본 오른쪽(+X)에 회전 적용
+    XMVECTOR right = XMVector3Rotate(
+        XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f),
+        XMLoadFloat4(&rotation)
+    );
+
+    XMFLOAT3 result;
+    XMStoreFloat3(&result, right);
+
+    return result;
+}
+
+
+void Transform::TranslateLocal(
+    const XMFLOAT3& movement)
+{
+    // 현재 Local 위치 가져오기
+    XMFLOAT3 position = GetLocalPosition();
+
+    // 부모 기준 좌표 이동
+    position.x += movement.x;
+    position.y += movement.y;
+    position.z += movement.z;
+
+    SetLocalPosition(position);
+}
+
+bool Transform::TranslateWorld(
+    const XMFLOAT3& movement)
+{
+    // 현재 World 위치 가져오기
+    XMFLOAT3 position = GetWorldPosition();
+
+    // 월드 기준 좌표 이동
+    position.x += movement.x;
+    position.y += movement.y;
+    position.z += movement.z;
+
+    // 부모 변환 역산은 기존 함수에 위임
+    return SetWorldPosition(position);
+}
+
+
+XMMATRIX Transform::GetViewMatrix() const
+{
+    // 월드 위치와 회전
+    XMFLOAT3 worldPosition = GetWorldPosition();
+    XMFLOAT4 worldRotation = GetWorldRotation();
+
+    XMVECTOR position =
+        XMLoadFloat3(&worldPosition);
+
+    XMVECTOR rotation =
+        XMLoadFloat4(&worldRotation);
+
+    // 기본 전방(+Z)
+    XMVECTOR forward = XMVector3Rotate(
+        XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f),
+        rotation
+    );
+
+    // 기본 위쪽(+Y)
+    XMVECTOR up = XMVector3Rotate(
+        XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f),
+        rotation
+    );
+
+    // 현재 Transform을 기준으로 View Matrix 계산
+    return XMMatrixLookToLH(
+        position,
+        forward,
+        up
+    );
+}
+
+
 void Transform::Rotate(const XMFLOAT3& eulerRadians)
 {
     // 현재 로컬 회전 가져오기
@@ -559,6 +663,59 @@ void Transform::Rotate(const XMFLOAT3& eulerRadians)
         XMQuaternionNormalize(result)
     );
 }
+
+
+
+bool Transform::RotateAround(
+    const XMFLOAT3& worldCenter,
+    const XMFLOAT3& axis,
+    float angleRadians)
+{
+    // 회전축 유효성 검사
+    XMVECTOR rotationAxis = XMLoadFloat3(&axis);
+
+    float lengthSq = XMVectorGetX(
+        XMVector3LengthSq(rotationAxis)
+    );
+
+    if (!std::isfinite(lengthSq) ||
+        lengthSq < 0.000001f ||
+        !std::isfinite(angleRadians))
+    {
+        return false;
+    }
+
+    rotationAxis = XMVector3Normalize(rotationAxis);
+
+    // 현재 월드 위치와 공전 중심
+    XMFLOAT3 currentPosition = GetWorldPosition();
+
+    XMVECTOR position = XMLoadFloat3(&currentPosition);
+    XMVECTOR center = XMLoadFloat3(&worldCenter);
+
+    // 중심에서 현재 위치까지의 벡터
+    XMVECTOR offset = position - center;
+
+    // 회전량 계산
+    XMVECTOR rotation = XMQuaternionRotationAxis(
+        rotationAxis,
+        angleRadians
+    );
+
+    // 위치와 방향 회전
+    XMVECTOR rotatedOffset =
+        XMVector3Rotate(offset, rotation);
+
+    XMFLOAT3 newPosition;
+    XMStoreFloat3(
+        &newPosition,
+        center + rotatedOffset
+    );
+
+    // 월드 위치 설정
+    return SetWorldPosition(newPosition);
+}
+
 
 
 

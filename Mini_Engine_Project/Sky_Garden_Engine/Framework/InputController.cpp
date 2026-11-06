@@ -1,10 +1,8 @@
+
 #include "InputController.h"
 #include "GameObject.h"
 
 #include <Windows.h>
-#include <DirectXMath.h>
-
-using namespace DirectX;
 
 InputController::InputController(
     GameObject* ownerObject,
@@ -16,30 +14,37 @@ InputController::InputController(
 
 void InputController::Update(float deltaTime)
 {
-    XMFLOAT3 position =
-        gameObject->transform.GetLocalPosition();
-
     float moveAmount = m_MoveSpeed * deltaTime;
+
+    // 입력 방향
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
 
     // WASD 이동
     if (GetAsyncKeyState('W') & 0x8000)
-        position.z += moveAmount;
+        z += 1.0f;
 
     if (GetAsyncKeyState('S') & 0x8000)
-        position.z -= moveAmount;
+        z -= 1.0f;
 
     if (GetAsyncKeyState('A') & 0x8000)
-        position.x -= moveAmount;
+        x -= 1.0f;
 
     if (GetAsyncKeyState('D') & 0x8000)
-        position.x += moveAmount;
+        x += 1.0f;
 
     // QE 상하 이동
     if (GetAsyncKeyState('Q') & 0x8000)
-        position.y += moveAmount;
+        y += 1.0f;
 
     if (GetAsyncKeyState('E') & 0x8000)
-        position.y -= moveAmount;
+        y -= 1.0f;
 
-    gameObject->transform.SetLocalPosition(position);
+    // 부모 기준 좌표 이동
+    gameObject->transform.TranslateLocal({
+        x * moveAmount,
+        y * moveAmount,
+        z * moveAmount
+        });
 }

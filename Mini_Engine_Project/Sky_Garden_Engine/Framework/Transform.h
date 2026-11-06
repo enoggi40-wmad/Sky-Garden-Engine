@@ -51,9 +51,29 @@ public:
     // 로컬 회전을 오일러 각도로 반환 (Degree)
     XMFLOAT3 GetLocalEulerAngles() const;
 
+    // 월드 기준 방향 벡터
+    XMFLOAT3 Forward() const;
+    XMFLOAT3 Right() const;
+
+    // Local / World 좌표 기준 이동
+    void TranslateLocal(const XMFLOAT3& movement);
+    bool TranslateWorld(const XMFLOAT3& movement);
+
+    // 현재 Transform을 기준으로 View Matrix 생성
+    XMMATRIX GetViewMatrix() const;
+
 public:
     // 로컬 좌표축을 기준으로 회전 (라디안)
     void Rotate(const XMFLOAT3& eulerRadians);
+
+    // 월드 좌표의 중심과 회전축을 기준으로 회전
+    bool RotateAround(
+        const DirectX::XMFLOAT3& worldCenter,
+        const DirectX::XMFLOAT3& axis,
+        float angleRadians
+    );
+
+    
 
 private:
 

@@ -382,6 +382,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         return;
     }
 
+
     const int crystalCount = 12;
     const float orbitRadius = 700.0f;
 
@@ -396,34 +397,46 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
         crystal->SetParent(orbitCenter);
 
-        // 공전 중심
+        // 공전 중심의 월드 위치
+        XMFLOAT3 center =
+            orbitCenter->transform.GetWorldPosition();
+
+        // 공전 반지름만큼 떨어진 초기 위치
         crystal->transform.SetWorldPosition({
-            0.0f, -300.0f, 0.0f
+            center.x + orbitRadius,
+            center.y,
+            center.z
             });
+
+        // 초기 각도만큼 배치
+        crystal->transform.RotateAround(
+            center,
+            { 0.0f, 1.0f, 0.0f },
+            startAngle
+        );
 
         crystal->transform.SetLocalEulerAngles({
-        45.0f,  // X축 회전
-        0.0f,
-        0.0f
+            45.0f, 0.0f, 0.0f
             });
 
-        // 크리스탈 크기
         crystal->transform.SetWorldScale({
             50.0f, 50.0f, 50.0f
             });
 
         crystal->AddComponent<ModelRenderer>(crystalModel);
 
-        // 공전 Component 추가
+        // Orbiter는 공전만 담당
         crystal->AddComponent<Orbiter>(
             &orbitCenter->transform,
-            700.0f,
-            0.3f,
-            startAngle
+            0.3f
         );
+
+		// Rotator는 자전만 담당
+		crystal->AddComponent<Rotator>(0.5f);
 
         AddGameObject(crystal);
     }
+
 
 
 

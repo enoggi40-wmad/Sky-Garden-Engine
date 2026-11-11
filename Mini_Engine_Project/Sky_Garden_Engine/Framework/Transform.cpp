@@ -633,6 +633,7 @@ void Transform::Rotate(const XMFLOAT3& eulerRadians)
 
 
 
+
 bool Transform::RotateAround(
     const XMFLOAT3& worldCenter,
     const XMFLOAT3& axis,
@@ -654,36 +655,95 @@ bool Transform::RotateAround(
 
     rotationAxis = XMVector3Normalize(rotationAxis);
 
-    // 현재 월드 위치와 공전 중심
+    // 현재 월드 위치와 회전
     XMFLOAT3 currentPosition = GetWorldPosition();
+    XMFLOAT4 currentRotation = GetWorldRotation();
 
     XMVECTOR position = XMLoadFloat3(&currentPosition);
     XMVECTOR center = XMLoadFloat3(&worldCenter);
 
-    // 중심에서 현재 위치까지의 벡터
+    // 중심을 기준으로 회전할 각도
+    XMVECTOR deltaRotation =
+        XMQuaternionRotationAxis(rotationAxis, angleRadians);
+
+    // 1. 공전 위치 계산
     XMVECTOR offset = position - center;
 
-    // 회전량 계산
-    XMVECTOR rotation = XMQuaternionRotationAxis(
-        rotationAxis,
-        angleRadians
-    );
-
-    // 위치와 방향 회전
     XMVECTOR rotatedOffset =
-        XMVector3Rotate(offset, rotation);
+        XMVector3Rotate(offset, deltaRotation);
 
     XMFLOAT3 newPosition;
-    XMStoreFloat3(
-        &newPosition,
-        center + rotatedOffset
+    XMStoreFloat3(&newPosition, center + rotatedOffset);
+
+    // 2. 월드 회전 계산
+    XMMATRIX currentRotationMatrix =
+        XMMatrixRotationQuaternion(
+            XMLoadFloat4(&currentRotation)
+        );
+
+    XMMATRIX deltaRotationMatrix =
+        XMMatrixRotationQuaternion(deltaRotation);
+
+    XMVECTOR newRotationQuaternion =
+        XMQuaternionRotationMatrix(
+            currentRotationMatrix * deltaRotationMatrix
+        );
+
+    XMFLOAT4 newRotation;
+    XMStoreFloat4(
+        &newRotation,
+        XMQuaternionNormalize(newRotationQuaternion)
     );
 
-    // 월드 위치 설정
-    return SetWorldPosition(newPosition);
+    // 3. 계산한 월드 위치와 회전 적용
+    if (!SetWorldPosition(newPosition))
+        return false;
+
+    SetWorldRotation(newRotation);
+
+    return true;
 }
 
 
+bool Transform::SetPositionAround(
+    const XMFLOAT3& worldCenter,
+    const XMFLOAT3& axis,
+    float radius,
+    float angleRadians)
+{
+    XMVECTOR rotationAxis = XMLoadFloat3(&axis);
+
+    float lengthSq = XMVectorGetX(
+        XMVector3LengthSq(rotationAxis)
+    );
+
+    if (!std::isfinite(lengthSq) ||
+        lengthSq < 0.000001f ||
+        !std::isfinite(radius) ||
+        !std::isfinite(angleRadians))
+    {
+        return false;
+    }
+
+    rotationAxis = XMVector3Normalize(rotationAxis);
+
+    // 월드 X축 방향을 초기 기준 방향으로 사용
+    XMVECTOR offset = XMVectorSet(radius, 0.0f, 0.0f, 0.0f);
+
+    XMVECTOR rotation =
+        XMQuaternionRotationAxis(rotationAxis, angleRadians);
+
+    XMVECTOR rotatedOffset =
+        XMVector3Rotate(offset, rotation);
+
+    XMVECTOR position =
+        XMLoadFloat3(&worldCenter) + rotatedOffset;
+
+    XMFLOAT3 result;
+    XMStoreFloat3(&result, position);
+
+    return SetWorldPosition(result);
+}
 
 
 

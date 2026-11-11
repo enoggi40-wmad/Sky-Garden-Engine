@@ -71,6 +71,14 @@ public:
         float angleRadians
     );
 
+	// 월드 좌표의 중심과 회전축을 기준으로 위치를 원형으로 이동
+    bool SetPositionAround(
+        const XMFLOAT3& worldCenter,
+        const XMFLOAT3& axis,
+        float radius,
+        float angleRadians
+    );
+
     
 
 private:

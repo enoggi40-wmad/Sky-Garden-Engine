@@ -363,18 +363,17 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         new GameObject("CrystalOrbitCenter");
 
     // CircleStone을 따라 이동
-    orbitCenter->SetParent(circleStone, false);
+    orbitCenter->SetParent(circleStone);
 
     orbitCenter->transform.SetWorldPosition({
         0.0f, -300.0f, 0.0f
         });
 
+    AddGameObject(orbitCenter);
+
     // =====================================================
     // Crystal Prism (CircleStone 자식 12개)
     // =====================================================
-
-    AddGameObject(orbitCenter);
-
     ModelClass* crystalModel =
         resourceManager->GetModel("CrystalPrism");
 
@@ -395,18 +394,18 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         float startAngle =
             (XM_2PI / crystalCount) * i;
 
-        crystal->SetParent(circleStone, false);
+        crystal->SetParent(orbitCenter);
 
         // 공전 중심
         crystal->transform.SetWorldPosition({
             0.0f, -300.0f, 0.0f
             });
 
-        //crystal->transform.SetLocalEulerAngles({
-        //45.0f,  // X축 회전
-        //0.0f,
-        //0.0f
-        //    });
+        crystal->transform.SetLocalEulerAngles({
+        45.0f,  // X축 회전
+        0.0f,
+        0.0f
+            });
 
         // 크리스탈 크기
         crystal->transform.SetWorldScale({

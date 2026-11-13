@@ -37,6 +37,8 @@ public:
 
 	void LoadScene(SceneType type);
 	void Shutdown();
+
+	bool IsTitleScene() const;
 	
 
 private:

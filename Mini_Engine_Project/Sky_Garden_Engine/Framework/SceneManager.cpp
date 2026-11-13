@@ -104,9 +104,6 @@ void SceneManager::LoadScene(SceneType type)
         m_CurrentScene = new MainScene;
         break;
     
-    /*case SceneType::Test:
-        m_CurrentScene = new TestScene;
-		break;*/
     }
 
     m_CurrentSceneType = type;
@@ -126,4 +123,9 @@ void SceneManager::Shutdown()
     }
 
     m_ResourceManager = nullptr;
+}
+
+bool SceneManager::IsTitleScene() const
+{
+    return m_CurrentSceneType == SceneType::Title;
 }

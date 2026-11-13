@@ -168,6 +168,7 @@
     <ClCompile Include="ModelRenderer.cpp" />
     <ClCompile Include="ObjLoader.cpp" />
     <ClCompile Include="Orbiter.cpp" />
+    <ClCompile Include="PerformanceMonitor.cpp" />
     <ClCompile Include="PhongLightShaderClass.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RendererManager.cpp" />
@@ -216,6 +217,7 @@
     <ClInclude Include="ModelRenderer.h" />
     <ClInclude Include="ObjLoader.h" />
     <ClInclude Include="Orbiter.h" />
+    <ClInclude Include="PerformanceMonitor.h" />
     <ClInclude Include="PhongLightShaderClass.h" />
     <ClInclude Include="RenderContext.h" />
     <ClInclude Include="Renderer.h" />

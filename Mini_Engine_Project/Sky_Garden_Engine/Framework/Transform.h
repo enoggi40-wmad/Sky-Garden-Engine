@@ -55,12 +55,17 @@ public:
     XMFLOAT3 Forward() const;
     XMFLOAT3 Right() const;
 
+    Transform* GetParent() const;
+    
+    static bool s_UseDirtyFlag;
+
+public:
+    Transform* GetRoot() const;
+
     // Local / World 좌표 기준 이동
     void TranslateLocal(const XMFLOAT3& movement);
     bool TranslateWorld(const XMFLOAT3& movement);
 
-
-public:
     // 로컬 좌표축을 기준으로 회전 (라디안)
     void Rotate(const XMFLOAT3& eulerRadians);
 
@@ -78,6 +83,8 @@ public:
         float radius,
         float angleRadians
     );
+
+
 
     
 
@@ -107,4 +114,25 @@ private:
     XMFLOAT3 m_LocalScale = {
         1.0f, 1.0f, 1.0f
     };
+
+private:
+	// Local Matrix Cache
+	mutable XMMATRIX m_CachedLocalMatrix = XMMatrixIdentity();
+	mutable bool m_LocalDirty = true;
+
+    // World Matrix Cache
+    // 이전에 계산한 World Matrix 저장
+    mutable XMMATRIX m_CachedWorldMatrix = XMMatrixIdentity();
+    // 자신의 World Matrix를 다시 계산해야 하는지 표시
+    mutable bool m_WorldDirty = true;
+
+    // 부모의 World Matrix 변경 추적
+    // 자신의 World Matrix 갱신 버전
+    mutable unsigned long long m_WorldVersion = 0;
+    // 마지막 계산 당시 부모의 버전
+    mutable unsigned long long m_CachedParentVersion = 0;
+    // 마지막 계산 당시 부모 Transform 
+    mutable const Transform* m_CachedParent = nullptr;
+    
+
 };

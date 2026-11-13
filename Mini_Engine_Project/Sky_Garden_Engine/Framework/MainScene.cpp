@@ -371,19 +371,11 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
     AddGameObject(orbitCenter);
 
+
     // =====================================================
-    // Crystal Prism (CircleStone 자식 12개)
+    // Crystal Prism
     // =====================================================
-    ModelClass* crystalModel =
-        resourceManager->GetModel("CrystalPrism");
-
-    if (!crystalModel)
-    {
-        return;
-    }
-
-
-    const int crystalCount = 12;
+    const int crystalCount = 100;
     const float orbitRadius = 700.0f;
 
     for (int i = 0; i < crystalCount; i++)
@@ -395,47 +387,32 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         float startAngle =
             (XM_2PI / crystalCount) * i;
 
-        crystal->SetParent(orbitCenter);
+        //crystal->SetParent(orbitCenter);
 
-        // 공전 중심의 월드 위치
-        XMFLOAT3 center =
-            orbitCenter->transform.GetWorldPosition();
-
-        // 공전 반지름만큼 떨어진 초기 위치
+        // MainScene은 초기 위치만 설정
         crystal->transform.SetWorldPosition({
-            center.x + orbitRadius,
-            center.y,
-            center.z
-            });
-
-        // 초기 각도만큼 배치
-        crystal->transform.RotateAround(
-            center,
-            { 0.0f, 1.0f, 0.0f },
-            startAngle
-        );
-
-        crystal->transform.SetLocalEulerAngles({
-            45.0f, 0.0f, 0.0f
+            std::cos(startAngle) * orbitRadius,
+            -300.0f,
+            std::sin(startAngle) * orbitRadius
             });
 
         crystal->transform.SetWorldScale({
             50.0f, 50.0f, 50.0f
             });
 
-        crystal->AddComponent<ModelRenderer>(crystalModel);
+        crystal->AddComponent<ModelRenderer>(crystalPrismModel);
 
-        // Orbiter는 공전만 담당
-        crystal->AddComponent<Orbiter>(
+        // 공전은 Orbiter가 전부 관리
+        /*crystal->AddComponent<Orbiter>(
             &orbitCenter->transform,
-            0.3f
-        );
-
-		// Rotator는 자전만 담당
-		crystal->AddComponent<Rotator>(0.5f);
+            orbitRadius,
+            0.3f,
+            startAngle
+        );*/
 
         AddGameObject(crystal);
     }
+
 
 
 

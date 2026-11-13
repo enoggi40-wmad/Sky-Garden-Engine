@@ -53,11 +53,15 @@ public:
 	bool SetPerformanceInfo(
 		int fps,
 		int cpu,
+		float frameTime,
+		float memoryMB,
 		int objectCount,
 		int polygonCount,
 		int screenWidth,
 		int screenHeight,
-		ID3D11DeviceContext*);
+		ID3D11DeviceContext* deviceContext
+	);
+
 
 private:
 	bool InitializeSentence(SentenceType**, int, ID3D11Device*);

@@ -11,6 +11,8 @@
 #include "d3dclass.h"
 #include "ShaderManager.h"
 #include "ResourceManager.h"
+#include "PerformanceMonitor.h"
+#include "textclass.h"
 
 
 /////////////
@@ -41,6 +43,15 @@ public:
 
 private:
     bool Render();
+
+    PerformanceMonitor m_PerformanceMonitor;
+
+    TextClass* m_Text = nullptr;
+
+    bool m_ShowPerformanceMonitor = true;
+    bool m_PreviousF4Pressed = false;
+
+    float m_PerformanceTextTimer = 0.0f;
 
 private:
     // Direct3D

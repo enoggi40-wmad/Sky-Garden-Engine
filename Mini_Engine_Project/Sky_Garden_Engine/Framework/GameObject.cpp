@@ -152,6 +152,9 @@ bool GameObject::SetParent(
         transform.m_Parent = nullptr;
     }
 
+    // 11. 부모 변경으로 World Matrix 캐시 무효화
+    transform.m_WorldDirty = true;
+
     return true;
 }
 

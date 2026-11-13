@@ -2,21 +2,50 @@
 #include "Transform.h"
 #include <cmath>
 
+bool Transform::s_UseDirtyFlag = true;
+
 // 자신의 로컬 행렬에 부모의 월드 행렬을 곱해 최종 월드 행렬 계산
 XMMATRIX Transform::GetWorldMatrix() const
 {
-    // 자신의 위치, 회전, 크기로 만든 로컬 행렬
-    XMMATRIX localMatrix = GetLocalMatrix();
+    XMMATRIX parentWorldMatrix = XMMatrixIdentity();
+    unsigned long long parentVersion = 0;
 
-    // 부모가 있으면 부모의 월드 변환까지 반영
+    // 부모의 월드 행렬과 버전 확인
     if (m_Parent)
     {
-        return localMatrix * m_Parent->GetWorldMatrix();
+        parentWorldMatrix = m_Parent->GetWorldMatrix();
+        parentVersion = m_Parent->m_WorldVersion;
     }
 
-    // 부모가 없으면 로컬 변환이 곧 월드 변환
-    return localMatrix;
+    // 부모가 다른 오브젝트로 바뀌었거나, 
+    // 부모의 행렬이 이전에 계산했을 때와 달라졌는가?
+    bool parentChanged =
+        (m_CachedParent != m_Parent) ||
+        (m_CachedParentVersion != parentVersion);
+
+    // 자신과 부모 모두 변경되지 않았다면 캐시 재사용
+    if (!m_WorldDirty && !parentChanged && s_UseDirtyFlag)
+    {
+        return m_CachedWorldMatrix;
+    }
+
+    // 월드 행렬 재계산
+    m_CachedWorldMatrix =
+        GetLocalMatrix() * parentWorldMatrix;
+
+    // 계산 완료
+    m_WorldDirty = false;
+
+    // 현재 부모 정보 저장
+    m_CachedParent = m_Parent;
+    m_CachedParentVersion = parentVersion;
+
+    // 월드 행렬 버전 갱신
+    ++m_WorldVersion;
+
+    return m_CachedWorldMatrix;
 }
+
 
 bool Transform::SetWorldMatrix(const XMMATRIX& worldMatrix)
 {
@@ -56,6 +85,14 @@ bool Transform::SetWorldMatrix(const XMMATRIX& worldMatrix)
 // 자신의 로컬 위치, 회전, 크기로 부모 기준 변환 행렬 생성
 XMMATRIX Transform::GetLocalMatrix() const
 {
+	// 캐시된 로컬 행렬이 유효하면 재계산하지 않고 반환
+    // 전에 계산해 둔 로컬 행렬이 지금도 그대로 쓸 수 있다면, 
+    // 다시 계산하지 말고 저장된 행렬을 가져옴
+    if (!m_LocalDirty && s_UseDirtyFlag)
+    {
+        return m_CachedLocalMatrix;
+    }
+
     // 로컬 크기 행렬 생성
     XMMATRIX scaleMatrix =
         XMMatrixScaling(
@@ -79,7 +116,14 @@ XMMATRIX Transform::GetLocalMatrix() const
             m_LocalPosition.z
         );
 
-    return scaleMatrix * rotationMatrix * translationMatrix;
+    // 계산 결과 저장
+    m_CachedLocalMatrix =
+        scaleMatrix * rotationMatrix * translationMatrix;
+
+    // 계산 완료
+    m_LocalDirty = false;
+
+    return m_CachedLocalMatrix;
 }
 
 // 전달받은 행렬을 위치, 회전, 크기로 분해해서 Transform에 저장
@@ -166,6 +210,9 @@ bool Transform::TrySetLocalMatrix(const XMMATRIX& matrix)
     m_LocalRotation = newRotation;
     m_LocalScale = newScale;
 
+    m_LocalDirty = true;
+    m_WorldDirty = true;
+
     return true;
 }
 
@@ -205,6 +252,8 @@ bool Transform::SetWorldPosition(const XMFLOAT3& worldPosition)
     if (!m_Parent)
     {
         m_LocalPosition = worldPosition;
+        m_LocalDirty = true;
+        m_WorldDirty = true;
         return true;
     }
 
@@ -251,6 +300,8 @@ bool Transform::SetWorldPosition(const XMFLOAT3& worldPosition)
     }
 
     m_LocalPosition = result;
+    m_LocalDirty = true;
+    m_WorldDirty = true;
 
     return true;
 }
@@ -267,6 +318,9 @@ XMFLOAT3 Transform::GetLocalPosition() const
 void Transform::SetLocalPosition(const XMFLOAT3& localPosition)
 {
     m_LocalPosition = localPosition;
+
+    m_LocalDirty = true;
+    m_WorldDirty = true;
 }
 
 
@@ -377,6 +431,9 @@ void Transform::SetLocalRotation(const XMFLOAT4& rotation)
         &m_LocalRotation,
         XMQuaternionNormalize(quaternion)
     );
+
+    m_LocalDirty = true;
+    m_WorldDirty = true;
 }
 
 
@@ -511,6 +568,9 @@ void Transform::SetLocalScale(const XMFLOAT3& localScale)
     }
 
     m_LocalScale = localScale;
+
+    m_LocalDirty = true;
+    m_WorldDirty = true;
 }
 
 void Transform::SetLocalEulerAngles(const XMFLOAT3& eulerDegrees)
@@ -629,6 +689,9 @@ void Transform::Rotate(const XMFLOAT3& eulerRadians)
         &m_LocalRotation,
         XMQuaternionNormalize(result)
     );
+
+    m_LocalDirty = true;
+    m_WorldDirty = true;
 }
 
 
@@ -745,6 +808,22 @@ bool Transform::SetPositionAround(
     return SetWorldPosition(result);
 }
 
+Transform* Transform::GetParent() const
+{
+    return m_Parent;
+}
+
+Transform* Transform::GetRoot() const
+{
+    Transform* root = const_cast<Transform*>(this);
+
+    while (root->m_Parent)
+    {
+        root = root->m_Parent;
+    }
+
+    return root;
+}
 
 
 

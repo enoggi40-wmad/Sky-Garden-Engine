@@ -20,6 +20,9 @@ GraphicsClass::GraphicsClass()
 
     // Resource Manager
     m_ResourceManager = nullptr;
+
+    // Text
+    m_Text = nullptr;
 }
 
 
@@ -145,44 +148,108 @@ bool GraphicsClass::Initialize(
         return false;
     }
 
-
-    return true;
-}
-
-
-bool GraphicsClass::Frame(int fps, int cpu)
-{
-    static auto previousTime =
-        std::chrono::high_resolution_clock::now();
-
-    auto currentTime =
-        std::chrono::high_resolution_clock::now();
-
-    std::chrono::duration<float> elapsedTime =
-        currentTime - previousTime;
-
-    float deltaTime =
-        elapsedTime.count();
-
-    previousTime =
-        currentTime;
-
-
-    m_SceneManager->Update(
-        deltaTime
+    
+    m_PerformanceMonitor.Initialize(
+        screenWidth,
+        screenHeight
     );
 
 
-    bool result = Render();
+    m_Text = new TextClass;
 
-    if (!result)
+    if (!m_Text)
+    {
+        return false;
+    }
+
+    XMMATRIX baseViewMatrix =
+        XMMatrixTranslation(0.0f, 0.0f, 1.0f);
+
+    if (!m_Text->Initialize(
+        m_D3D->GetDevice(),
+        m_D3D->GetDeviceContext(),
+        hwnd,
+        screenWidth,
+        screenHeight,
+        baseViewMatrix))
     {
         return false;
     }
 
 
+
+
     return true;
 }
+
+
+
+bool GraphicsClass::Frame(int fps, int cpu)
+{
+    static auto previousTime =
+        std::chrono::steady_clock::now();
+
+    auto currentTime =
+        std::chrono::steady_clock::now();
+
+    std::chrono::duration<float> elapsedTime =
+        currentTime - previousTime;
+
+    float deltaTime = elapsedTime.count();
+
+    previousTime = currentTime;
+
+    // 성능 정보 업데이트
+    m_PerformanceMonitor.Update(
+        fps,
+        cpu,
+        deltaTime
+    );
+
+    m_PerformanceTextTimer += deltaTime;
+
+    // 0.5초마다 텍스트 갱신
+    if (m_PerformanceTextTimer >= 0.5f)
+    {
+        if (!m_Text->SetPerformanceInfo(
+            m_PerformanceMonitor.GetFPS(),
+            m_PerformanceMonitor.GetCPUUsage(),
+            m_PerformanceMonitor.GetFrameTime(),
+            m_PerformanceMonitor.GetMemoryUsageMB(),
+            -1, // Object Count: 아직 연결 전
+            -1, // Polygon Count: 아직 연결 전
+            m_PerformanceMonitor.GetScreenWidth(),
+            m_PerformanceMonitor.GetScreenHeight(),
+            m_D3D->GetDeviceContext()))
+        {
+            return false;
+        }
+
+        m_PerformanceTextTimer = 0.0f;
+    }
+
+    // F4: 성능 모니터 표시 전환
+    bool f4Pressed =
+        (GetAsyncKeyState(VK_F4) & 0x8000) != 0;
+
+    if (f4Pressed && !m_PreviousF4Pressed)
+    {
+        m_ShowPerformanceMonitor =
+            !m_ShowPerformanceMonitor;
+    }
+
+    m_PreviousF4Pressed = f4Pressed;
+
+    // Scene 업데이트
+    m_SceneManager->Update(deltaTime);
+
+    // 렌더링
+    if (!Render())
+        return false;
+
+    return true;
+}
+
 
 
 bool GraphicsClass::Render()
@@ -250,6 +317,35 @@ bool GraphicsClass::Render()
 
 
     // =====================================================
+    // Performance Monitor Render
+    // =====================================================
+
+    if (m_ShowPerformanceMonitor &&
+        m_Text &&
+        !m_SceneManager->IsTitleScene())
+    {
+        XMMATRIX worldMatrix;
+        m_D3D->GetWorldMatrix(worldMatrix);
+
+        m_D3D->TurnZBufferOff();
+        m_D3D->TurnOnAlphaBlending();
+
+        bool textResult = m_Text->Render(
+            m_D3D->GetDeviceContext(),
+            worldMatrix,
+            orthoMatrix
+        );
+
+        m_D3D->TurnOffAlphaBlending();
+        m_D3D->TurnZBufferOn();
+
+        if (!textResult)
+            return false;
+    }
+
+
+
+    // =====================================================
     // Scene End
     // =====================================================
 
@@ -262,6 +358,17 @@ bool GraphicsClass::Render()
 
 void GraphicsClass::Shutdown()
 {
+	// =====================================================
+	// Text
+	// =====================================================
+
+    if (m_Text)
+    {
+        m_Text->Shutdown();
+        delete m_Text;
+        m_Text = nullptr;
+    }
+
     // =====================================================
     // Scene Manager
     // =====================================================

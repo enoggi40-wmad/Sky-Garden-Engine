@@ -73,18 +73,14 @@ bool TextClass::Initialize(
 	}
 
 	// Initialize 3 sentences.
-	result = InitializeSentence(&m_sentence1, 256, device);
-	if (!result)
-	{
+	if (!InitializeSentence(&m_sentence1, 256, device))
 		return false;
-	}
 
-	// Initialize default text once.
-	result = SetPerformanceInfo(0, 0, 0, 0, screenWidth, screenHeight, deviceContext);
-	if (!result)
-	{
+	if (!InitializeSentence(&m_sentence2, 256, device))
 		return false;
-	}
+
+	if (!InitializeSentence(&m_sentence3, 256, device))
+		return false;
 
 	return true;
 }
@@ -117,18 +113,36 @@ void TextClass::Shutdown()
 }
 
 
-bool TextClass::Render(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX orthoMatrix)
-{
-	bool result;
 
-	result = RenderSentence(deviceContext, m_sentence1, worldMatrix, orthoMatrix);
-	if (!result)
-	{
+bool TextClass::Render(
+	ID3D11DeviceContext* deviceContext,
+	XMMATRIX worldMatrix,
+	XMMATRIX orthoMatrix)
+{
+	if (!RenderSentence(
+		deviceContext,
+		m_sentence1,
+		worldMatrix,
+		orthoMatrix))
 		return false;
-	}
+
+	if (!RenderSentence(
+		deviceContext,
+		m_sentence2,
+		worldMatrix,
+		orthoMatrix))
+		return false;
+
+	if (!RenderSentence(
+		deviceContext,
+		m_sentence3,
+		worldMatrix,
+		orthoMatrix))
+		return false;
 
 	return true;
 }
+
 
 
 bool TextClass::InitializeSentence(SentenceType** sentence, int maxLength, ID3D11Device* device)
@@ -400,48 +414,64 @@ bool TextClass::RenderSentence(
 }
 
 
+
 bool TextClass::SetPerformanceInfo(
 	int fps,
 	int cpu,
+	float frameTime,
+	float memoryMB,
 	int objectCount,
 	int polygonCount,
 	int screenWidth,
 	int screenHeight,
 	ID3D11DeviceContext* deviceContext)
 {
-	char infoString[256];
-	bool result;
-
-	if (fps > 9999)
-	{
-		fps = 9999;
-	}
+	char line1[256];
+	char line2[256];
+	char line3[256];
 
 	sprintf_s(
-		infoString,
-		"FPS=%d   CPU=%d%%   OBJ=%d   POLY=%d   RES=%dx%d",
-		fps,
-		cpu,
-		objectCount,
-		polygonCount,
-		screenWidth,
-		screenHeight
+		line1,
+		"FPS: %d   CPU: %d%%   FRAME: %.2f ms",
+		fps, cpu, frameTime
 	);
 
-	result = UpdateSentence(
-		m_sentence1,
-		infoString,
-		20,
-		25,
-		0.05f,
-		0.15f,
-		0.35f,
-		deviceContext);
+	sprintf_s(
+		line2,
+		"MEMORY: %.1f MB   RES: %dx%d",
+		memoryMB, screenWidth, screenHeight
+	);
 
-	if (!result)
+	if (objectCount < 0 || polygonCount < 0)
 	{
-		return false;
+		sprintf_s(
+			line3,
+			"OBJECTS: N/A   POLYGONS: N/A"
+		);
 	}
+	else
+	{
+		sprintf_s(
+			line3,
+			"OBJECTS: %d   POLYGONS: %d",
+			objectCount, polygonCount
+		);
+	}
+
+	if (!UpdateSentence(
+		m_sentence1, line1, 20, 10,
+		0.0f, 0.0f, 0.0f, deviceContext))
+		return false;
+
+	if (!UpdateSentence(
+		m_sentence2, line2, 20, 30,
+		0.0f, 0.0f, 0.0f, deviceContext))
+		return false;
+
+	if (!UpdateSentence(
+		m_sentence3, line3, 20, 50,
+		0.0f, 0.0f, 0.0f, deviceContext))
+		return false;
 
 	return true;
 }

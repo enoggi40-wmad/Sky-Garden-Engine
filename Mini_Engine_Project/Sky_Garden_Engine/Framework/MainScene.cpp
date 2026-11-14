@@ -375,7 +375,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     // =====================================================
     // Crystal Prism
     // =====================================================
-    const int crystalCount = 100;
+    const int crystalCount = 1000;
     const float orbitRadius = 700.0f;
 
     for (int i = 0; i < crystalCount; i++)
@@ -387,7 +387,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         float startAngle =
             (XM_2PI / crystalCount) * i;
 
-        //crystal->SetParent(orbitCenter);
+        crystal->SetParent(orbitCenter);
 
         // MainScene은 초기 위치만 설정
         crystal->transform.SetWorldPosition({

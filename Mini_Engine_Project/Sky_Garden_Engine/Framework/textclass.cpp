@@ -12,6 +12,7 @@ TextClass::TextClass()
 	m_sentence1 = 0;
 	m_sentence2 = 0;
 	m_sentence3 = 0;
+	m_sentence4 = 0;
 }
 
 
@@ -82,6 +83,9 @@ bool TextClass::Initialize(
 	if (!InitializeSentence(&m_sentence3, 256, device))
 		return false;
 
+	if (!InitializeSentence(&m_sentence4, 256, device))
+		return false;
+
 	return true;
 }
 
@@ -92,6 +96,7 @@ void TextClass::Shutdown()
 	ReleaseSentence(&m_sentence1);
 	ReleaseSentence(&m_sentence2);
 	ReleaseSentence(&m_sentence3);
+	ReleaseSentence(&m_sentence4);
 
 	// Release the font shader object.
 	if (m_FontShader)
@@ -136,6 +141,13 @@ bool TextClass::Render(
 	if (!RenderSentence(
 		deviceContext,
 		m_sentence3,
+		worldMatrix,
+		orthoMatrix))
+		return false;
+
+	if (!RenderSentence(
+		deviceContext,
+		m_sentence4,
 		worldMatrix,
 		orthoMatrix))
 		return false;
@@ -415,6 +427,7 @@ bool TextClass::RenderSentence(
 
 
 
+
 bool TextClass::SetPerformanceInfo(
 	int fps,
 	int cpu,
@@ -424,11 +437,13 @@ bool TextClass::SetPerformanceInfo(
 	int polygonCount,
 	int screenWidth,
 	int screenHeight,
+	bool dirtyFlagEnabled,
 	ID3D11DeviceContext* deviceContext)
 {
 	char line1[256];
 	char line2[256];
 	char line3[256];
+	char line4[256];
 
 	sprintf_s(
 		line1,
@@ -458,6 +473,14 @@ bool TextClass::SetPerformanceInfo(
 		);
 	}
 
+	// Dirty Flag ป๓ลย
+	sprintf_s(
+		line4,
+		/*"DIRTY FLAG: %s",
+		dirtyFlagEnabled ? "ON" : "OFF"*/
+		""
+	);
+
 	if (!UpdateSentence(
 		m_sentence1, line1, 20, 10,
 		0.0f, 0.0f, 0.0f, deviceContext))
@@ -470,6 +493,11 @@ bool TextClass::SetPerformanceInfo(
 
 	if (!UpdateSentence(
 		m_sentence3, line3, 20, 50,
+		0.0f, 0.0f, 0.0f, deviceContext))
+		return false;
+
+	if (!UpdateSentence(
+		m_sentence4, line4, 20, 70,
 		0.0f, 0.0f, 0.0f, deviceContext))
 		return false;
 

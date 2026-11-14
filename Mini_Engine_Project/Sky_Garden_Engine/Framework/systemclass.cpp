@@ -2,7 +2,6 @@
 // Filename: systemclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
 #include "systemclass.h"
-#include "Transform.h"
 
 SystemClass::SystemClass()
 {

@@ -4,6 +4,7 @@
 #include "graphicsclass.h"
 #include "SceneManager.h"
 #include "InputManager.h"
+#include "Transform.h"
 
 #include <chrono>
 
@@ -184,6 +185,7 @@ bool GraphicsClass::Initialize(
 
 
 
+
 bool GraphicsClass::Frame(int fps, int cpu)
 {
     static auto previousTime =
@@ -199,7 +201,42 @@ bool GraphicsClass::Frame(int fps, int cpu)
 
     previousTime = currentTime;
 
-    // 성능 정보 업데이트
+    // =====================================================
+    // F3: Dirty Flag ON/OFF
+    // =====================================================
+
+    bool f3Pressed =
+        (GetAsyncKeyState(VK_F3) & 0x8000) != 0;
+
+    if (f3Pressed && !m_PreviousF3Pressed)
+    {
+        Transform::s_UseDirtyFlag =
+            !Transform::s_UseDirtyFlag;
+    }
+
+    m_PreviousF3Pressed = f3Pressed;
+
+
+    // =====================================================
+    // F4: Performance Monitor ON/OFF
+    // =====================================================
+
+    bool f4Pressed =
+        (GetAsyncKeyState(VK_F4) & 0x8000) != 0;
+
+    if (f4Pressed && !m_PreviousF4Pressed)
+    {
+        m_ShowPerformanceMonitor =
+            !m_ShowPerformanceMonitor;
+    }
+
+    m_PreviousF4Pressed = f4Pressed;
+
+
+    // =====================================================
+    // Performance Monitor Update
+    // =====================================================
+
     m_PerformanceMonitor.Update(
         fps,
         cpu,
@@ -216,11 +253,13 @@ bool GraphicsClass::Frame(int fps, int cpu)
             m_PerformanceMonitor.GetCPUUsage(),
             m_PerformanceMonitor.GetFrameTime(),
             m_PerformanceMonitor.GetMemoryUsageMB(),
-            -1, // Object Count: 아직 연결 전
-            -1, // Polygon Count: 아직 연결 전
+            -1,  // Object Count
+            -1,  // Polygon Count
             m_PerformanceMonitor.GetScreenWidth(),
             m_PerformanceMonitor.GetScreenHeight(),
-            m_D3D->GetDeviceContext()))
+            Transform::s_UseDirtyFlag,  // Dirty Flag ON/OFF
+            m_D3D->GetDeviceContext()
+        ))
         {
             return false;
         }
@@ -228,27 +267,24 @@ bool GraphicsClass::Frame(int fps, int cpu)
         m_PerformanceTextTimer = 0.0f;
     }
 
-    // F4: 성능 모니터 표시 전환
-    bool f4Pressed =
-        (GetAsyncKeyState(VK_F4) & 0x8000) != 0;
 
-    if (f4Pressed && !m_PreviousF4Pressed)
-    {
-        m_ShowPerformanceMonitor =
-            !m_ShowPerformanceMonitor;
-    }
+    // =====================================================
+    // Scene Update
+    // =====================================================
 
-    m_PreviousF4Pressed = f4Pressed;
-
-    // Scene 업데이트
     m_SceneManager->Update(deltaTime);
 
-    // 렌더링
+
+    // =====================================================
+    // Render
+    // =====================================================
+
     if (!Render())
         return false;
 
     return true;
 }
+
 
 
 

@@ -54,13 +54,15 @@ public:
 		int fps,
 		int cpu,
 		float frameTime,
-		float memoryMB,
+		float memoryUsageMB,
 		int objectCount,
 		int polygonCount,
 		int screenWidth,
 		int screenHeight,
+		bool dirtyFlagEnabled,  
 		ID3D11DeviceContext* deviceContext
 	);
+	
 
 
 private:
@@ -81,6 +83,8 @@ private:
 	SentenceType* m_sentence1;
 	SentenceType* m_sentence2;
 	SentenceType* m_sentence3;
+	SentenceType* m_sentence4;
+
 };
 
 #endif

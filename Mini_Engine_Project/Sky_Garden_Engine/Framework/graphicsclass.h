@@ -50,6 +50,7 @@ private:
 
     bool m_ShowPerformanceMonitor = true;
     bool m_PreviousF4Pressed = false;
+    bool m_PreviousF3Pressed = false;
 
     float m_PerformanceTextTimer = 0.0f;
 

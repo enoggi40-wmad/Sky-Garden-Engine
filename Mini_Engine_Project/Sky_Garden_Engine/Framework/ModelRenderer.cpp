@@ -68,11 +68,10 @@ ShaderType ModelRenderer::GetShaderType() const
 bool ModelRenderer::Render(
     const RenderContext& context)
 {
-    if (!m_Model)
+    if (!m_Model || !m_Material)
     {
-        // ModelClass가 연결되어 있지 않으면 렌더링할 수 없음
         return false;
-	}
+    }
 
     // 이 ModelRenderer가 붙어있는 GameObject의
     // Transform을 이용해서 World Matrix를 만든다.
@@ -137,11 +136,10 @@ bool ModelRenderer::Render(
         };
 
         XMFLOAT4 specularColor =
-        {
-            1.0f, 1.0f, 1.0f, 1.0f
-        };
+            m_Material->GetSpecularColor();
 
-        float specularPower = 32.0f;
+        float specularPower =
+            m_Material->GetSpecularPower();
 
         XMFLOAT4 pointLightColor[2] =
         {
@@ -264,11 +262,10 @@ bool ModelRenderer::Render(
         };
 
         XMFLOAT4 specularColor =
-        {
-            1.0f, 1.0f, 1.0f, 1.0f
-        };
+            m_Material->GetSpecularColor();
 
-        float specularPower = 32.0f;
+        float specularPower =
+            m_Material->GetSpecularPower();
 
         // 노멀맵 + Phong 조명으로 렌더링
         result = shader->Render(

@@ -2,6 +2,10 @@
 
 #include <vector>
 #include <DirectXMath.h>
+#include <memory>
+#include <vector>
+
+class Material;
 
 class GameObject;
 class ModelClass;
@@ -54,4 +58,10 @@ public:
 private:
     // 현재 Scene에 들어있는 GameObject 목록
     std::vector<GameObject*> gameObjects;
+
+protected:
+    Material* CreateMaterial();
+
+private:
+    std::vector<std::unique_ptr<Material>> m_Materials;
 };

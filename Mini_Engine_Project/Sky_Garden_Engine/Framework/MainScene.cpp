@@ -134,7 +134,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     GameObject* magicBillboard =
         new GameObject("MagicBillboard");
 
-    Material* billboardMaterial = new Material();
+    Material* billboardMaterial = CreateMaterial();
 
     billboardMaterial->SetShaderType(ShaderType::Texture);
 
@@ -163,7 +163,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         });
 
 
-    
+
 
     AddGameObject(magicBillboard);
 
@@ -181,7 +181,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     }
 
     // GuardianLion Material: 모델과 독립적으로 Texture 선택
-    Material* guardianLionMaterial = new Material();
+    Material* guardianLionMaterial = CreateMaterial();
     guardianLionMaterial->SetShaderType(ShaderType::Texture);
     guardianLionMaterial->SetDiffuseTexture(
         resourceManager->LoadTexture(
@@ -231,7 +231,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     }
 
     // SakuraTree Material: 모델과 독립적으로 Texture 선택
-    Material* sakuraTreeMaterial = new Material();
+    Material* sakuraTreeMaterial = CreateMaterial();
     sakuraTreeMaterial->SetShaderType(ShaderType::Texture);
     sakuraTreeMaterial->SetDiffuseTexture(
         resourceManager->LoadTexture(
@@ -277,7 +277,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         return;
     }
     // FloatingAlter Material: 모델과 독립적으로 Texture 선택
-    Material* floatingAlterMaterial = new Material();
+    Material* floatingAlterMaterial = CreateMaterial();
     floatingAlterMaterial->SetShaderType(ShaderType::Texture);
     floatingAlterMaterial->SetDiffuseTexture(
         resourceManager->LoadTexture(
@@ -319,7 +319,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     }
 
     // GoldenSpire Material: 모델과 독립적으로 Texture 선택
-    Material* goldenSpireMaterial = new Material();
+    Material* goldenSpireMaterial = CreateMaterial();
     goldenSpireMaterial->SetShaderType(ShaderType::Texture);
     goldenSpireMaterial->SetDiffuseTexture(
         resourceManager->LoadTexture(
@@ -393,7 +393,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         return;
     }
 
-    Material* circleStoneMaterial = new Material();
+    Material* circleStoneMaterial = CreateMaterial();
     circleStoneMaterial->SetShaderType(ShaderType::Texture);
 
     circleStoneMaterial->SetDiffuseTexture(
@@ -467,11 +467,12 @@ void MainScene::Initialize(ResourceManager* resourceManager)
             L"./data/Crystal_Prism2.dds"
         );
 
-    Material* material1 = new Material();
+    Material* material1 = CreateMaterial();
     material1->SetShaderType(ShaderType::PhongLight);
     material1->SetDiffuseTexture(texture1);
+    material1->SetSpecularPower(8.0f);
 
-    Material* material2 = new Material();
+    Material* material2 = CreateMaterial();
     material2->SetShaderType(ShaderType::Texture);
     material2->SetDiffuseTexture(texture2);
 
@@ -536,7 +537,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         return;
     }
     // 4개의 CrystalPrism2가 하나의 Material 공유
-    Material* crystalPrism2Material = new Material();
+    Material* crystalPrism2Material = CreateMaterial();
     crystalPrism2Material->SetShaderType(ShaderType::Texture);
     crystalPrism2Material->SetDiffuseTexture(
         resourceManager->LoadTexture(
@@ -625,7 +626,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     }
 
     // 4개의 Lantern이 하나의 Material 공유
-    Material* lanternMaterial = new Material();
+    Material* lanternMaterial = CreateMaterial();
     lanternMaterial->SetShaderType(ShaderType::Texture);
     lanternMaterial->SetDiffuseTexture(
         resourceManager->LoadTexture(

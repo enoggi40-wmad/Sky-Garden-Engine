@@ -1,8 +1,11 @@
 #pragma once
 #include "Scene.h"
+#include <memory>
+#include <vector>
 
 class ResourceManager;
 class CameraComponent;
+class Material;
 
 class MainScene : public Scene
 {
@@ -16,4 +19,6 @@ public:
 private:
 	CameraComponent* m_MainCamera;
 	CameraComponent* m_CutsceneCamera;
+
+
 };

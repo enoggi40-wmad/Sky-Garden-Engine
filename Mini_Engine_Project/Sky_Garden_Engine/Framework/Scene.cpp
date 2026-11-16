@@ -13,6 +13,8 @@
 #include "Renderer.h"
 #include "RendererManager.h"
 #include "Transform.h"
+#include "Material.h"
+#include <memory>
 //
 Scene::Scene()
 {
@@ -51,6 +53,13 @@ void Scene::AddGameObject(GameObject* gameObject)
     {
         m_RendererManager->AddRenderer(renderer);
     }
+}
+
+Material* Scene::CreateMaterial()
+{
+    m_Materials.push_back(std::make_unique<Material>());
+
+    return m_Materials.back().get();
 }
 
 void Scene::Update(float deltaTime)

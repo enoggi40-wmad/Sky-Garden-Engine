@@ -7,6 +7,7 @@
 class ModelClass;
 struct ID3D11Device;
 class BitmapClass;
+class TextureClass;
 
 class ResourceManager
 {
@@ -58,7 +59,19 @@ public:
     );
 
     ID3D11Device* GetDevice() const;
+
+public:
+    ID3D11ShaderResourceView* LoadTexture(
+        const std::string& name,
+        const wchar_t* texturePath
+    );
+
+    ID3D11ShaderResourceView* GetTexture(
+        const std::string& name
+    );
     
+private:
+    std::unordered_map<std::string, TextureClass*> m_Textures;
 
 private:
     struct ModelResourceInfo

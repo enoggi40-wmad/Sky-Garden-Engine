@@ -81,6 +81,29 @@ bool ModelRenderer::Render(
     XMMATRIX worldMatrix =
         gameObject->transform.GetWorldMatrix();
 
+    // Material에 텍스처가 있으면 우선 사용
+    // 없으면 기존 ModelClass의 텍스처 사용
+
+    ID3D11ShaderResourceView* diffuseTexture =
+        (m_Material && m_Material->GetDiffuseTexture())
+        ? m_Material->GetDiffuseTexture()
+        : m_Model->GetTexture();
+
+    ID3D11ShaderResourceView* secondTexture =
+        (m_Material && m_Material->GetSecondTexture())
+        ? m_Material->GetSecondTexture()
+        : m_Model->GetSecondTexture();
+
+    ID3D11ShaderResourceView* alphaMap =
+        (m_Material && m_Material->GetAlphaMap())
+        ? m_Material->GetAlphaMap()
+        : m_Model->GetAlphaMap();
+
+    ID3D11ShaderResourceView* normalMap =
+        (m_Material && m_Material->GetNormalMap())
+        ? m_Material->GetNormalMap()
+        : m_Model->GetNormalMap();
+
 
     // ModelClass가 가지고 있는 Vertex / Index Buffer를
     // Direct3D 렌더링 파이프라인에 준비한다.
@@ -100,7 +123,7 @@ bool ModelRenderer::Render(
             worldMatrix,
             context.viewMatrix,
             context.projectionMatrix,
-            m_Model->GetTexture()
+            diffuseTexture
         );
     }
     else if (shaderType == ShaderType::PhongLight)
@@ -145,7 +168,7 @@ bool ModelRenderer::Render(
             worldMatrix,
             context.viewMatrix,
             context.projectionMatrix,
-            m_Model->GetTexture(),
+            diffuseTexture,
             lightDirection,
             ambientColor,
             diffuseColor,
@@ -164,9 +187,9 @@ bool ModelRenderer::Render(
         // HLSL의 shaderTextures[0], [1], [2] 순서
         ID3D11ShaderResourceView* textures[3] =
         {
-            m_Model->GetTexture(),        // 풀
-            m_Model->GetSecondTexture(),  // 흙
-            m_Model->GetAlphaMap()        // S자 마스크
+            diffuseTexture,       // 풀
+            secondTexture,  // 흙
+            alphaMap       // S자 마스크
         };
 
         auto* shader =
@@ -222,8 +245,8 @@ bool ModelRenderer::Render(
         // HLSL의 shaderTextures[0], shaderTextures[1]에 대응
         ID3D11ShaderResourceView* textures[2] =
         {
-            m_Model->GetTexture(),
-            m_Model->GetNormalMap()
+            diffuseTexture,
+            normalMap
         };
 
         if (!textures[0] || !textures[1])

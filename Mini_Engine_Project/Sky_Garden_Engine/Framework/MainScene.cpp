@@ -18,6 +18,7 @@
 #include "Material.h"
 
 
+
 MainScene::MainScene()
 {
     m_MainCamera = nullptr;
@@ -330,8 +331,17 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         return;
     }
 
+    Material* circleStoneMaterial = new Material();
+    circleStoneMaterial->SetShaderType(ShaderType::Texture);
+
+    /*circleStoneMaterial->SetDiffuseTexture(
+        circleStoneModel->GetTexture()
+	);*/
+
     GameObject* circleStone =
         new GameObject("CircleStone");
+
+	
 
     // 기존 위치와 크기
     circleStone->transform.SetWorldPosition({
@@ -343,7 +353,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         });
 
 
-    circleStone->AddComponent<ModelRenderer>(circleStoneModel);
+    circleStone->AddComponent<ModelRenderer>(circleStoneModel, circleStoneMaterial);
 
     // 부모가 움직이면 아래의 수정들도 함께 움직인다.
     circleStone->AddComponent<Floater>(
@@ -379,9 +389,27 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     const int crystalCount = 12;
     const float orbitRadius = 700.0f;
 
-    Material* crystalMaterial = new Material();
+    // ResourceManager에서 Texture 로드
+    ID3D11ShaderResourceView* texture1 =
+        resourceManager->LoadTexture(
+            "CrystalTexture1",
+            L"./data/Crystal_Prism.dds"
+        );
 
-    crystalMaterial->SetShaderType(ShaderType::PhongLight);
+    ID3D11ShaderResourceView* texture2 =
+        resourceManager->LoadTexture(
+            "CrystalTexture2",
+            L"./data/Crystal_Prism2.dds"
+        );
+
+    Material* material1 = new Material();
+    material1->SetShaderType(ShaderType::PhongLight);
+    material1->SetDiffuseTexture(texture1);
+
+    Material* material2 = new Material();
+    material2->SetShaderType(ShaderType::Texture);
+    material2->SetDiffuseTexture(texture2);
+
 
     for (int i = 0; i < crystalCount; i++)
     {
@@ -407,7 +435,10 @@ void MainScene::Initialize(ResourceManager* resourceManager)
             50.0f, 50.0f, 50.0f
             });
 
-        crystal->AddComponent<ModelRenderer>(crystalPrismModel, crystalMaterial);
+        crystal->AddComponent<ModelRenderer>(
+            crystalPrismModel,
+            (i % 2 == 0) ? material1 : material2
+        );
 
         // 공전은 Orbiter가 전부 관리
         crystal->AddComponent<Orbiter>(

@@ -38,3 +38,45 @@ float Material::GetSpecularPower() const
 {
     return m_SpecularPower;
 }
+
+void Material::SetDiffuseTexture(ID3D11ShaderResourceView* texture)
+{
+    m_DiffuseTexture = texture;
+}
+
+ID3D11ShaderResourceView* Material::GetDiffuseTexture() const
+{
+    return m_DiffuseTexture;
+}
+
+void Material::SetSecondTexture(ID3D11ShaderResourceView* texture)
+{
+    m_SecondTexture = texture;
+}
+
+ID3D11ShaderResourceView* Material::GetSecondTexture() const
+{
+    return m_SecondTexture;
+}
+
+void Material::SetAlphaMap(ID3D11ShaderResourceView* texture)
+{
+    m_AlphaMap = texture;
+}
+
+ID3D11ShaderResourceView* Material::GetAlphaMap() const
+{
+    return m_AlphaMap;
+}
+
+void Material::SetNormalMap(ID3D11ShaderResourceView* texture)
+{
+    m_NormalMap = texture;
+}
+
+ID3D11ShaderResourceView* Material::GetNormalMap() const
+{
+    return m_NormalMap;
+}
+
+

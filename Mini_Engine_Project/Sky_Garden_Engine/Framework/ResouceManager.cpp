@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "DDSTextureLoader.h"
+#include "textureclass.h"
 
 ResourceManager::ResourceManager()
 {
@@ -24,6 +25,43 @@ ResourceManager::~ResourceManager()
 ID3D11Device* ResourceManager::GetDevice() const
 {
     return m_Device;
+}
+
+ID3D11ShaderResourceView* ResourceManager::LoadTexture(
+    const std::string& name,
+    const wchar_t* texturePath)
+{
+    auto it = m_Textures.find(name);
+
+    if (it != m_Textures.end())
+        return it->second->GetTexture();
+
+    if (!m_Device || !texturePath)
+        return nullptr;
+
+    TextureClass* texture = new TextureClass;
+
+    if (!texture->Initialize(m_Device, texturePath))
+    {
+        texture->Shutdown();
+        delete texture;
+        return nullptr;
+    }
+
+    m_Textures[name] = texture;
+
+    return texture->GetTexture();
+}
+
+ID3D11ShaderResourceView* ResourceManager::GetTexture(
+    const std::string& name)
+{
+    auto it = m_Textures.find(name);
+
+    if (it != m_Textures.end())
+        return it->second->GetTexture();
+
+    return nullptr;
 }
 
 ID3D11ShaderResourceView* ResourceManager::GetCubeMap(
@@ -332,6 +370,17 @@ ModelClass* ResourceManager::GetModel(
 
 void ResourceManager::Shutdown()
 {
+    for (auto& pair : m_Textures)
+    {
+        if (pair.second)
+        {
+            pair.second->Shutdown();
+            delete pair.second;
+        }
+    }
+
+    m_Textures.clear();
+
     // ResourceManager가 소유한 모든 모델 리소스 정리
     for (auto& pair : m_Models)
     {

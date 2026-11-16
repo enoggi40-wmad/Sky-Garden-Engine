@@ -15,6 +15,7 @@
 #include <Windows.h>
 #include <cmath>
 #include <string>
+#include "Material.h"
 
 
 MainScene::MainScene()
@@ -375,14 +376,20 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     // =====================================================
     // Crystal Prism
     // =====================================================
-    const int crystalCount = 1000;
+    const int crystalCount = 12;
     const float orbitRadius = 700.0f;
+
+    Material* crystalMaterial = new Material();
+
+    crystalMaterial->SetShaderType(ShaderType::PhongLight);
 
     for (int i = 0; i < crystalCount; i++)
     {
         GameObject* crystal = new GameObject(
             "CrystalPrism_" + std::to_string(i + 1)
         );
+
+        
 
         float startAngle =
             (XM_2PI / crystalCount) * i;
@@ -400,15 +407,15 @@ void MainScene::Initialize(ResourceManager* resourceManager)
             50.0f, 50.0f, 50.0f
             });
 
-        crystal->AddComponent<ModelRenderer>(crystalPrismModel);
+        crystal->AddComponent<ModelRenderer>(crystalPrismModel, crystalMaterial);
 
         // 공전은 Orbiter가 전부 관리
-        /*crystal->AddComponent<Orbiter>(
+        crystal->AddComponent<Orbiter>(
             &orbitCenter->transform,
             orbitRadius,
             0.3f,
             startAngle
-        );*/
+        );
 
         AddGameObject(crystal);
     }

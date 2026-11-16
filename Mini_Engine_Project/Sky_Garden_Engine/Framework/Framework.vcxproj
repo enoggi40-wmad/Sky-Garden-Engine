@@ -164,6 +164,7 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainScene.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="modelclass.cpp" />
     <ClCompile Include="ModelRenderer.cpp" />
     <ClCompile Include="ObjLoader.cpp" />
@@ -212,6 +213,7 @@
     <ClInclude Include="InputController.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="MainScene.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="modelclass.h" />
     <ClInclude Include="ModelData.h" />
     <ClInclude Include="ModelRenderer.h" />
@@ -227,6 +229,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="ShaderType.h" />
     <ClInclude Include="SkyBoxRenderer.h" />
     <ClInclude Include="SkyMapShaderClass.h" />
     <ClInclude Include="SkySphereClass.h" />

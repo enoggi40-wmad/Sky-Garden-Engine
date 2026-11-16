@@ -5,6 +5,7 @@
 #include "textureshaderclass.h"
 
 #include "ShaderManager.h"
+#include "Material.h"
 
 
 // ModelRenderer 생성자
@@ -16,14 +17,23 @@
 // 이 GameObject가 사용할 실제 ModelClass
 ModelRenderer::ModelRenderer(
     GameObject* ownerObject,
-    ModelClass* model)
-    : Renderer(ownerObject), m_Model(model)
+    ModelClass* model,
+    Material* material)
+    : Renderer(ownerObject),
+    m_Model(model),
+    m_Material(material),
+    m_ShaderType(ShaderType::Texture)
 {
-    m_Model = model;
-    m_ShaderType = ShaderType::Texture;
-    //m_ShaderType = ShaderType::PhongLight;
-	//m_ShaderType = ShaderType::AlphaMap;
-	//m_ShaderType = ShaderType::BumpMap;
+}
+
+void ModelRenderer::SetMaterial(Material* material)
+{
+    m_Material = material;
+}
+
+Material* ModelRenderer::GetMaterial() const
+{
+    return m_Material;
 }
 
 
@@ -33,14 +43,25 @@ ModelClass* ModelRenderer::GetModel() const
     return m_Model;
 }
 
-// ModelRenderer가 사용할 ShaderType 설정
 void ModelRenderer::SetShaderType(ShaderType type)
 {
-    m_ShaderType = type; 
+    if (m_Material)
+    {
+        m_Material->SetShaderType(type);
+    }
+    else
+    {
+        m_ShaderType = type;
+    }
 }
 
 ShaderType ModelRenderer::GetShaderType() const
 {
+    if (m_Material)
+    {
+        return m_Material->GetShaderType();
+    }
+
     return m_ShaderType;
 }
 
@@ -69,7 +90,9 @@ bool ModelRenderer::Render(
     // Shader를 이용해서 실제 모델을 화면에 그린다.
     bool result = false;
 
-    if (m_ShaderType == ShaderType::Texture)
+    ShaderType shaderType = GetShaderType();
+
+    if (shaderType == ShaderType::Texture)
     {
         result = context.shaderManager->GetTextureShader()->Render(
             context.deviceContext,
@@ -80,7 +103,7 @@ bool ModelRenderer::Render(
             m_Model->GetTexture()
         );
     }
-    else if (m_ShaderType == ShaderType::PhongLight)
+    else if (shaderType == ShaderType::PhongLight)
     {
         XMFLOAT3 lightDirection =
         {
@@ -136,7 +159,7 @@ bool ModelRenderer::Render(
 
 
     }
-    else if (m_ShaderType == ShaderType::AlphaMap)
+    else if (shaderType == ShaderType::AlphaMap)
     {
         // HLSL의 shaderTextures[0], [1], [2] 순서
         ID3D11ShaderResourceView* textures[3] =
@@ -185,7 +208,7 @@ bool ModelRenderer::Render(
 
 
     }
-    else if (m_ShaderType == ShaderType::BumpMap)
+    else if (shaderType == ShaderType::BumpMap)
     {
         // 사용할 셰이더 가져오기
         BumpMapShaderClass* shader =

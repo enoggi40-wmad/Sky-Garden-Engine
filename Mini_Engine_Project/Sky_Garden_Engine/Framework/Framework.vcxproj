@@ -151,6 +151,7 @@
     <ClCompile Include="cpuclass.cpp" />
     <ClCompile Include="d3dclass.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
+    <ClCompile Include="DirectInputClass.cpp" />
     <ClCompile Include="FbxLoader.cpp" />
     <ClCompile Include="Floater.cpp" />
     <ClCompile Include="fontclass.cpp" />
@@ -201,6 +202,7 @@
     <ClInclude Include="cpuclass.h" />
     <ClInclude Include="d3dclass.h" />
     <ClInclude Include="DDSTextureLoader.h" />
+    <ClInclude Include="DirectInputClass.h" />
     <ClInclude Include="FbxLoader.h" />
     <ClInclude Include="Floater.h" />
     <ClInclude Include="fontclass.h" />

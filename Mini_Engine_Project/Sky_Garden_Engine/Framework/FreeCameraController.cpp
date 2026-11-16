@@ -3,7 +3,7 @@
 #include "GameObject.h"
 #include "CameraComponent.h"
 #include "InputManager.h"
-
+#include "DirectInputClass.h"
 #include <Windows.h>
 #include <algorithm>
 
@@ -26,6 +26,8 @@ void FreeCameraController::Update(float deltaTime)
     if (!camera || !camera->IsActive())
         return;
 
+    auto& input = DirectInputClass::Get();
+
     Transform& transform = gameObject->transform;
 
     // 이동 속도
@@ -37,17 +39,10 @@ void FreeCameraController::Update(float deltaTime)
     float rightInput = 0.0f;
 
     // 방향키로 카메라 이동
-    if (GetAsyncKeyState(VK_UP) & 0x8000)
-        forwardInput += 1.0f;
-
-    if (GetAsyncKeyState(VK_DOWN) & 0x8000)
-        forwardInput -= 1.0f;
-
-    if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
-        rightInput += 1.0f;
-
-    if (GetAsyncKeyState(VK_LEFT) & 0x8000)
-        rightInput -= 1.0f;
+    if (input.IsKeyDown(DIK_UP)) forwardInput += 1.0f;
+    if (input.IsKeyDown(DIK_DOWN)) forwardInput -= 1.0f;
+    if (input.IsKeyDown(DIK_RIGHT)) rightInput += 1.0f;
+    if (input.IsKeyDown(DIK_LEFT)) rightInput -= 1.0f;
 
     // 카메라의 월드 방향 가져오기
     XMFLOAT3 forward = transform.Forward();
@@ -69,57 +64,26 @@ void FreeCameraController::Update(float deltaTime)
     transform.TranslateWorld(movement);
 
     // 마우스 우클릭 시 회전
-    HWND hwnd = InputManager::GetWindowHandle();
-
-    if (hwnd && (GetAsyncKeyState(VK_RBUTTON) & 0x8000))
+    if (input.IsMouseButtonDown(1))
     {
         const float mouseSensitivity = 0.15f;
 
-        RECT clientRect;
-        GetClientRect(hwnd, &clientRect);
+        float deltaX = static_cast<float>(input.GetMouseDeltaX());
+        float deltaY = static_cast<float>(input.GetMouseDeltaY());
 
-        // 화면 중앙
-        POINT center;
-        center.x =
-            (clientRect.right - clientRect.left) / 2;
-
-        center.y =
-            (clientRect.bottom - clientRect.top) / 2;
-
-        // 현재 마우스 위치
-        POINT mousePosition;
-        GetCursorPos(&mousePosition);
-        ScreenToClient(hwnd, &mousePosition);
-
-        // 마우스 이동량
-        int deltaX = mousePosition.x - center.x;
-        int deltaY = mousePosition.y - center.y;
-
-        // 회전 각도 갱신 (Degree)
         m_Yaw += deltaX * mouseSensitivity;
         m_Pitch += deltaY * mouseSensitivity;
 
-        // 상하 회전 제한
         m_Pitch = std::clamp(
             m_Pitch,
             -89.0f,
             89.0f
         );
 
-        // 회전 처리는 Transform에 위임
         transform.SetLocalEulerAngles({
             m_Pitch,
             m_Yaw,
             0.0f
             });
-
-        // 마우스를 중앙으로 이동
-        POINT screenCenter = center;
-        ClientToScreen(hwnd, &screenCenter);
-
-        SetCursorPos(
-            screenCenter.x,
-            screenCenter.y
-        );
     }
 }

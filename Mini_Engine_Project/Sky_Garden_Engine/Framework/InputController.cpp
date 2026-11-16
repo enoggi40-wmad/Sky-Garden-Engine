@@ -1,6 +1,7 @@
 
 #include "InputController.h"
 #include "GameObject.h"
+#include "DirectInputClass.h"
 
 #include <Windows.h>
 
@@ -21,25 +22,16 @@ void InputController::Update(float deltaTime)
     float y = 0.0f;
     float z = 0.0f;
 
-    // WASD 이동
-    if (GetAsyncKeyState('W') & 0x8000)
-        z += 1.0f;
+    auto& input = DirectInputClass::Get();
 
-    if (GetAsyncKeyState('S') & 0x8000)
-        z -= 1.0f;
-
-    if (GetAsyncKeyState('A') & 0x8000)
-        x -= 1.0f;
-
-    if (GetAsyncKeyState('D') & 0x8000)
-        x += 1.0f;
-
-    // QE 상하 이동
-    if (GetAsyncKeyState('Q') & 0x8000)
-        y += 1.0f;
-
-    if (GetAsyncKeyState('E') & 0x8000)
-        y -= 1.0f;
+    // wasd
+    if (input.IsKeyDown(DIK_W)) z += 1.0f;
+    if (input.IsKeyDown(DIK_S)) z -= 1.0f;
+    if (input.IsKeyDown(DIK_A)) x -= 1.0f;
+    if (input.IsKeyDown(DIK_D)) x += 1.0f;
+    // qe
+    if (input.IsKeyDown(DIK_Q)) y += 1.0f;
+    if (input.IsKeyDown(DIK_E)) y -= 1.0f;
 
     // 부모 기준 좌표 이동
     gameObject->transform.TranslateLocal({

@@ -5,15 +5,19 @@
 #include <cmath>
 
 #include "ShaderManager.h"
+#include "Material.h"
 
 using namespace DirectX;
 
 
-BillboardRenderer::BillboardRenderer(GameObject* owner,ModelClass* model)
-    : Renderer(owner)
+BillboardRenderer::BillboardRenderer(
+    GameObject* owner,
+    ModelClass* model,
+    Material* material)
+    : Renderer(owner),
+    m_Model(model),
+    m_Material(material)
 {
-    m_Model = model;
-
     SetTransparent(true);
 }
 
@@ -25,7 +29,8 @@ BillboardRenderer::~BillboardRenderer()
 bool BillboardRenderer::Render(
     const RenderContext& context)
 {
-    if (!m_Model)
+    if (!m_Model || !m_Material ||
+        !m_Material->GetDiffuseTexture())
     {
         return false;
     }
@@ -82,7 +87,7 @@ bool BillboardRenderer::Render(
             worldMatrix,
             context.viewMatrix,
             context.projectionMatrix,
-            m_Model->GetTexture()
+            m_Material->GetDiffuseTexture()
         );
 
     if (!result)

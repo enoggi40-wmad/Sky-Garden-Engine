@@ -319,8 +319,7 @@ ModelClass* ResourceManager::LoadModel(
     bool result =
         model->Initialize(
             m_Device,
-            modelData,
-            texturePath
+            modelData 
         );
 
     if (!result)

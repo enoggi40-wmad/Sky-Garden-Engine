@@ -10,7 +10,7 @@ ModelClass::ModelClass()
 {
 	m_vertexBuffer = 0;
 	m_indexBuffer = 0;
-	m_Texture = 0;
+	
 	m_model = 0;
 
 	
@@ -29,8 +29,7 @@ ModelClass::~ModelClass()
 
 bool ModelClass::Initialize(
 	ID3D11Device* device,
-	const std::vector<ModelVertexData>& modelData,
-	const WCHAR* textureFilename)
+	const std::vector<ModelVertexData>& modelData)
 {
 	bool result;
 
@@ -70,28 +69,13 @@ bool ModelClass::Initialize(
 		return false;
 	}
 
-
-	// Texture 로드
-	result =
-		LoadTexture(
-			device,
-			textureFilename
-		);
-
-	if (!result)
-	{
-		return false;
-	}
-
-
 	return true;
 }
 
 
 void ModelClass::Shutdown()
 {
-	// Release the model texture.
-	ReleaseTexture();
+	
 
 	// Shutdown the vertex and index buffers.
 	ShutdownBuffers();
@@ -122,77 +106,9 @@ int ModelClass::GetIndexCount()
 }
 
 
-ID3D11ShaderResourceView* ModelClass::GetTexture()
-{
-	return m_Texture->GetTexture();
-}
 
-// AlphaMapShader에서 사용할 두 번째 텍스처와 혼합 마스크(알파맵)를 로드 -> 추후 MaterialClass로 옮길 예정
-bool ModelClass::LoadBlendTextures(
-	ID3D11Device* device,
-	const WCHAR* secondTextureFilename,
-	const WCHAR* alphaMapFilename)
-{
-	if (!device || !secondTextureFilename || !alphaMapFilename)
-	{
-		return false;
-	}
 
-	// 두 번째 텍스처: 흙
-	TextureClass* secondTexture = new TextureClass;
 
-	if (!secondTexture->Initialize(device, secondTextureFilename))
-	{
-		secondTexture->Shutdown();
-		delete secondTexture;
-		return false;
-	}
-
-	// 세 번째 텍스처: S자 혼합 마스크
-	TextureClass* alphaMap = new TextureClass;
-
-	if (!alphaMap->Initialize(device, alphaMapFilename))
-	{
-		alphaMap->Shutdown();
-		delete alphaMap;
-
-		secondTexture->Shutdown();
-		delete secondTexture;
-		return false;
-	}
-
-	// 두 장 모두 로드에 성공했으면 기존 자원 정리
-	if (m_SecondTexture)
-	{
-		m_SecondTexture->Shutdown();
-		delete m_SecondTexture;
-	}
-
-	if (m_AlphaMap)
-	{
-		m_AlphaMap->Shutdown();
-		delete m_AlphaMap;
-	}
-
-	m_SecondTexture = secondTexture;
-	m_AlphaMap = alphaMap;
-
-	return true;
-}
-
-ID3D11ShaderResourceView* ModelClass::GetSecondTexture()
-{
-	return m_SecondTexture
-		? m_SecondTexture->GetTexture()
-		: nullptr;
-}
-
-ID3D11ShaderResourceView* ModelClass::GetAlphaMap()
-{
-	return m_AlphaMap
-		? m_AlphaMap->GetTexture()
-		: nullptr;
-}
 
 // 삼각형의 위치·UV를 이용해 각 정점의 접선 계산 -> 추후 MaterialClass로 옮길 예정
 void ModelClass::CalculateTangents(VertexType* vertices)
@@ -315,47 +231,6 @@ void ModelClass::CalculateTangents(VertexType* vertices)
 	}
 }
 
-bool ModelClass::LoadNormalMap(
-	ID3D11Device* device,
-	const WCHAR* filename)
-{
-	if (!device || !filename)
-	{
-		return false;
-	}
-
-	TextureClass* normalMap = new TextureClass;
-
-	if (!normalMap->Initialize(device, filename))
-	{
-		normalMap->Shutdown();
-		delete normalMap;
-
-		return false;
-	}
-
-	// 새 텍스처 로드에 성공하면 기존 노멀맵을 교체한다.
-	if (m_NormalMap)
-	{
-		m_NormalMap->Shutdown();
-		delete m_NormalMap;
-	}
-
-	m_NormalMap = normalMap;
-
-	return true;
-}
-
-
-ID3D11ShaderResourceView* ModelClass::GetNormalMap()
-{
-	if (!m_NormalMap)
-	{
-		return nullptr;
-	}
-
-	return m_NormalMap->GetTexture();
-}
 
 
 bool ModelClass::InitializeBuffers(ID3D11Device* device)
@@ -499,56 +374,3 @@ void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 }
 
 
-bool ModelClass::LoadTexture(ID3D11Device* device, const WCHAR* filename)
-{
-	bool result;
-
-
-	// Create the texture object.
-	m_Texture = new TextureClass;
-	if(!m_Texture)
-	{
-		return false;
-	}
-
-	// Initialize the texture object.
-	result = m_Texture->Initialize(device, filename);
-	if(!result)
-	{
-		return false;
-	}
-
-	return true;
-}
-
-
-void ModelClass::ReleaseTexture()
-{
-	if (m_NormalMap)
-	{
-		m_NormalMap->Shutdown();
-		delete m_NormalMap;
-		m_NormalMap = nullptr;
-	}
-
-	if (m_Texture)
-	{
-		m_Texture->Shutdown();
-		delete m_Texture;
-		m_Texture = nullptr;
-	}
-
-	if (m_SecondTexture)
-	{
-		m_SecondTexture->Shutdown();
-		delete m_SecondTexture;
-		m_SecondTexture = nullptr;
-	}
-
-	if (m_AlphaMap)
-	{
-		m_AlphaMap->Shutdown();
-		delete m_AlphaMap;
-		m_AlphaMap = nullptr;
-	}
-}

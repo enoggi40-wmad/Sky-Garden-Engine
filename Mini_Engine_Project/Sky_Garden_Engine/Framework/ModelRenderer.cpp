@@ -85,25 +85,18 @@ bool ModelRenderer::Render(
     // 없으면 기존 ModelClass의 텍스처 사용
 
     ID3D11ShaderResourceView* diffuseTexture =
-        (m_Material && m_Material->GetDiffuseTexture())
-        ? m_Material->GetDiffuseTexture()
-        : m_Model->GetTexture();
+        m_Material ? m_Material->GetDiffuseTexture() : nullptr;
 
     ID3D11ShaderResourceView* secondTexture =
-        (m_Material && m_Material->GetSecondTexture())
-        ? m_Material->GetSecondTexture()
-        : m_Model->GetSecondTexture();
-
+        m_Material ? m_Material->GetSecondTexture() : nullptr;
+        
     ID3D11ShaderResourceView* alphaMap =
-        (m_Material && m_Material->GetAlphaMap())
-        ? m_Material->GetAlphaMap()
-        : m_Model->GetAlphaMap();
+        m_Material ? m_Material->GetAlphaMap() : nullptr;
+        
 
     ID3D11ShaderResourceView* normalMap =
-        (m_Material && m_Material->GetNormalMap())
-        ? m_Material->GetNormalMap()
-        : m_Model->GetNormalMap();
-
+        m_Material ? m_Material->GetNormalMap() : nullptr;
+        
 
     // ModelClass가 가지고 있는 Vertex / Index Buffer를
     // Direct3D 렌더링 파이프라인에 준비한다.

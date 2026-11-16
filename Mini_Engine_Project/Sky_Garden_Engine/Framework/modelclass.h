@@ -48,8 +48,7 @@ public:
 
 	bool Initialize(
 		ID3D11Device*,
-		const std::vector<ModelVertexData>&,
-		const WCHAR*
+		const std::vector<ModelVertexData>&
 	);
 
 	void Shutdown();
@@ -96,10 +95,7 @@ private:
 private:
 	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;
 	int m_vertexCount, m_indexCount;
-	TextureClass* m_Texture;
-	TextureClass* m_SecondTexture = nullptr;
-	TextureClass* m_AlphaMap = nullptr;
-	TextureClass* m_NormalMap = nullptr;
+	
 	ModelVertexData* m_model;
 };
 

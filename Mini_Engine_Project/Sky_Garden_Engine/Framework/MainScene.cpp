@@ -62,7 +62,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
     m_MainCamera =
         mainCamera->AddComponent<CameraComponent>();
-        mainCamera->AddComponent<FreeCameraController>();
+    mainCamera->AddComponent<FreeCameraController>();
 
     SetActiveCamera(m_MainCamera);
 
@@ -84,7 +84,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
     m_CutsceneCamera =
         cutsceneCamera->AddComponent<CameraComponent>();
-        cutsceneCamera->AddComponent<FreeCameraController>();
+    cutsceneCamera->AddComponent<FreeCameraController>();
 
     AddGameObject(cutsceneCamera);
 
@@ -134,6 +134,22 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     GameObject* magicBillboard =
         new GameObject("MagicBillboard");
 
+    Material* billboardMaterial = new Material();
+
+    billboardMaterial->SetShaderType(ShaderType::Texture);
+
+    billboardMaterial->SetDiffuseTexture(
+        resourceManager->LoadTexture(
+            "MagicBillboardTexture",
+            L"./data/Magic_Billboard.dds"
+        )
+    );
+
+    magicBillboard->AddComponent<BillboardRenderer>(
+        magicBillboardModel,
+        billboardMaterial
+    );
+
     magicBillboard->transform.SetWorldPosition({
         0.0f,
         200.0f,
@@ -147,9 +163,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         });
 
 
-    magicBillboard->AddComponent<BillboardRenderer>(
-        magicBillboardModel
-    );
+    
 
     AddGameObject(magicBillboard);
 
@@ -165,6 +179,16 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     {
         return;
     }
+
+    // GuardianLion Material: 모델과 독립적으로 Texture 선택
+    Material* guardianLionMaterial = new Material();
+    guardianLionMaterial->SetShaderType(ShaderType::Texture);
+    guardianLionMaterial->SetDiffuseTexture(
+        resourceManager->LoadTexture(
+            "GuardianLionTexture",
+            L"./data/Guardian_Lion.dds"
+        )
+    );
 
     // GameObject 생성
     GameObject* guardianLion =
@@ -185,7 +209,9 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         });
 
     //guardianLion->AddComponent<Rotator>(1.0f);
-    guardianLion->AddComponent<ModelRenderer>(guardianLionModel);
+    guardianLion->AddComponent<ModelRenderer>(
+        guardianLionModel, guardianLionMaterial
+    );
 
 
     // Scene에 등록
@@ -203,6 +229,16 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     {
         return;
     }
+
+    // SakuraTree Material: 모델과 독립적으로 Texture 선택
+    Material* sakuraTreeMaterial = new Material();
+    sakuraTreeMaterial->SetShaderType(ShaderType::Texture);
+    sakuraTreeMaterial->SetDiffuseTexture(
+        resourceManager->LoadTexture(
+            "SakuraTreeTexture",
+            L"./data/Sakura_Tree.dds"
+        )
+    );
 
     GameObject* sakuraTree =
         new GameObject("SakuraTree");
@@ -222,7 +258,9 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         });
 
 
-    sakuraTree->AddComponent<ModelRenderer>(sakuraTreeModel);
+    sakuraTree->AddComponent<ModelRenderer>(
+        sakuraTreeModel, sakuraTreeMaterial
+    );
 
     AddGameObject(sakuraTree);
 
@@ -238,6 +276,16 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     {
         return;
     }
+    // FloatingAlter Material: 모델과 독립적으로 Texture 선택
+    Material* floatingAlterMaterial = new Material();
+    floatingAlterMaterial->SetShaderType(ShaderType::Texture);
+    floatingAlterMaterial->SetDiffuseTexture(
+        resourceManager->LoadTexture(
+            "FloatingAlterTexture",
+            L"./data/Floating_Alter.dds"
+        )
+    );
+
     GameObject* floatingAlter =
         new GameObject("FloatingAlter");
 
@@ -253,7 +301,9 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         0.0f
         });
 
-    floatingAlter->AddComponent<ModelRenderer>(floatingAlterModel);
+    floatingAlter->AddComponent<ModelRenderer>(
+        floatingAlterModel, floatingAlterMaterial
+    );
 
     AddGameObject(floatingAlter);
 
@@ -267,6 +317,16 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     {
         return;
     }
+
+    // GoldenSpire Material: 모델과 독립적으로 Texture 선택
+    Material* goldenSpireMaterial = new Material();
+    goldenSpireMaterial->SetShaderType(ShaderType::Texture);
+    goldenSpireMaterial->SetDiffuseTexture(
+        resourceManager->LoadTexture(
+            "GoldenSpireTexture",
+            L"./data/Golden_Spire.dds"
+        )
+    );
 
     GameObject* goldenSpire =
         new GameObject("GoldenSpire");
@@ -284,7 +344,9 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         0.0f
         });
 
-    goldenSpire->AddComponent<ModelRenderer>(goldenSpireModel);
+    goldenSpire->AddComponent<ModelRenderer>(
+        goldenSpireModel, goldenSpireMaterial
+    );
 
     AddGameObject(goldenSpire);
 
@@ -334,14 +396,17 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     Material* circleStoneMaterial = new Material();
     circleStoneMaterial->SetShaderType(ShaderType::Texture);
 
-    /*circleStoneMaterial->SetDiffuseTexture(
-        circleStoneModel->GetTexture()
-	);*/
+    circleStoneMaterial->SetDiffuseTexture(
+        resourceManager->LoadTexture(
+            "CircleStoneTexture",
+            L"./data/Circle_Stone.dds"
+        )
+    );
 
     GameObject* circleStone =
         new GameObject("CircleStone");
 
-	
+
 
     // 기존 위치와 크기
     circleStone->transform.SetWorldPosition({
@@ -417,7 +482,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
             "CrystalPrism_" + std::to_string(i + 1)
         );
 
-        
+
 
         float startAngle =
             (XM_2PI / crystalCount) * i;
@@ -470,6 +535,16 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     {
         return;
     }
+    // 4개의 CrystalPrism2가 하나의 Material 공유
+    Material* crystalPrism2Material = new Material();
+    crystalPrism2Material->SetShaderType(ShaderType::Texture);
+    crystalPrism2Material->SetDiffuseTexture(
+        resourceManager->LoadTexture(
+            "CrystalPrism2Texture",
+            L"./data/Crystal_Prism2.dds"
+        )
+    );
+
     const int crystal2Count = 4;
 
     // 각 CrystalPrism2의 기본 위치
@@ -507,7 +582,10 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
 
         // 4개의 GameObject가 하나의 CrystalPrism2 ModelClass를 공유
-        crystal2->AddComponent<ModelRenderer>(crystalPrism2Model);
+        crystal2->AddComponent<ModelRenderer>(
+            crystalPrism2Model,
+            crystalPrism2Material
+        );
 
 
 
@@ -546,6 +624,16 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         return;
     }
 
+    // 4개의 Lantern이 하나의 Material 공유
+    Material* lanternMaterial = new Material();
+    lanternMaterial->SetShaderType(ShaderType::Texture);
+    lanternMaterial->SetDiffuseTexture(
+        resourceManager->LoadTexture(
+            "LanternTexture",
+            L"./data/Lantern.dds"
+        )
+    );
+
     const int lanternCount = 4;
 
     DirectX::XMFLOAT3 lanternPositions[lanternCount] =
@@ -580,7 +668,10 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
 
         // 모델 렌더링 Component
-        lantern->AddComponent <ModelRenderer>(lanternModel);
+        lantern->AddComponent<ModelRenderer>(
+            lanternModel,
+            lanternMaterial
+        );
 
 
         // 각 Lantern의 움직임 시작 시점을 다르게 설정

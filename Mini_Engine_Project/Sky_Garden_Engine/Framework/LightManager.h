@@ -1,7 +1,7 @@
-
 #pragma once
 
 #include "Light.h"
+#include "LightData.h"
 
 #include <vector>
 #include <type_traits>
@@ -39,6 +39,10 @@ public:
 
         return result;
     }
+
+    LightData GetLightData() const;
+
+	
 
 private:
     std::vector<Light*> m_Lights;

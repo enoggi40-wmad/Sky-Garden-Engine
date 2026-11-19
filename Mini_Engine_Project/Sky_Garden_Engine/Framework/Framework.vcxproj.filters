@@ -388,6 +388,9 @@
     <ClInclude Include="ShaderManager.h">
       <Filter>Shaders_헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="LightData.h">
+      <Filter>Lights_헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\textureShader.hlsl">

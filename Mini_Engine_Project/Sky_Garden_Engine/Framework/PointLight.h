@@ -8,6 +8,7 @@ class PointLight : public Light
 	explicit PointLight(GameObject* owner);
 	~PointLight() override = default;
 
+public:
 	DirectX::XMFLOAT3 GetPosition() const;
 
 	void SetRange(float range);
@@ -16,6 +17,9 @@ class PointLight : public Light
 	// °Å¸® °¨¼è
 	void SetAttenuation(const DirectX::XMFLOAT3& attenuation);
 	DirectX::XMFLOAT3 GetAttenuation() const;
+
+	
+	
 
 private:
 

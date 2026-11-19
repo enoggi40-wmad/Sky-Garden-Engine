@@ -16,14 +16,14 @@ public:
 
 	virtual ~Light() = default;
 
-	void SetColor(const DirectX::XMFLOAT4& color) 
+	void SetDiffuseColor(const DirectX::XMFLOAT4& color) 
 	{ 
-		m_Color = color; 
+		m_DiffuseColor = color; 
 	}
 
-	DirectX::XMFLOAT4 GetColor() const 
+	DirectX::XMFLOAT4 GetDiffuseColor() const 
 	{ 
-		return m_Color; 
+		return m_DiffuseColor; 
 	}
 
 	void SetIntensity(float intensity)
@@ -37,7 +37,7 @@ public:
 	}
 
 protected:
-	DirectX::XMFLOAT4 m_Color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	DirectX::XMFLOAT4 m_DiffuseColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	float m_Intensity = 1.0f;
 };

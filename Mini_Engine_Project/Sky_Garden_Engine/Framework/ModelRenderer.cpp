@@ -118,40 +118,24 @@ bool ModelRenderer::Render(
             diffuseTexture
         );
     }
+
     else if (shaderType == ShaderType::Phong)
     {
-        XMFLOAT3 lightDirection =
-        {
-            0.0f, -1.0f, 1.0f
-        };
+        // Scene의 LightManager에서 수집한 광원 데이터
+        const LightData& lightData = context.lightData;
 
+        // 임시 Scene 공통 Ambient
         XMFLOAT4 ambientColor =
         {
             0.3f, 0.3f, 0.3f, 1.0f
         };
 
-        XMFLOAT4 diffuseColor =
-        {
-            1.0f, 1.0f, 1.0f, 1.0f
-        };
-
+        // Material의 Specular 속성은 그대로 유지
         XMFLOAT4 specularColor =
             m_Material->GetSpecularColor();
 
         float specularPower =
             m_Material->GetSpecularPower();
-
-        XMFLOAT4 pointLightColor[2] =
-        {
-            XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f),
-            XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f)
-        };
-
-        XMFLOAT4 pointLightPosition[2] =
-        {
-            XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f),
-            XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f)
-        };
 
         result = context.shaderManager->GetPhongShader()->Render(
             context.deviceContext,
@@ -160,19 +144,14 @@ bool ModelRenderer::Render(
             context.viewMatrix,
             context.projectionMatrix,
             diffuseTexture,
-            lightDirection,
-            ambientColor,
-            diffuseColor,
             context.cameraPosition,
+            ambientColor,
             specularColor,
             specularPower,
-            pointLightColor,
-            pointLightPosition
+            lightData
         );
-
-
-
     }
+
     else if (shaderType == ShaderType::AlphaMap)
     {
         // HLSL의 shaderTextures[0], [1], [2] 순서

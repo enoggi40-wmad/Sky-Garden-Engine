@@ -220,6 +220,7 @@
     <ClInclude Include="InputController.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Light.h" />
+    <ClInclude Include="LightData.h" />
     <ClInclude Include="LightManager.h" />
     <ClInclude Include="MainScene.h" />
     <ClInclude Include="Material.h" />

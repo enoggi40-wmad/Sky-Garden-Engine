@@ -2,6 +2,7 @@
 
 #include <d3d11.h>
 #include <DirectXMath.h>
+#include "LightData.h"
 
 class ShaderManager;
 
@@ -16,4 +17,7 @@ struct RenderContext
     DirectX::XMMATRIX orthoMatrix;
 
     DirectX::XMFLOAT3 cameraPosition;
+
+    LightData lightData = {};
+
 };

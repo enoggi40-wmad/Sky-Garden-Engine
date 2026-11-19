@@ -35,3 +35,4 @@ XMFLOAT3 PointLight::GetAttenuation() const
 {
     return m_Attenuation;
 }
+

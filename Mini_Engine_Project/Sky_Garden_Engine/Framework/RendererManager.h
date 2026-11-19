@@ -26,7 +26,8 @@ public:
         DirectX::XMMATRIX viewMatrix,
         DirectX::XMMATRIX projectionMatrix,
         DirectX::XMMATRIX orthoMatrix,
-        DirectX::XMFLOAT3 cameraPosition
+        DirectX::XMFLOAT3 cameraPosition,
+		const LightData& lightData
     );
 
     float GetDistanceSquared(

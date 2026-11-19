@@ -57,7 +57,8 @@ bool RendererManager::Render(
     DirectX::XMMATRIX viewMatrix,
     DirectX::XMMATRIX projectionMatrix,
     DirectX::XMMATRIX orthoMatrix,
-    DirectX::XMFLOAT3 cameraPosition)
+    DirectX::XMFLOAT3 cameraPosition,
+    const LightData& lightData)
 {
     RenderContext context{};
 
@@ -70,6 +71,8 @@ bool RendererManager::Render(
     context.cameraPosition = cameraPosition;
 
 	context.orthoMatrix = orthoMatrix;
+
+	context.lightData = lightData;
 
     // 불투명 오브젝트 렌더링
     for (Renderer* renderer : m_OpaqueRenderers)

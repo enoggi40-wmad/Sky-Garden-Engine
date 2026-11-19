@@ -182,7 +182,8 @@ bool Scene::Render(
         viewMatrix,
         projectionMatrix,
         orthoMatrix,
-        cameraPosition
+        cameraPosition,
+		m_LightManager->GetLightData()
     );
 }
 

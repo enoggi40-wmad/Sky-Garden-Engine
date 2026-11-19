@@ -1,6 +1,8 @@
-#define NUM_POINT_LIGHTS 2
 
+#define MAX_POINT_LIGHTS 16
+#define MAX_SPOT_LIGHTS 16
 
+// Vertex Shader Constant Buffers
 cbuffer MatrixBuffer : register(b0)
 {
     matrix worldMatrix;
@@ -11,32 +13,72 @@ cbuffer MatrixBuffer : register(b0)
 cbuffer CameraBuffer : register(b1)
 {
     float3 cameraPosition;
-    float padding;
+    float cameraPadding;
 };
 
-cbuffer PointLightPositionBuffer : register(b2)
-{
-    float4 pointLightPosition[NUM_POINT_LIGHTS];
-};
-
+// Pixel Shader Constant Buffers
 cbuffer LightBuffer : register(b0)
 {
     float4 ambientColor;
-    float4 diffuseColor;
-    float3 lightDirection;
-    float specularPower;
     float4 specularColor;
+
+    float specularPower;
+    float3 lightPadding;
 };
 
-cbuffer PointLightColorBuffer : register(b1)
+// DirectionalLight
+struct DirectionalLightData
 {
-    float4 pointLightColor[NUM_POINT_LIGHTS];
+    // xyz: Direction, w: Intensity
+    float4 directionIntensity;
+
+    float4 diffuseColor;
 };
 
+// PointLight
+struct PointLightData
+{
+    // xyz: Position, w: Range
+    float4 positionRange;
 
-Texture2D shaderTexture;
-SamplerState SampleType;
+    // rgb: DiffuseColor, a: Intensity
+    float4 diffuseColorIntensity;
 
+    // xyz: Attenuation
+    float4 attenuation;
+};
+
+// SpotLight
+struct SpotLightData
+{
+    // xyz: Position, w: Range
+    float4 positionRange;
+
+    // xyz: Direction, w: InnerCos
+    float4 directionInnerCos;
+
+    // rgb: DiffuseColor, a: Intensity
+    float4 diffuseColorIntensity;
+
+    // xyz: Attenuation, w: OuterCos
+    float4 attenuationOuterCos;
+};
+
+// Scene의 전체 광원 데이터
+cbuffer LightDataBuffer : register(b1)
+{
+    DirectionalLightData directionalLight;
+
+    PointLightData pointLights[MAX_POINT_LIGHTS];
+    SpotLightData spotLights[MAX_SPOT_LIGHTS];
+
+    int pointLightCount;
+    int spotLightCount;
+    float2 countPadding;
+};
+
+Texture2D shaderTexture : register(t0);
+SamplerState SampleType : register(s0);
 
 struct VertexInputType
 {
@@ -45,130 +87,232 @@ struct VertexInputType
     float3 normal : NORMAL;
 };
 
-
 struct PixelInputType
 {
     float4 position : SV_POSITION;
     float2 tex : TEXCOORD0;
+
     float3 normal : NORMAL;
     float3 viewDirection : TEXCOORD1;
-    float3 pointLightPos1 : TEXCOORD2;
-    float3 pointLightPos2 : TEXCOORD3;
+    float3 worldPosition : TEXCOORD2;
 };
-
 
 // Vertex Shader
 PixelInputType LightVertexShader(VertexInputType input)
 {
     PixelInputType output;
-    float4 worldPosition;
 
-
-	// Change the position vector to be 4 units for proper matrix calculations.
     input.position.w = 1.0f;
 
-	// Calculate the position of the vertex against the world, view, and projection matrices.
-    output.position = mul(input.position, worldMatrix);
-    output.position = mul(output.position, viewMatrix);
+    // World Position
+    float4 worldPos =
+        mul(input.position, worldMatrix);
+
+    // Clip Position
+    output.position = mul(worldPos, viewMatrix);
     output.position = mul(output.position, projectionMatrix);
 
-	// Store the texture coordinates for the pixel shader.
+    output.worldPosition = worldPos.xyz;
+
     output.tex = input.tex;
 
-	// Calculate the normal vector against the world matrix only.
-    output.normal = mul(input.normal, (float3x3) worldMatrix);
+    // World Normal
+    output.normal =
+        mul(input.normal, (float3x3) worldMatrix);
 
-	// Normalize the normal vector.
-    output.normal = normalize(output.normal);
-
-	// Calculate the position of the vertex in the world.
-    worldPosition = mul(input.position, worldMatrix);
-
-	// Determine the viewing direction based on the position of the camera and the position of the vertex in the world.
-    output.viewDirection = cameraPosition.xyz - worldPosition.xyz;
-
-	// Normalize the viewing direction vector.
-    output.viewDirection = normalize(output.viewDirection);
-
-	// Determine the point light positions based on the position of the lights and the position of the vertex in the world.
-    output.pointLightPos1 = pointLightPosition[0].xyz - worldPosition.xyz;
-    output.pointLightPos2 = pointLightPosition[1].xyz - worldPosition.xyz;
-
-	// Normalize the point light position vectors.
-    output.pointLightPos1 = normalize(output.pointLightPos1);
-    output.pointLightPos2 = normalize(output.pointLightPos2);
+    // Camera Direction
+    output.viewDirection =
+        cameraPosition - worldPos.xyz;
 
     return output;
 }
 
+// Specular 계산
+float3 CalculateSpecular(
+    float3 normal,
+    float3 lightDir,
+    float3 viewDir,
+    float3 lightColor)
+{
+    float diffuseFactor =
+        saturate(dot(normal, lightDir));
+
+    if (diffuseFactor <= 0.0f)
+    {
+        return float3(0.0f, 0.0f, 0.0f);
+    }
+
+    float3 reflection =
+        reflect(-lightDir, normal);
+
+    float factor = pow(
+        saturate(dot(reflection, viewDir)),
+        max(specularPower, 0.0001f)
+    );
+
+    return specularColor.rgb * lightColor * factor;
+}
+
+// 거리 감쇠 계산
+float CalculateAttenuation(
+    float distance,
+    float range,
+    float3 attenuation)
+{
+    if (range <= 0.0f || distance >= range)
+    {
+        return 0.0f;
+    }
+
+    float denominator =
+        attenuation.x +
+        attenuation.y * distance +
+        attenuation.z * distance * distance;
+
+    float distanceAttenuation =
+        1.0f / max(denominator, 0.0001f);
+
+    // Range 끝부분에서 부드럽게 감소
+    float rangeFactor =
+        saturate(1.0f - distance / range);
+
+    return distanceAttenuation *
+        rangeFactor * rangeFactor;
+}
 
 // Pixel Shader
 float4 LightPixelShader(PixelInputType input) : SV_TARGET
 {
-    float4 textureColor;
-    float3 lightDir;
-    float lightIntensity;
-    float4 color;
-    float3 reflection;
-    float4 specular;
+    float4 textureColor =
+        shaderTexture.Sample(SampleType, input.tex);
 
-    float pointLightIntensity1;
-    float pointLightIntensity2;
-    float4 pointLightColor1;
-    float4 pointLightColor2;
+    float3 normal = normalize(input.normal);
+    float3 viewDir = normalize(input.viewDirection);
 
+    // Phong 세 요소
+    float3 ambient = ambientColor.rgb;
+    float3 diffuse = float3(0.0f, 0.0f, 0.0f);
+    float3 specular = float3(0.0f, 0.0f, 0.0f);
 
-	// Sample the texture pixel at this location.
-    textureColor = shaderTexture.Sample(SampleType, input.tex);
-
-	// Set the default output color to the ambient light value for all pixels.
-    color = ambientColor;
-
-	// Initialize the specular light color.
-    specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
-
-	// Invert the light direction for calculations.
-    lightDir = -lightDirection;
-
-	// Calculate the amount of light on this pixel.
-    lightIntensity = saturate(dot(input.normal, lightDir));
-
-    if (lightIntensity > 0.0f)
+    // 1. DirectionalLight
+    if (directionalLight.directionIntensity.w > 0.0f)
     {
-		// Determine the final diffuse color based on the diffuse color and the amount of light intensity.
-        color += diffuseColor * lightIntensity;
+        float3 lightDir = normalize(
+            -directionalLight.directionIntensity.xyz
+        );
 
-		// Saturate the light color.
-        color = saturate(color);
+        float3 lightColor =
+            directionalLight.diffuseColor.rgb *
+            directionalLight.directionIntensity.w;
 
-		// Calculate the reflection vector based on the light intensity, normal vector, and light direction.
-        reflection = normalize(2 * lightIntensity * input.normal - lightDir);
+        float NdotL = saturate(dot(normal, lightDir));
 
-		// Determine the amount of specular light based on the reflection vector, viewing direction, and specular power.
-        specular = specularColor * pow(
-			saturate(dot(reflection, input.viewDirection)),
-			specularPower
-		);
+        diffuse += lightColor * NdotL;
+
+        specular += CalculateSpecular(
+            normal, lightDir, viewDir, lightColor
+        );
     }
 
+    // 2. PointLight
+    [loop]
+    for (int i = 0; i < pointLightCount; i++)
+    {
+        PointLightData light = pointLights[i];
 
-	// Calculate the amount of light on this pixel from the first point light.
-    pointLightIntensity1 = saturate(dot(input.normal, input.pointLightPos1));
+        float3 toLight =
+            light.positionRange.xyz - input.worldPosition;
 
-	// Calculate the amount of light on this pixel from the second point light.
-    pointLightIntensity2 = saturate(dot(input.normal, input.pointLightPos2));
+        float distance = length(toLight);
 
-	// Determine the diffuse color amount of each point light.
-    pointLightColor1 = pointLightColor[0] * pointLightIntensity1;
-    pointLightColor2 = pointLightColor[1] * pointLightIntensity2;
+        float3 lightDir =
+            toLight / max(distance, 0.0001f);
 
+        float attenuation = CalculateAttenuation(
+            distance,
+            light.positionRange.w,
+            light.attenuation.xyz
+        );
 
-	// Multiply the texture pixel by the lighting.
-    color = saturate(color + pointLightColor1 + pointLightColor2);
-    color = color * textureColor;
+        float3 lightColor =
+            light.diffuseColorIntensity.rgb *
+            light.diffuseColorIntensity.w *
+            attenuation;
 
-	// Add the specular component.
-    color = saturate(color + specular);
+        float NdotL = saturate(dot(normal, lightDir));
 
-    return color;
+        diffuse += lightColor * NdotL;
+
+        specular += CalculateSpecular(
+            normal, lightDir, viewDir, lightColor
+        );
+    }
+
+    // 3. SpotLight
+    [loop]
+    for (int i = 0; i < spotLightCount; i++)
+    {
+        SpotLightData light = spotLights[i];
+
+        float3 toLight =
+            light.positionRange.xyz - input.worldPosition;
+
+        float distance = length(toLight);
+
+        float3 lightDir =
+            toLight / max(distance, 0.0001f);
+
+        // 광원에서 픽셀을 향하는 방향
+        float3 lightToPixel = -lightDir;
+
+        float3 spotDirection =
+            normalize(light.directionInnerCos.xyz);
+
+        float cosAngle =
+            dot(lightToPixel, spotDirection);
+
+        float innerCos =
+            light.directionInnerCos.w;
+
+        float outerCos =
+            light.attenuationOuterCos.w;
+
+        // 조사각의 안쪽과 바깥쪽 사이에서 감쇠
+        float coneFactor = saturate(
+            (cosAngle - outerCos) /
+            max(innerCos - outerCos, 0.0001f)
+        );
+
+        coneFactor =
+            coneFactor * coneFactor *
+            (3.0f - 2.0f * coneFactor);
+
+        float attenuation = CalculateAttenuation(
+            distance,
+            light.positionRange.w,
+            light.attenuationOuterCos.xyz
+        );
+
+        float3 lightColor =
+            light.diffuseColorIntensity.rgb *
+            light.diffuseColorIntensity.w *
+            attenuation *
+            coneFactor;
+
+        float NdotL = saturate(dot(normal, lightDir));
+
+        diffuse += lightColor * NdotL;
+
+        specular += CalculateSpecular(
+            normal, lightDir, viewDir, lightColor
+        );
+    }
+
+    // 최종 Phong Lighting
+    float3 lighting = ambient + diffuse;
+
+    float3 finalColor =
+        textureColor.rgb * lighting + specular;
+
+    return float4(saturate(finalColor), textureColor.a);
 }

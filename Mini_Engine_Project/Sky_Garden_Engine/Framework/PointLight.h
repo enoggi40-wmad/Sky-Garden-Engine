@@ -5,6 +5,7 @@
 
 class PointLight : public Light
 {
+public:
 	explicit PointLight(GameObject* owner);
 	~PointLight() override = default;
 

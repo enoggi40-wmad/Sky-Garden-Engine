@@ -127,7 +127,7 @@ bool ModelRenderer::Render(
         // 임시 Scene 공통 Ambient
         XMFLOAT4 ambientColor =
         {
-            0.3f, 0.3f, 0.3f, 1.0f
+            0.05f, 0.05f, 0.05f, 1.0f
         };
 
         // Material의 Specular 속성은 그대로 유지
@@ -232,7 +232,7 @@ bool ModelRenderer::Render(
 
         XMFLOAT4 diffuseColor =
         {
-            1.0f, 1.0f, 1.0f, 1.0f
+            0.2f, 0.2f, 0.2f, 1.0f
         };
 
         XMFLOAT4 ambientColor =

@@ -16,6 +16,9 @@
 #include <cmath>
 #include <string>
 #include "Material.h"
+#include "DirectionalLight.h"
+#include "PointLight.h"
+#include "SpotLight.h"
 
 
 
@@ -88,6 +91,118 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
     AddGameObject(cutsceneCamera);
 
+    // =====================================================
+    // Lighting Test: DirectionalLight (1)
+    // =====================================================
+    // Light의 Forward(+Z)를 아래쪽으로 기울여 태양광처럼 사용.
+    /*GameObject* sunLightObject = new GameObject("TestDirectionalLight");
+    sunLightObject->transform.SetLocalEulerAngles({
+        45.0f, -30.0f, 0.0f
+        });
+
+    DirectionalLight* sunLight =
+        sunLightObject->AddComponent<DirectionalLight>();
+    sunLight->SetDiffuseColor({ 1.0f, 0.94f, 0.85f, 1.0f });
+    sunLight->SetIntensity(0.7f);
+    AddGameObject(sunLightObject);*/
+
+    // =====================================================
+    // Lighting Test: SpotLight
+    // =====================================================
+    GameObject* frontSpotObject = new GameObject("TestSpotLightFront");
+    frontSpotObject->transform.SetWorldPosition({
+        -150.0f, 750.0f, 0.0f
+        });
+    frontSpotObject->transform.SetLocalEulerAngles({
+        90.0f, 0.0f, 0.0f
+        });
+
+    SpotLight* frontSpot =
+        frontSpotObject->AddComponent<SpotLight>();
+    frontSpot->SetDiffuseColor({ 0.35f, 0.85f, 1.0f, 1.0f });
+    frontSpot->SetIntensity(4.0f);
+    frontSpot->SetRange(20000.0f);
+    frontSpot->SetAttenuation({ 1.0f, 0.0008f, 0.0000005f });
+    frontSpot->SetInnerAngle(10.0f);
+    frontSpot->SetOuterAngle(20.0f);
+    AddGameObject(frontSpotObject);
+
+    GameObject* backSpotObject = new GameObject("TestSpotLightBack");
+    backSpotObject->transform.SetWorldPosition({
+        150.0f, 750.0f, 0.0f
+        });
+    backSpotObject->transform.SetLocalEulerAngles({
+        90.0f, 0.0f, 0.0f
+        });
+
+    SpotLight* backSpot =
+        backSpotObject->AddComponent<SpotLight>();
+    backSpot->SetDiffuseColor({ 1.0f, 0.55f, 0.85f, 1.0f });
+    backSpot->SetIntensity(4.0f);
+    backSpot->SetRange(20000.0f);
+    backSpot->SetAttenuation({ 1.0f, 0.0008f, 0.0000005f });
+    backSpot->SetInnerAngle(10.0f);
+    backSpot->SetOuterAngle(20.0f);
+    AddGameObject(backSpotObject);
+
+    // =====================================================
+    // Independent PointLights
+    // =====================================================
+
+    const int pointLightCount = 4;
+
+    const char* pointLightNames[pointLightCount] =
+    {
+        "PointLight_Red",
+        "PointLight_Blue",
+        "PointLight_Yellow",
+        "PointLight_White"
+    };
+
+    DirectX::XMFLOAT3 pointLightPositions[pointLightCount] =
+    {
+        { -350.0f, -350.0f,  350.0f },
+        {  350.0f, -350.0f,  350.0f },
+        { -350.0f, -350.0f, -350.0f },
+        {  350.0f, -350.0f, -350.0f }
+    };
+
+    DirectX::XMFLOAT4 pointLightColors[pointLightCount] =
+    {
+        { 1.0f, 0.0f, 0.0f, 1.0f }, // Red
+        { 0.0f, 0.0f, 1.0f, 1.0f }, // Blue
+        { 1.0f, 1.0f, 0.0f, 1.0f }, // Yellow
+        { 1.0f, 1.0f, 1.0f, 1.0f }  // White
+    };
+
+    for (int i = 0; i < pointLightCount; i++)
+    {
+        GameObject* lightObject =
+            new GameObject(pointLightNames[i]);
+
+        // 독립적인 Transform
+        lightObject->transform.SetWorldPosition(
+            pointLightPositions[i]
+        );
+
+        // 독립적인 PointLight Component
+        PointLight* light =
+            lightObject->AddComponent<PointLight>();
+
+        light->SetDiffuseColor(pointLightColors[i]);
+        light->SetIntensity(12.0f);
+        light->SetRange(270.0f);
+
+        light->SetAttenuation({
+            1.0f,
+            0.003f,
+            0.00002f
+            });
+
+        // Scene 및 LightManager에 자동 등록
+        AddGameObject(lightObject);
+    }
+
 
     // =====================================================
     // SkyBox
@@ -136,7 +251,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
     Material* billboardMaterial = CreateMaterial();
 
-    billboardMaterial->SetShaderType(ShaderType::Texture);
+    billboardMaterial->SetShaderType(ShaderType::Phong);
 
     billboardMaterial->SetDiffuseTexture(
         resourceManager->LoadTexture(
@@ -182,7 +297,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
     // GuardianLion Material: 모델과 독립적으로 Texture 선택
     Material* guardianLionMaterial = CreateMaterial();
-    guardianLionMaterial->SetShaderType(ShaderType::Texture);
+    guardianLionMaterial->SetShaderType(ShaderType::Phong);
     guardianLionMaterial->SetDiffuseTexture(
         resourceManager->LoadTexture(
             "GuardianLionTexture",
@@ -232,7 +347,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
     // SakuraTree Material: 모델과 독립적으로 Texture 선택
     Material* sakuraTreeMaterial = CreateMaterial();
-    sakuraTreeMaterial->SetShaderType(ShaderType::Texture);
+    sakuraTreeMaterial->SetShaderType(ShaderType::Phong);
     sakuraTreeMaterial->SetDiffuseTexture(
         resourceManager->LoadTexture(
             "SakuraTreeTexture",
@@ -278,7 +393,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     }
     // FloatingAlter Material: 모델과 독립적으로 Texture 선택
     Material* floatingAlterMaterial = CreateMaterial();
-    floatingAlterMaterial->SetShaderType(ShaderType::Texture);
+    floatingAlterMaterial->SetShaderType(ShaderType::Phong);
     floatingAlterMaterial->SetDiffuseTexture(
         resourceManager->LoadTexture(
             "FloatingAlterTexture",
@@ -320,7 +435,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
     // GoldenSpire Material: 모델과 독립적으로 Texture 선택
     Material* goldenSpireMaterial = CreateMaterial();
-    goldenSpireMaterial->SetShaderType(ShaderType::Texture);
+    goldenSpireMaterial->SetShaderType(ShaderType::Phong);
     goldenSpireMaterial->SetDiffuseTexture(
         resourceManager->LoadTexture(
             "GoldenSpireTexture",
@@ -394,7 +509,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     }
 
     Material* circleStoneMaterial = CreateMaterial();
-    circleStoneMaterial->SetShaderType(ShaderType::Texture);
+    circleStoneMaterial->SetShaderType(ShaderType::Phong);
 
     circleStoneMaterial->SetDiffuseTexture(
         resourceManager->LoadTexture(
@@ -473,7 +588,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     material1->SetSpecularPower(8.0f);
 
     Material* material2 = CreateMaterial();
-    material2->SetShaderType(ShaderType::Texture);
+    material2->SetShaderType(ShaderType::Phong);
     material2->SetDiffuseTexture(texture2);
 
 
@@ -538,7 +653,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     }
     // 4개의 CrystalPrism2가 하나의 Material 공유
     Material* crystalPrism2Material = CreateMaterial();
-    crystalPrism2Material->SetShaderType(ShaderType::Texture);
+    crystalPrism2Material->SetShaderType(ShaderType::Phong);
     crystalPrism2Material->SetDiffuseTexture(
         resourceManager->LoadTexture(
             "CrystalPrism2Texture",
@@ -627,7 +742,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 
     // 4개의 Lantern이 하나의 Material 공유
     Material* lanternMaterial = CreateMaterial();
-    lanternMaterial->SetShaderType(ShaderType::Texture);
+    lanternMaterial->SetShaderType(ShaderType::Phong);
     lanternMaterial->SetDiffuseTexture(
         resourceManager->LoadTexture(
             "LanternTexture",
@@ -636,6 +751,15 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     );
 
     const int lanternCount = 4;
+
+    // Lighting Test: 랜턴마다 서로 다른 PointLight 색상 지정
+    const DirectX::XMFLOAT4 lanternLightColors[lanternCount] =
+    {
+        { 1.0f, 0.55f, 0.22f, 1.0f }, // 따뜻한 주황
+        { 1.0f, 0.36f, 0.54f, 1.0f }, // 분홍
+        { 0.35f, 0.65f, 1.0f, 1.0f }, // 파랑
+        { 0.75f, 0.42f, 1.0f, 1.0f } // 보라
+    };
 
     DirectX::XMFLOAT3 lanternPositions[lanternCount] =
     {
@@ -691,8 +815,11 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         // Y축 자전 Component
         lantern->AddComponent<Rotator>(0.5f);
 
-
-        // Scene 등록
+        
+        // Scene 등록 (Renderer와 Light가 함께 자동 등록됨)
         AddGameObject(lantern);
     }
+
+    
+
 }

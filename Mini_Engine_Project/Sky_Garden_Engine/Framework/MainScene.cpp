@@ -95,7 +95,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     // Lighting Test: DirectionalLight (1)
     // =====================================================
     // Light의 Forward(+Z)를 아래쪽으로 기울여 태양광처럼 사용.
-    /*GameObject* sunLightObject = new GameObject("TestDirectionalLight");
+    GameObject* sunLightObject = new GameObject("TestDirectionalLight");
     sunLightObject->transform.SetLocalEulerAngles({
         45.0f, -30.0f, 0.0f
         });
@@ -104,10 +104,10 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         sunLightObject->AddComponent<DirectionalLight>();
     sunLight->SetDiffuseColor({ 1.0f, 0.94f, 0.85f, 1.0f });
     sunLight->SetIntensity(0.7f);
-    AddGameObject(sunLightObject);*/
+    AddGameObject(sunLightObject);
 
     // =====================================================
-    // Lighting Test: SpotLight
+    // Lighting Test: SpotLight (2)
     // =====================================================
     GameObject* frontSpotObject = new GameObject("TestSpotLightFront");
     frontSpotObject->transform.SetWorldPosition({

@@ -118,7 +118,7 @@ bool ModelRenderer::Render(
             diffuseTexture
         );
     }
-    else if (shaderType == ShaderType::PhongLight)
+    else if (shaderType == ShaderType::Phong)
     {
         XMFLOAT3 lightDirection =
         {
@@ -153,7 +153,7 @@ bool ModelRenderer::Render(
             XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f)
         };
 
-        result = context.shaderManager->GetPhongLightShader()->Render(
+        result = context.shaderManager->GetPhongShader()->Render(
             context.deviceContext,
             m_Model->GetIndexCount(),
             worldMatrix,

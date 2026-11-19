@@ -45,6 +45,18 @@
     <Filter Include="Shaders_헤더 파일">
       <UniqueIdentifier>{aa6b857a-8f26-44af-b0d7-9f1feecb1286}</UniqueIdentifier>
     </Filter>
+    <Filter Include="InnerComponents_소스 파일">
+      <UniqueIdentifier>{9f2bdbb1-5f3f-4afe-b33c-d1a8bcc5ff04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="InnerComponents_헤더 파일">
+      <UniqueIdentifier>{f0591f29-b29a-4f7f-9544-94abde441118}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lights_헤더 파일">
+      <UniqueIdentifier>{25a623e2-f038-48c4-9bbe-cac923efbd91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lights_소스 파일">
+      <UniqueIdentifier>{57a698be-d5c8-4e21-a8c9-98d1ba0ae12c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="inputclass.cpp">
@@ -77,9 +89,6 @@
     <ClCompile Include="Transform.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="ResouceManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -91,9 +100,6 @@
     </ClCompile>
     <ClCompile Include="TitleScene.cpp">
       <Filter>Scenes_소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneManager.cpp">
-      <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="ModelRenderer.cpp">
       <Filter>Renderers_소스 파일</Filter>
@@ -107,23 +113,11 @@
     <ClCompile Include="Rotator.cpp">
       <Filter>Components_소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="CameraComponent.cpp">
-      <Filter>Components_소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="FreeCameraController.cpp">
-      <Filter>Components_소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="InputManager.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="BillboardRenderer.cpp">
       <Filter>Renderers_소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="RendererManager.cpp">
-      <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="UIRenderer.cpp">
       <Filter>Renderers_소스 파일</Filter>
@@ -161,7 +155,7 @@
     <ClCompile Include="textureshaderclass.cpp">
       <Filter>Shaders_소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="PhongLightShaderClass.cpp">
+    <ClCompile Include="PhongShaderClass.cpp">
       <Filter>Shaders_소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SkyMapShaderClass.cpp">
@@ -179,9 +173,6 @@
     <ClCompile Include="BumpMapShaderClass.cpp">
       <Filter>Shaders_소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="InputController.cpp">
-      <Filter>Components_소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="PerformanceMonitor.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -190,6 +181,39 @@
     </ClCompile>
     <ClCompile Include="DirectInputClass.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="FreeCameraController.cpp">
+      <Filter>InnerComponents_소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="InputController.cpp">
+      <Filter>InnerComponents_소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraComponent.cpp">
+      <Filter>InnerComponents_소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectionalLight.cpp">
+      <Filter>Lights_소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLight.cpp">
+      <Filter>Lights_소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SpotLight.cpp">
+      <Filter>Lights_소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Renderers_소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="RendererManager.cpp">
+      <Filter>Renderers_소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Scenes_소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Scenes_소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="LightManager.cpp">
+      <Filter>Lights_소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -229,9 +253,6 @@
     <ClInclude Include="Component.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="ResourceManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -240,9 +261,6 @@
     </ClInclude>
     <ClInclude Include="TitleScene.h">
       <Filter>Scenes_헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneManager.h">
-      <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="ModelRenderer.h">
       <Filter>Renderers_헤더 파일</Filter>
@@ -256,32 +274,17 @@
     <ClInclude Include="Floater.h">
       <Filter>Components_헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="CameraComponent.h">
-      <Filter>Components_헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="FreeCameraController.h">
-      <Filter>Components_헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="InputManager.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="BillboardRenderer.h">
       <Filter>Renderers_헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="RendererManager.h">
-      <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="RenderContext.h">
       <Filter>Renderers_헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="UIRenderer.h">
       <Filter>Renderers_헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderManager.h">
-      <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="graphicsclass.h">
       <Filter>헤더 파일</Filter>
@@ -313,7 +316,7 @@
     <ClInclude Include="textureshaderclass.h">
       <Filter>Shaders_헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="PhongLightShaderClass.h">
+    <ClInclude Include="PhongShaderClass.h">
       <Filter>Shaders_헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SkyMapShaderClass.h">
@@ -334,9 +337,6 @@
     <ClInclude Include="BumpMapShaderClass.h">
       <Filter>Shaders_헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="InputController.h">
-      <Filter>Components_헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="PerformanceMonitor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -349,12 +349,51 @@
     <ClInclude Include="DirectInputClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="FreeCameraController.h">
+      <Filter>InnerComponents_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="InputController.h">
+      <Filter>InnerComponents_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraComponent.h">
+      <Filter>InnerComponents_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalLight.h">
+      <Filter>Lights_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLight.h">
+      <Filter>Lights_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SpotLight.h">
+      <Filter>Lights_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Lights_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Renderers_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="RendererManager.h">
+      <Filter>Renderers_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scenes_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Scenes_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="LightManager.h">
+      <Filter>Lights_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderManager.h">
+      <Filter>Shaders_헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\textureShader.hlsl">
       <Filter>_리소스 파일</Filter>
     </None>
-    <None Include="data\phongLightShader.hlsl">
+    <None Include="data\phongShader.hlsl">
       <Filter>_리소스 파일</Filter>
     </None>
     <None Include="skyMapShader.hlsl">

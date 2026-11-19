@@ -3,7 +3,7 @@
 enum class ShaderType
 {
     Texture,
-    PhongLight,
+    Phong,
     AlphaMap,
     BumpMap
 };

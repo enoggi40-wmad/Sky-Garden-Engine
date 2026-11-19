@@ -2,8 +2,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Filename: lightshaderclass.h
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef _PHONGLIGHTSHADERCLASS_H_
-#define _PHONGLIGHTSHADERCLASS_H_
+#ifndef _PHONGSHADERCLASS_H_
+#define _PHONGSHADERCLASS_H_
 
 
 /////////////
@@ -26,9 +26,9 @@ using namespace DirectX;
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Class name: PhongLightShaderClass
+// Class name: PhongShaderClass
 ////////////////////////////////////////////////////////////////////////////////
-class PhongLightShaderClass
+class PhongShaderClass
 {
 private:
 	struct MatrixBufferType
@@ -64,9 +64,9 @@ private:
 	};
 
 public:
-	PhongLightShaderClass();
-	PhongLightShaderClass(const PhongLightShaderClass&);
-	~PhongLightShaderClass();
+	PhongShaderClass();
+	PhongShaderClass(const PhongShaderClass&);
+	~PhongShaderClass();
 
 	bool Initialize(ID3D11Device*, HWND);
 	void Shutdown();

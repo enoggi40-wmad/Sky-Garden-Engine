@@ -152,6 +152,7 @@
     <ClCompile Include="d3dclass.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
     <ClCompile Include="DirectInputClass.cpp" />
+    <ClCompile Include="DirectionalLight.cpp" />
     <ClCompile Include="FbxLoader.cpp" />
     <ClCompile Include="Floater.cpp" />
     <ClCompile Include="fontclass.cpp" />
@@ -163,6 +164,7 @@
     <ClCompile Include="inputclass.cpp" />
     <ClCompile Include="InputController.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainScene.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -171,7 +173,8 @@
     <ClCompile Include="ObjLoader.cpp" />
     <ClCompile Include="Orbiter.cpp" />
     <ClCompile Include="PerformanceMonitor.cpp" />
-    <ClCompile Include="PhongLightShaderClass.cpp" />
+    <ClCompile Include="PhongShaderClass.cpp" />
+    <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RendererManager.cpp" />
     <ClCompile Include="ResouceManager.cpp" />
@@ -182,6 +185,7 @@
     <ClCompile Include="SkyBoxRenderer.cpp" />
     <ClCompile Include="SkyMapShaderClass.cpp" />
     <ClCompile Include="SkySphereClass.cpp" />
+    <ClCompile Include="SpotLight.cpp" />
     <ClCompile Include="systemclass.cpp" />
     <ClCompile Include="textclass.cpp" />
     <ClCompile Include="textureclass.cpp" />
@@ -203,6 +207,7 @@
     <ClInclude Include="d3dclass.h" />
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="DirectInputClass.h" />
+    <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="FbxLoader.h" />
     <ClInclude Include="Floater.h" />
     <ClInclude Include="fontclass.h" />
@@ -214,6 +219,8 @@
     <ClInclude Include="inputclass.h" />
     <ClInclude Include="InputController.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="Light.h" />
+    <ClInclude Include="LightManager.h" />
     <ClInclude Include="MainScene.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="modelclass.h" />
@@ -222,7 +229,8 @@
     <ClInclude Include="ObjLoader.h" />
     <ClInclude Include="Orbiter.h" />
     <ClInclude Include="PerformanceMonitor.h" />
-    <ClInclude Include="PhongLightShaderClass.h" />
+    <ClInclude Include="PhongShaderClass.h" />
+    <ClInclude Include="PointLight.h" />
     <ClInclude Include="RenderContext.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RendererManager.h" />
@@ -235,6 +243,7 @@
     <ClInclude Include="SkyBoxRenderer.h" />
     <ClInclude Include="SkyMapShaderClass.h" />
     <ClInclude Include="SkySphereClass.h" />
+    <ClInclude Include="SpotLight.h" />
     <ClInclude Include="systemclass.h" />
     <ClInclude Include="TestScene.h" />
     <ClInclude Include="textclass.h" />
@@ -251,7 +260,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="data\phongLightShader.hlsl">
+    <None Include="data\phongShader.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

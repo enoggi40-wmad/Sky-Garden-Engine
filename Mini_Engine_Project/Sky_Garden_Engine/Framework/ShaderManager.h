@@ -2,7 +2,7 @@
 
 #include <d3d11.h>
 #include "textureshaderclass.h"
-#include "PhongLightShaderClass.h"
+#include "PhongShaderClass.h"
 #include "SkyMapShaderClass.h"
 #include "AlphaMapShaderClass.h"
 #include "BumpMapShaderClass.h"
@@ -21,7 +21,7 @@ public:
     void Shutdown();
 
     TextureShaderClass* GetTextureShader();
-    PhongLightShaderClass* GetPhongLightShader();
+    PhongShaderClass* GetPhongShader();
     SkyMapShaderClass* GetSkyMapShader();
 	AlphaMapShaderClass* GetAlphaMapShader();
     BumpMapShaderClass* GetBumpMapShader();
@@ -29,7 +29,7 @@ public:
 
 private:
     TextureShaderClass* m_TextureShader;
-    PhongLightShaderClass* m_PhongLightShader;
+    PhongShaderClass* m_PhongShader;
     SkyMapShaderClass* m_SkyMapShader;
 	AlphaMapShaderClass* m_AlphaMapShader;
     BumpMapShaderClass* m_BumpMapShader;

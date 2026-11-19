@@ -94,11 +94,11 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     // =====================================================
 
     GameObject* sky =
-        new GameObject("skymap_Sunset");
+        new GameObject("skymap");
 
     SkyBoxRenderer* skyRenderer =
         sky->AddComponent<SkyBoxRenderer>(
-            resourceManager->GetCubeMap("skymap_Sunset")
+            resourceManager->GetCubeMap("skymap")
         );
 
     bool result =
@@ -468,7 +468,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
         );
 
     Material* material1 = CreateMaterial();
-    material1->SetShaderType(ShaderType::PhongLight);
+    material1->SetShaderType(ShaderType::Phong);
     material1->SetDiffuseTexture(texture1);
     material1->SetSpecularPower(8.0f);
 

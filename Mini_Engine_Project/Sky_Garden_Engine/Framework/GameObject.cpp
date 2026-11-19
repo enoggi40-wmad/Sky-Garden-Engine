@@ -1,6 +1,7 @@
 #include "GameObject.h"
 #include <algorithm>
 #include <cmath>
+#include "Scene.h"
 
 // 생성자
 GameObject::GameObject(const std::string& objectName)
@@ -22,11 +23,26 @@ GameObject::~GameObject()
     // 자신이 가진 Component 삭제
     for (Component* component : components)
     {
+        if (m_Scene)
+        {
+            m_Scene->OnComponentRemoved(component);
+        }
+
         delete component;
     }
 
     components.clear();
 }
+
+
+void GameObject::NotifyComponentAdded(Component* component)
+{
+    if (m_Scene)
+    {
+        m_Scene->OnComponentAdded(component);
+    }
+}
+
 
 
 GameObject* GameObject::GetParent() const

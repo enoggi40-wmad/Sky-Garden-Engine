@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Filename: lightshaderclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
-#include "PhongLightShaderClass.h"
+#include "PhongShaderClass.h"
 
 
-PhongLightShaderClass::PhongLightShaderClass()
+PhongShaderClass::PhongShaderClass()
 {
 	m_vertexShader = 0;
 	m_pixelShader = 0;
@@ -18,23 +18,23 @@ PhongLightShaderClass::PhongLightShaderClass()
 }
 
 
-PhongLightShaderClass::PhongLightShaderClass(const PhongLightShaderClass& other)
+PhongShaderClass::PhongShaderClass(const PhongShaderClass& other)
 {
 }
 
 
-PhongLightShaderClass::~PhongLightShaderClass()
+PhongShaderClass::~PhongShaderClass()
 {
 }
 
 // The new HLSL shader files are used as input to initialize the light shader.
-bool PhongLightShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+bool PhongShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 {
 	bool result;
 
 
 	// Initialize the vertex and pixel shaders.
-	result = InitializeShader(device, hwnd, L"./data/phongLightShader.hlsl");
+	result = InitializeShader(device, hwnd, L"./data/phongShader.hlsl");
 	if (!result)
 	{
 		return false;
@@ -44,7 +44,7 @@ bool PhongLightShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 }
 
 
-void PhongLightShaderClass::Shutdown()
+void PhongShaderClass::Shutdown()
 {
 	// Shutdown the vertex and pixel shaders as well as the related objects.
 	ShutdownShader();
@@ -52,7 +52,7 @@ void PhongLightShaderClass::Shutdown()
 	return;
 }
 
-bool PhongLightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount,
+bool PhongShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount,
 	XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix,
 	ID3D11ShaderResourceView* texture,
 	XMFLOAT3 lightDirection, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor,
@@ -78,7 +78,7 @@ bool PhongLightShaderClass::Render(ID3D11DeviceContext* deviceContext, int index
 }
 
 
-bool PhongLightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, const WCHAR* fileName)
+bool PhongShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, const WCHAR* fileName)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
@@ -297,7 +297,7 @@ bool PhongLightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, co
 }
 
 
-void PhongLightShaderClass::ShutdownShader()
+void PhongShaderClass::ShutdownShader()
 {
 	// Release the point light position constant buffer.
 	if (m_pointLightPositionBuffer)
@@ -366,7 +366,7 @@ void PhongLightShaderClass::ShutdownShader()
 }
 
 
-void PhongLightShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const WCHAR* shaderFilename)
+void PhongShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const WCHAR* shaderFilename)
 {
 	char* compileErrors;
 	unsigned long bufferSize, i;
@@ -402,7 +402,7 @@ void PhongLightShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, H
 }
 
 // The SetShaderParameters function now takes in lightDirection and diffuseColor as inputs.
-bool PhongLightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
+bool PhongShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix,
 	ID3D11ShaderResourceView* texture,
 	XMFLOAT3 lightDirection, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor,
@@ -550,7 +550,7 @@ bool PhongLightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceConte
 }
 
 
-void PhongLightShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
+void PhongShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
 {
 	// Set the vertex input layout.
 	deviceContext->IASetInputLayout(m_layout);

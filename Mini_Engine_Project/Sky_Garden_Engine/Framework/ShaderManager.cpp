@@ -4,7 +4,7 @@
 ShaderManager::ShaderManager()
 {
     m_TextureShader = nullptr;
-    m_PhongLightShader = nullptr;
+    m_PhongShader = nullptr;
     m_SkyMapShader = 0;
     m_BumpMapShader = nullptr;
 }
@@ -46,18 +46,18 @@ bool ShaderManager::Initialize(
 
 
 	// Phong Light Shader 생성
-    m_PhongLightShader = new PhongLightShaderClass;
-    if (!m_PhongLightShader)
+    m_PhongShader = new PhongShaderClass;
+    if (!m_PhongShader)
     {
         return false;
     }
 
 	// Phong Light Shader 초기화
-    result = m_PhongLightShader->Initialize(device, hwnd);
+    result = m_PhongShader->Initialize(device, hwnd);
     if (!result)
     {
-        delete m_PhongLightShader;
-        m_PhongLightShader = nullptr;
+        delete m_PhongShader;
+        m_PhongShader = nullptr;
 
         return false;
     }
@@ -133,9 +133,9 @@ TextureShaderClass* ShaderManager::GetTextureShader()
     return m_TextureShader;
 }
 
-PhongLightShaderClass* ShaderManager::GetPhongLightShader()
+PhongShaderClass* ShaderManager::GetPhongShader()
 {
-    return m_PhongLightShader;
+    return m_PhongShader;
 }
 
 SkyMapShaderClass* ShaderManager::GetSkyMapShader()
@@ -171,11 +171,11 @@ void ShaderManager::Shutdown()
         m_SkyMapShader = 0;
     }
 
-    if (m_PhongLightShader)
+    if (m_PhongShader)
     {
-        m_PhongLightShader->Shutdown();
-        delete m_PhongLightShader;
-        m_PhongLightShader = nullptr;
+        m_PhongShader->Shutdown();
+        delete m_PhongShader;
+        m_PhongShader = nullptr;
     }
 
     if (m_TextureShader)

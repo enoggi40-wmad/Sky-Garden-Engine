@@ -15,13 +15,17 @@
 #include "Transform.h"
 #include "Material.h"
 #include <memory>
+
+#include "Light.h"
+
 //
 Scene::Scene()
 {
     m_ActiveCamera = nullptr;
 
-    m_RendererManager =
-        new RendererManager;
+    m_RendererManager = new RendererManager;
+
+    m_LightManager = new LightManager;
 }
 
 Scene::~Scene()
@@ -40,12 +44,26 @@ Scene::~Scene()
     }
 
     gameObjects.clear();
+
+    delete m_LightManager;
+    m_LightManager = nullptr;
 }
+
 
 void Scene::AddGameObject(GameObject* gameObject)
 {
+    if (!gameObject)
+        return;
+
+    // 다른 Scene에 속하거나 이미 등록된 객체 방지
+    if (gameObject->m_Scene)
+        return;
+
     gameObjects.push_back(gameObject);
 
+    gameObject->m_Scene = this;
+
+    // 기존 Renderer 등록
     Renderer* renderer =
         gameObject->GetComponent<Renderer>();
 
@@ -53,7 +71,36 @@ void Scene::AddGameObject(GameObject* gameObject)
     {
         m_RendererManager->AddRenderer(renderer);
     }
+
+    // 이미 추가되어 있던 Light 컴포넌트 등록
+    for (Component* component : gameObject->components)
+    {
+        OnComponentAdded(component);
+    }
 }
+
+
+void Scene::OnComponentAdded(Component* component)
+{
+    Light* light = dynamic_cast<Light*>(component);
+
+    if (light)
+    {
+        m_LightManager->RegisterLight(light);
+    }
+}
+
+
+void Scene::OnComponentRemoved(Component* component)
+{
+    Light* light = dynamic_cast<Light*>(component);
+
+    if (light)
+    {
+        m_LightManager->UnregisterLight(light);
+    }
+}
+
 
 Material* Scene::CreateMaterial()
 {

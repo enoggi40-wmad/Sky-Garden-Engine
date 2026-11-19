@@ -556,6 +556,22 @@ void ResourceManager::Initialize(ID3D11Device* device,
             MB_OK
         );
     }
+
+    ID3D11ShaderResourceView* skyMap_Sunset =
+        LoadCubeMap(
+            "skymap_Sunset",
+            L"./data/skymap_Sunset.dds"
+        );
+
+    if (!skyMap_Sunset)
+    {
+        MessageBox(
+            NULL,
+            L"skymap_Sunset.dds Load Failed",
+            L"Resource Error",
+            MB_OK
+        );
+    }
         
 }
 

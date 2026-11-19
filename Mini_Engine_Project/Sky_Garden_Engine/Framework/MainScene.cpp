@@ -94,11 +94,11 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     // =====================================================
 
     GameObject* sky =
-        new GameObject("skymap");
+        new GameObject("skymap_Sunset");
 
     SkyBoxRenderer* skyRenderer =
         sky->AddComponent<SkyBoxRenderer>(
-            resourceManager->GetCubeMap("skymap")
+            resourceManager->GetCubeMap("skymap_Sunset")
         );
 
     bool result =

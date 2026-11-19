@@ -291,7 +291,7 @@ bool SkyMapShaderClass::InitializeShader(
 	samplerDesc.BorderColor[3] = 0;
 
 	samplerDesc.MinLOD = 0;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	samplerDesc.MaxLOD = 0;
 
 
 	result = device->CreateSamplerState(

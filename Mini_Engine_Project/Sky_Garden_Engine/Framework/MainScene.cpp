@@ -95,7 +95,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
 	// Ambient Color
     // =====================================================
     SetAmbientColor({
-        0.5f, 0.5f, 0.5f, 1.0f
+        0.1f, 0.1f, 0.1f, 1.0f
         });
 
     // =====================================================
@@ -110,7 +110,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     DirectionalLight* sunLight =
         sunLightObject->AddComponent<DirectionalLight>();
     sunLight->SetDiffuseColor({ 1.0f, 0.94f, 0.85f, 1.0f });
-    sunLight->SetIntensity(0.7f);
+    sunLight->SetIntensity(0.3f);
     AddGameObject(sunLightObject);
 
     // =====================================================
@@ -593,6 +593,11 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     material1->SetShaderType(ShaderType::Phong);
     material1->SetDiffuseTexture(texture1);
     material1->SetSpecularPower(8.0f);
+    material1->SetEmissiveColor({
+    1.0f, 0.2f, 1.0f, 1.0f
+        });
+
+    material1->SetEmissiveIntensity(0.8f);
 
     Material* material2 = CreateMaterial();
     material2->SetShaderType(ShaderType::Phong);
@@ -634,7 +639,24 @@ void MainScene::Initialize(ResourceManager* resourceManager)
             orbitRadius,
             0.3f,
             startAngle
+
         );
+        // Crystal에 파란색 PointLight 추가
+        PointLight* crystalLight =
+            crystal->AddComponent<PointLight>();
+
+        crystalLight->SetDiffuseColor({
+            1.0f, 0.2f, 1.0f, 1.0f
+            });
+
+        crystalLight->SetIntensity(15.0f);
+        crystalLight->SetRange(250.0f);
+
+        crystalLight->SetAttenuation({
+            1.0f,
+            0.003f,
+            0.00002f
+            });
 
         AddGameObject(crystal);
     }

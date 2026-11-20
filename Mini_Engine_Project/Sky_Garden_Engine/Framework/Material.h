@@ -42,4 +42,24 @@ private:
     ID3D11ShaderResourceView* m_SecondTexture = nullptr;
     ID3D11ShaderResourceView* m_AlphaMap = nullptr;
     ID3D11ShaderResourceView* m_NormalMap = nullptr;
+
+private:
+    // 자체 발광 색상
+    DirectX::XMFLOAT4 m_EmissiveColor =
+    {
+        0.0f, 0.0f, 0.0f, 1.0f
+    };
+
+    // 자체 발광 강도
+    float m_EmissiveIntensity = 0.0f;
+
+public:
+    void SetEmissiveColor(
+        const DirectX::XMFLOAT4& color);
+
+    DirectX::XMFLOAT4 GetEmissiveColor() const;
+
+    void SetEmissiveIntensity(float intensity);
+
+    float GetEmissiveIntensity() const;
 };

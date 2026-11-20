@@ -5,7 +5,7 @@
 #include "Renderer.h"
 #include <d3d11.h>
 #include <DirectXMath.h>
-#include "LightData.h"dh
+#include "LightData.h"
 
 
 class D3DClass;

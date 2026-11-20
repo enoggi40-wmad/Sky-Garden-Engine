@@ -45,6 +45,8 @@ bool PhongShaderClass::Render(
     XMFLOAT4 ambientColor,
     XMFLOAT4 specularColor,
     float specularPower,
+    XMFLOAT4 emissiveColor,
+    float emissiveIntensity,
     const LightData& lightData)
 {
     if (!SetShaderParameters(
@@ -57,6 +59,8 @@ bool PhongShaderClass::Render(
         ambientColor,
         specularColor,
         specularPower,
+        emissiveColor,
+        emissiveIntensity,
         lightData))
     {
         return false;
@@ -299,6 +303,8 @@ bool PhongShaderClass::SetShaderParameters(
     XMFLOAT4 ambientColor,
     XMFLOAT4 specularColor,
     float specularPower,
+    XMFLOAT4 emissiveColor,
+    float emissiveIntensity,
     const LightData& lightData)
 {
     HRESULT result;
@@ -353,6 +359,14 @@ bool PhongShaderClass::SetShaderParameters(
     lightPtr->padding[0] = 0.0f;
     lightPtr->padding[1] = 0.0f;
     lightPtr->padding[2] = 0.0f;
+
+    // Material별 Emissive 속성을 PS b0에 함께 전달
+    lightPtr->emissiveColor = emissiveColor;
+    lightPtr->emissiveIntensity = emissiveIntensity;
+    lightPtr->emissivePadding[0] = 0.0f;
+    lightPtr->emissivePadding[1] = 0.0f;
+    lightPtr->emissivePadding[2] = 0.0f;
+
     deviceContext->Unmap(m_lightBuffer, 0);
     deviceContext->PSSetConstantBuffers(0, 1, &m_lightBuffer);
 

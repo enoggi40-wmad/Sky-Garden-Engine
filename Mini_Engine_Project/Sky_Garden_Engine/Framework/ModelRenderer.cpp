@@ -135,6 +135,12 @@ bool ModelRenderer::Render(
         float specularPower =
             m_Material->GetSpecularPower();
 
+        XMFLOAT4 emissiveColor =
+            m_Material->GetEmissiveColor();
+
+        float emissiveIntensity =
+            m_Material->GetEmissiveIntensity();
+
         result = context.shaderManager->GetPhongShader()->Render(
             context.deviceContext,
             m_Model->GetIndexCount(),
@@ -146,7 +152,10 @@ bool ModelRenderer::Render(
             ambientColor,
             specularColor,
             specularPower,
+            emissiveColor,
+            emissiveIntensity,
             lightData
+
         );
     }
 

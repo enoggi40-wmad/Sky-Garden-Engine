@@ -79,4 +79,25 @@ ID3D11ShaderResourceView* Material::GetNormalMap() const
     return m_NormalMap;
 }
 
+void Material::SetEmissiveColor(
+    const DirectX::XMFLOAT4& color)
+{
+    m_EmissiveColor = color;
+}
+
+DirectX::XMFLOAT4 Material::GetEmissiveColor() const
+{
+    return m_EmissiveColor;
+}
+
+void Material::SetEmissiveIntensity(float intensity)
+{
+    m_EmissiveIntensity = intensity;
+}
+
+float Material::GetEmissiveIntensity() const
+{
+    return m_EmissiveIntensity;
+}
+
 

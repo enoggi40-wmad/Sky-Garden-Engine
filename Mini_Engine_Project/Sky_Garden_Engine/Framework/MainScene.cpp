@@ -92,7 +92,14 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     AddGameObject(cutsceneCamera);
 
     // =====================================================
-    // Lighting Test: DirectionalLight (1)
+	// Ambient Color
+    // =====================================================
+    SetAmbientColor({
+        0.5f, 0.5f, 0.5f, 1.0f
+        });
+
+    // =====================================================
+    // DirectionalLight
     // =====================================================
     // Light의 Forward(+Z)를 아래쪽으로 기울여 태양광처럼 사용.
     GameObject* sunLightObject = new GameObject("TestDirectionalLight");
@@ -107,7 +114,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     AddGameObject(sunLightObject);
 
     // =====================================================
-    // Lighting Test: SpotLight (2)
+    // SpotLight * 2
     // =====================================================
     GameObject* frontSpotObject = new GameObject("TestSpotLightFront");
     frontSpotObject->transform.SetWorldPosition({
@@ -146,7 +153,7 @@ void MainScene::Initialize(ResourceManager* resourceManager)
     AddGameObject(backSpotObject);
 
     // =====================================================
-    // Independent PointLights
+    // PointLights * 4
     // =====================================================
 
     const int pointLightCount = 4;

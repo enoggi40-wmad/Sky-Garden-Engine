@@ -81,4 +81,24 @@ private:
 
     void OnComponentAdded(Component* component);
     void OnComponentRemoved(Component* component);
+
+
+	// Scene의 Ambient Color를 설정하는 멤버 변수
+private:
+    DirectX::XMFLOAT4 m_AmbientColor =
+    {
+        0.05f, 0.05f, 0.05f, 1.0f
+    };
+
+public:
+    void SetAmbientColor(
+        const DirectX::XMFLOAT4& color)
+    {
+        m_AmbientColor = color;
+    }
+
+    DirectX::XMFLOAT4 GetAmbientColor() const
+    {
+        return m_AmbientColor;
+    }
 };

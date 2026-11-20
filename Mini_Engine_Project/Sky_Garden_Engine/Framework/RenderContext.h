@@ -20,4 +20,9 @@ struct RenderContext
 
     LightData lightData = {};
 
+    DirectX::XMFLOAT4 ambientColor =
+    {
+        0.05f, 0.05f, 0.05f, 1.0f
+    };
+
 };

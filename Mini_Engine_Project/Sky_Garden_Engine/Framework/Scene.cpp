@@ -183,7 +183,9 @@ bool Scene::Render(
         projectionMatrix,
         orthoMatrix,
         cameraPosition,
-		m_LightManager->GetLightData()
+		m_LightManager->GetLightData(),
+		m_AmbientColor
+
     );
 }
 

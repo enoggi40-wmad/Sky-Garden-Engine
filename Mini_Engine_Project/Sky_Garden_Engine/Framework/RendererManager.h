@@ -5,6 +5,7 @@
 #include "Renderer.h"
 #include <d3d11.h>
 #include <DirectXMath.h>
+#include "LightData.h"dh
 
 
 class D3DClass;
@@ -27,7 +28,8 @@ public:
         DirectX::XMMATRIX projectionMatrix,
         DirectX::XMMATRIX orthoMatrix,
         DirectX::XMFLOAT3 cameraPosition,
-		const LightData& lightData
+		const LightData& lightData,
+		const DirectX::XMFLOAT4& ambientColor
     );
 
     float GetDistanceSquared(

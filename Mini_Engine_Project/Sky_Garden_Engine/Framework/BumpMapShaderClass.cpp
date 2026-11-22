@@ -1,409 +1,600 @@
-﻿#include "BumpMapShaderClass.h"
-
+﻿
+#include "BumpMapShaderClass.h"
 
 BumpMapShaderClass::BumpMapShaderClass()
 {
 }
 
-
-BumpMapShaderClass::BumpMapShaderClass(const BumpMapShaderClass& other)
+BumpMapShaderClass::BumpMapShaderClass(
+    const BumpMapShaderClass& other)
 {
+    // GPU 리소스를 소유하므로 복사 사용은 피해야 함
 }
-
 
 BumpMapShaderClass::~BumpMapShaderClass()
 {
 }
 
-
-bool BumpMapShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+bool BumpMapShaderClass::Initialize(
+    ID3D11Device* device,
+    HWND hwnd)
 {
-	// 정점 및 픽셀 쉐이더를 초기화합니다.
-	return InitializeShader(device, hwnd, L"./data/bumpmapShader.hlsl");
+    return InitializeShader(
+        device,
+        hwnd,
+        L"./data/bumpmapShader.hlsl"
+    );
 }
-
 
 void BumpMapShaderClass::Shutdown()
 {
-	// 버텍스 및 픽셀 쉐이더와 관련된 객체를 종료합니다.
-	ShutdownShader();
+    ShutdownShader();
 }
-
 
 bool BumpMapShaderClass::Render(
-	ID3D11DeviceContext* deviceContext,
-	int indexCount,
-	XMMATRIX worldMatrix,
-	XMMATRIX viewMatrix,
-	XMMATRIX projectionMatrix,
-	ID3D11ShaderResourceView** textureArray,
-	XMFLOAT3 lightDirection,
-	XMFLOAT4 diffuseColor,
-	XMFLOAT4 ambientColor,
-	XMFLOAT3 cameraPosition,
-	XMFLOAT4 specularColor,
-	float specularPower)
+    ID3D11DeviceContext* deviceContext,
+    int indexCount,
+    XMMATRIX worldMatrix,
+    XMMATRIX viewMatrix,
+    XMMATRIX projectionMatrix,
+    ID3D11ShaderResourceView** textureArray,
+    XMFLOAT3 cameraPosition,
+    XMFLOAT4 ambientColor,
+    XMFLOAT4 specularColor,
+    float specularPower,
+    XMFLOAT4 emissiveColor,
+    float emissiveIntensity,
+    const LightData& lightData)
 {
-	// 행렬, 텍스처, 조명 값을 셰이더에 전달
-	if (!SetShaderParameters(
-		deviceContext,
-		worldMatrix,
-		viewMatrix,
-		projectionMatrix,
-		textureArray,
-		lightDirection,
-		diffuseColor,
-		ambientColor,
-		cameraPosition,
-		specularColor,
-		specularPower))
-	{
-		return false;
-	}
+    if (!SetShaderParameters(
+        deviceContext,
+        worldMatrix,
+        viewMatrix,
+        projectionMatrix,
+        textureArray,
+        cameraPosition,
+        ambientColor,
+        specularColor,
+        specularPower,
+        emissiveColor,
+        emissiveIntensity,
+        lightData))
+    {
+        return false;
+    }
 
-	RenderShader(deviceContext, indexCount);
-
-	return true;
+    RenderShader(deviceContext, indexCount);
+    return true;
 }
 
-
-bool BumpMapShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, const WCHAR* fileName)
+bool BumpMapShaderClass::InitializeShader(
+    ID3D11Device* device,
+    HWND hwnd,
+    const WCHAR* fileName)
 {
-	HRESULT result;
-	ID3D10Blob* errorMessage = nullptr;
+    HRESULT result;
 
-	// 버텍스 쉐이더 코드를 컴파일한다.
-	ID3D10Blob* vertexShaderBuffer = nullptr;
-	result = D3DCompileFromFile(fileName, NULL, NULL, "BumpMapVertexShader", "vs_5_0",
-		D3D10_SHADER_ENABLE_STRICTNESS, 0, &vertexShaderBuffer, &errorMessage);
-	if (FAILED(result))
-	{
-		// 셰이더 컴파일 실패시 오류메시지를 출력합니다.
-		if (errorMessage)
-		{
-			OutputShaderErrorMessage(errorMessage, hwnd, fileName);
-		}
-		// 컴파일 오류가 아니라면 셰이더 파일을 찾을 수 없는 경우입니다.
-		else
-		{
-			MessageBox(hwnd, fileName, L"Missing Shader File", MB_OK);
-		}
+    ID3D10Blob* errorMessage = nullptr;
+    ID3D10Blob* vertexShaderBuffer = nullptr;
+    ID3D10Blob* pixelShaderBuffer = nullptr;
 
-		return false;
-	}
+    // ==========================================
+    // Vertex Shader 컴파일
+    // ==========================================
 
-	// 픽셀 쉐이더 코드를 컴파일한다.
-	ID3D10Blob* pixelShaderBuffer = nullptr;
-	result = D3DCompileFromFile(fileName, NULL, NULL, "BumpMapPixelShader", "ps_5_0",
-		D3D10_SHADER_ENABLE_STRICTNESS, 0, &pixelShaderBuffer, &errorMessage);
-	if (FAILED(result))
-	{
-		// 셰이더 컴파일 실패시 오류메시지를 출력합니다.
-		if (errorMessage)
-		{
-			OutputShaderErrorMessage(errorMessage, hwnd, fileName);
-		}
-		// 컴파일 오류가 아니라면 셰이더 파일을 찾을 수 없는 경우입니다.
-		else
-		{
-			MessageBox(hwnd, fileName, L"Missing Shader File", MB_OK);
-		}
+    result = D3DCompileFromFile(
+        fileName,
+        nullptr,
+        D3D_COMPILE_STANDARD_FILE_INCLUDE,
+        "BumpMapVertexShader",
+        "vs_5_0",
+        D3D10_SHADER_ENABLE_STRICTNESS,
+        0,
+        &vertexShaderBuffer,
+        &errorMessage
+    );
 
-		return false;
-	}
+    if (FAILED(result) || !vertexShaderBuffer)
+    {
+        if (errorMessage)
+            OutputShaderErrorMessage(
+                errorMessage, hwnd, fileName);
+        else
+            MessageBox(
+                hwnd,
+                fileName,
+                L"Vertex Shader Compile Failed",
+                MB_OK
+            );
 
-	// 버퍼로부터 정점 셰이더를 생성한다.
-	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
-		vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
-	if (FAILED(result))
-	{
-		return false;
-	}
+        return false;
+    }
 
-	// 버퍼에서 픽셀 쉐이더를 생성합니다.
-	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
-		pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
-	if (FAILED(result))
-	{
-		return false;
-	}
+    if (errorMessage)
+    {
+        errorMessage->Release();
+        errorMessage = nullptr;
+    }
 
-	// 정점 입력 레이아웃 구조체를 설정합니다.
-	// 이 설정은 ModelClass와 셰이더의 VertexType 구조와 일치해야합니다.
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[5];
-	polygonLayout[0].SemanticName = "POSITION";
-	polygonLayout[0].SemanticIndex = 0;
-	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[0].InputSlot = 0;
-	polygonLayout[0].AlignedByteOffset = 0;
-	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[0].InstanceDataStepRate = 0;
+    // ==========================================
+    // Pixel Shader 컴파일
+    // ==========================================
 
-	polygonLayout[1].SemanticName = "TEXCOORD";
-	polygonLayout[1].SemanticIndex = 0;
-	polygonLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-	polygonLayout[1].InputSlot = 0;
-	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[1].InstanceDataStepRate = 0;
+    result = D3DCompileFromFile(
+        fileName,
+        nullptr,
+        D3D_COMPILE_STANDARD_FILE_INCLUDE,
+        "BumpMapPixelShader",
+        "ps_5_0",
+        D3D10_SHADER_ENABLE_STRICTNESS,
+        0,
+        &pixelShaderBuffer,
+        &errorMessage
+    );
 
-	polygonLayout[2].SemanticName = "NORMAL";
-	polygonLayout[2].SemanticIndex = 0;
-	polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[2].InputSlot = 0;
-	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[2].InstanceDataStepRate = 0;
+    if (FAILED(result) || !pixelShaderBuffer)
+    {
+        if (errorMessage)
+            OutputShaderErrorMessage(
+                errorMessage, hwnd, fileName);
+        else
+            MessageBox(
+                hwnd,
+                fileName,
+                L"Pixel Shader Compile Failed",
+                MB_OK
+            );
 
-	polygonLayout[3].SemanticName = "TANGENT";
-	polygonLayout[3].SemanticIndex = 0;
-	polygonLayout[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[3].InputSlot = 0;
-	polygonLayout[3].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[3].InstanceDataStepRate = 0;
+        vertexShaderBuffer->Release();
+        return false;
+    }
 
-	polygonLayout[4].SemanticName = "BINORMAL";
-	polygonLayout[4].SemanticIndex = 0;
-	polygonLayout[4].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[4].InputSlot = 0;
-	polygonLayout[4].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[4].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[4].InstanceDataStepRate = 0;
+    if (errorMessage)
+    {
+        errorMessage->Release();
+        errorMessage = nullptr;
+    }
 
-	// 레이아웃의 요소 수를 가져옵니다.
-	UINT numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
+    // ==========================================
+    // GPU Shader 생성
+    // ==========================================
 
-	// 정점 입력 레이아웃을 만듭니다.
-	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(),
-		vertexShaderBuffer->GetBufferSize(), &m_layout);
-	if (FAILED(result))
-	{
-		return false;
-	}
+    result = device->CreateVertexShader(
+        vertexShaderBuffer->GetBufferPointer(),
+        vertexShaderBuffer->GetBufferSize(),
+        nullptr,
+        &m_vertexShader
+    );
 
-	// 더 이상 사용되지 않는 정점 셰이더 퍼버와 픽셀 셰이더 버퍼를 해제합니다.
-	vertexShaderBuffer->Release();
-	vertexShaderBuffer = 0;
+    if (FAILED(result))
+    {
+        vertexShaderBuffer->Release();
+        pixelShaderBuffer->Release();
+        ShutdownShader();
+        return false;
+    }
 
-	pixelShaderBuffer->Release();
-	pixelShaderBuffer = 0;
+    result = device->CreatePixelShader(
+        pixelShaderBuffer->GetBufferPointer(),
+        pixelShaderBuffer->GetBufferSize(),
+        nullptr,
+        &m_pixelShader
+    );
 
-	// 정점 셰이더에 있는 행렬 상수 버퍼의 구조체를 작성합니다.
-	D3D11_BUFFER_DESC matrixBufferDesc;
-	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferType);
-	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	matrixBufferDesc.MiscFlags = 0;
-	matrixBufferDesc.StructureByteStride = 0;
+    if (FAILED(result))
+    {
+        vertexShaderBuffer->Release();
+        pixelShaderBuffer->Release();
+        ShutdownShader();
+        return false;
+    }
 
-	// 상수 버퍼 포인터를 만들어 이 클래스에서 정점 셰이더 상수 버퍼에 접근할 수 있게 합니다.
-	result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
-	if (FAILED(result))
-	{
-		return false;
-	}
+    // ==========================================
+    // Input Layout
+    // 기존 5개 Semantic 유지
+    // ==========================================
 
-	// 텍스처 샘플러 상태 구조체를 생성 및 설정합니다.
-	D3D11_SAMPLER_DESC samplerDesc;
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.MipLODBias = 0.0f;
-	samplerDesc.MaxAnisotropy = 1;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.BorderColor[0] = 0;
-	samplerDesc.BorderColor[1] = 0;
-	samplerDesc.BorderColor[2] = 0;
-	samplerDesc.BorderColor[3] = 0;
-	samplerDesc.MinLOD = 0;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    D3D11_INPUT_ELEMENT_DESC polygonLayout[5] = {};
 
-	// 텍스처 샘플러 상태를 만듭니다.
-	result = device->CreateSamplerState(&samplerDesc, &m_sampleState);
-	if (FAILED(result))
-	{
-		return false;
-	}
+    polygonLayout[0].SemanticName = "POSITION";
+    polygonLayout[0].Format =
+        DXGI_FORMAT_R32G32B32_FLOAT;
+    polygonLayout[0].InputSlot = 0;
+    polygonLayout[0].AlignedByteOffset = 0;
+    polygonLayout[0].InputSlotClass =
+        D3D11_INPUT_PER_VERTEX_DATA;
 
-	// 픽셀 쉐이더에있는 광원 동적 상수 버퍼의 설명을 설정합니다.
-	D3D11_BUFFER_DESC lightBufferDesc;
-	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	lightBufferDesc.ByteWidth = sizeof(LightBufferType);
-	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	lightBufferDesc.MiscFlags = 0;
-	lightBufferDesc.StructureByteStride = 0;
+    polygonLayout[1].SemanticName = "TEXCOORD";
+    polygonLayout[1].Format =
+        DXGI_FORMAT_R32G32_FLOAT;
+    polygonLayout[1].InputSlot = 0;
+    polygonLayout[1].AlignedByteOffset =
+        D3D11_APPEND_ALIGNED_ELEMENT;
+    polygonLayout[1].InputSlotClass =
+        D3D11_INPUT_PER_VERTEX_DATA;
 
-	// 이 클래스 내에서 정점 셰이더 상수 버퍼에 액세스 할 수 있도록 상수 버퍼 포인터를 만듭니다.
-	result = device->CreateBuffer(&lightBufferDesc, NULL, &m_lightBuffer);
-	if (FAILED(result))
-	{
-		return false;
-	}
+    polygonLayout[2].SemanticName = "NORMAL";
+    polygonLayout[2].Format =
+        DXGI_FORMAT_R32G32B32_FLOAT;
+    polygonLayout[2].InputSlot = 0;
+    polygonLayout[2].AlignedByteOffset =
+        D3D11_APPEND_ALIGNED_ELEMENT;
+    polygonLayout[2].InputSlotClass =
+        D3D11_INPUT_PER_VERTEX_DATA;
 
-	return true;
+    polygonLayout[3].SemanticName = "TANGENT";
+    polygonLayout[3].Format =
+        DXGI_FORMAT_R32G32B32_FLOAT;
+    polygonLayout[3].InputSlot = 0;
+    polygonLayout[3].AlignedByteOffset =
+        D3D11_APPEND_ALIGNED_ELEMENT;
+    polygonLayout[3].InputSlotClass =
+        D3D11_INPUT_PER_VERTEX_DATA;
+
+    polygonLayout[4].SemanticName = "BINORMAL";
+    polygonLayout[4].Format =
+        DXGI_FORMAT_R32G32B32_FLOAT;
+    polygonLayout[4].InputSlot = 0;
+    polygonLayout[4].AlignedByteOffset =
+        D3D11_APPEND_ALIGNED_ELEMENT;
+    polygonLayout[4].InputSlotClass =
+        D3D11_INPUT_PER_VERTEX_DATA;
+
+    result = device->CreateInputLayout(
+        polygonLayout,
+        5,
+        vertexShaderBuffer->GetBufferPointer(),
+        vertexShaderBuffer->GetBufferSize(),
+        &m_layout
+    );
+
+    vertexShaderBuffer->Release();
+    pixelShaderBuffer->Release();
+
+    if (FAILED(result))
+    {
+        ShutdownShader();
+        return false;
+    }
+
+    // ==========================================
+    // Sampler 생성
+    // ==========================================
+
+    D3D11_SAMPLER_DESC samplerDesc = {};
+
+    samplerDesc.Filter =
+        D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+
+    samplerDesc.AddressU =
+        D3D11_TEXTURE_ADDRESS_WRAP;
+
+    samplerDesc.AddressV =
+        D3D11_TEXTURE_ADDRESS_WRAP;
+
+    samplerDesc.AddressW =
+        D3D11_TEXTURE_ADDRESS_WRAP;
+
+    samplerDesc.ComparisonFunc =
+        D3D11_COMPARISON_ALWAYS;
+
+    samplerDesc.MinLOD = 0;
+    samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    samplerDesc.MaxAnisotropy = 1;
+
+    result = device->CreateSamplerState(
+        &samplerDesc,
+        &m_sampleState
+    );
+
+    if (FAILED(result))
+    {
+        ShutdownShader();
+        return false;
+    }
+
+    // ==========================================
+    // Constant Buffer 생성
+    // ==========================================
+
+    auto createDynamicBuffer =
+        [device](
+            UINT byteWidth,
+            ID3D11Buffer** buffer) -> bool
+        {
+            D3D11_BUFFER_DESC desc = {};
+
+            desc.Usage = D3D11_USAGE_DYNAMIC;
+            desc.ByteWidth = byteWidth;
+            desc.BindFlags =
+                D3D11_BIND_CONSTANT_BUFFER;
+
+            desc.CPUAccessFlags =
+                D3D11_CPU_ACCESS_WRITE;
+
+            return SUCCEEDED(
+                device->CreateBuffer(
+                    &desc, nullptr, buffer)
+            );
+        };
+
+    if (!createDynamicBuffer(
+        sizeof(MatrixBufferType),
+        &m_matrixBuffer) ||
+
+        !createDynamicBuffer(
+            sizeof(CameraBufferType),
+            &m_cameraBuffer) ||
+
+        !createDynamicBuffer(
+            sizeof(LightBufferType),
+            &m_lightBuffer) ||
+
+        !createDynamicBuffer(
+            sizeof(LightData),
+            &m_lightDataBuffer))
+    {
+        ShutdownShader();
+        return false;
+    }
+
+    return true;
 }
-
 
 void BumpMapShaderClass::ShutdownShader()
 {
-	// 광원 상수 버퍼를 해제합니다.
-	if (m_lightBuffer)
-	{
-		m_lightBuffer->Release();
-		m_lightBuffer = 0;
-	}
+    if (m_lightDataBuffer)
+    {
+        m_lightDataBuffer->Release();
+        m_lightDataBuffer = nullptr;
+    }
 
-	// 샘플러 상태를 해제한다.
-	if (m_sampleState)
-	{
-		m_sampleState->Release();
-		m_sampleState = 0;
-	}
+    if (m_lightBuffer)
+    {
+        m_lightBuffer->Release();
+        m_lightBuffer = nullptr;
+    }
 
-	// 행렬 상수 버퍼를 해제합니다.
-	if (m_matrixBuffer)
-	{
-		m_matrixBuffer->Release();
-		m_matrixBuffer = 0;
-	}
+    if (m_cameraBuffer)
+    {
+        m_cameraBuffer->Release();
+        m_cameraBuffer = nullptr;
+    }
 
-	// 레이아웃을 해제합니다.
-	if (m_layout)
-	{
-		m_layout->Release();
-		m_layout = 0;
-	}
+    if (m_matrixBuffer)
+    {
+        m_matrixBuffer->Release();
+        m_matrixBuffer = nullptr;
+    }
 
-	// 픽셀 쉐이더를 해제합니다.
-	if (m_pixelShader)
-	{
-		m_pixelShader->Release();
-		m_pixelShader = 0;
-	}
+    if (m_sampleState)
+    {
+        m_sampleState->Release();
+        m_sampleState = nullptr;
+    }
 
-	// 버텍스 쉐이더를 해제합니다.
-	if (m_vertexShader)
-	{
-		m_vertexShader->Release();
-		m_vertexShader = 0;
-	}
+    if (m_layout)
+    {
+        m_layout->Release();
+        m_layout = nullptr;
+    }
+
+    if (m_pixelShader)
+    {
+        m_pixelShader->Release();
+        m_pixelShader = nullptr;
+    }
+
+    if (m_vertexShader)
+    {
+        m_vertexShader->Release();
+        m_vertexShader = nullptr;
+    }
 }
 
-
-void BumpMapShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const WCHAR* shaderFilename)
+void BumpMapShaderClass::OutputShaderErrorMessage(
+    ID3D10Blob* errorMessage,
+    HWND hwnd,
+    const WCHAR* shaderFilename)
 {
-	// 에러 메시지를 출력창에 표시합니다.
-	OutputDebugStringA(reinterpret_cast<const char*>(errorMessage->GetBufferPointer()));
+    OutputDebugStringA(
+        static_cast<const char*>(
+            errorMessage->GetBufferPointer()
+            )
+    );
 
-	// 에러 메세지를 반환합니다.
-	errorMessage->Release();
-	errorMessage = 0;
+    errorMessage->Release();
 
-	// 컴파일 에러가 있음을 팝업 메세지로 알려줍니다.
-	MessageBox(hwnd, L"Error compiling shader.", shaderFilename, MB_OK);
+    MessageBox(
+        hwnd,
+        L"Error compiling shader. Check Debug Output.",
+        shaderFilename,
+        MB_OK
+    );
 }
 
 bool BumpMapShaderClass::SetShaderParameters(
-	ID3D11DeviceContext* deviceContext,
-	XMMATRIX worldMatrix,
-	XMMATRIX viewMatrix,
-	XMMATRIX projectionMatrix,
-	ID3D11ShaderResourceView** textureArray,
-	XMFLOAT3 lightDirection,
-	XMFLOAT4 diffuseColor,
-	XMFLOAT4 ambientColor,
-	XMFLOAT3 cameraPosition,
-	XMFLOAT4 specularColor,
-	float specularPower)
+    ID3D11DeviceContext* deviceContext,
+    XMMATRIX worldMatrix,
+    XMMATRIX viewMatrix,
+    XMMATRIX projectionMatrix,
+    ID3D11ShaderResourceView** textureArray,
+    XMFLOAT3 cameraPosition,
+    XMFLOAT4 ambientColor,
+    XMFLOAT4 specularColor,
+    float specularPower,
+    XMFLOAT4 emissiveColor,
+    float emissiveIntensity,
+    const LightData& lightData)
 {
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
+    HRESULT result;
+    D3D11_MAPPED_SUBRESOURCE mappedResource = {};
 
-	// HLSL에 전달할 행렬 전치
-	worldMatrix = XMMatrixTranspose(worldMatrix);
-	viewMatrix = XMMatrixTranspose(viewMatrix);
-	projectionMatrix = XMMatrixTranspose(projectionMatrix);
+    // 기존 DirectXMath 행렬 규약 유지
+    worldMatrix = XMMatrixTranspose(worldMatrix);
+    viewMatrix = XMMatrixTranspose(viewMatrix);
+    projectionMatrix =
+        XMMatrixTranspose(projectionMatrix);
 
-	// 행렬 버퍼 갱신
-	if (FAILED(deviceContext->Map(
-		m_matrixBuffer,
-		0,
-		D3D11_MAP_WRITE_DISCARD,
-		0,
-		&mappedResource)))
-	{
-		return false;
-	}
+    // ==========================================
+    // VS b0: MatrixBuffer
+    // ==========================================
 
-	MatrixBufferType* matrixDataPtr =
-		static_cast<MatrixBufferType*>(mappedResource.pData);
+    result = deviceContext->Map(
+        m_matrixBuffer,
+        0,
+        D3D11_MAP_WRITE_DISCARD,
+        0,
+        &mappedResource
+    );
 
-	matrixDataPtr->world = worldMatrix;
-	matrixDataPtr->view = viewMatrix;
-	matrixDataPtr->projection = projectionMatrix;
+    if (FAILED(result))
+        return false;
 
-	deviceContext->Unmap(m_matrixBuffer, 0);
+    MatrixBufferType* matrixPtr =
+        static_cast<MatrixBufferType*>(
+            mappedResource.pData
+            );
 
-	// 정점 셰이더에 행렬 버퍼 연결
-	deviceContext->VSSetConstantBuffers(
-		0, 1, &m_matrixBuffer
-	);
+    matrixPtr->world = worldMatrix;
+    matrixPtr->view = viewMatrix;
+    matrixPtr->projection = projectionMatrix;
 
-	// 색상 텍스처와 노멀맵 연결
-	deviceContext->PSSetShaderResources(
-		0, 2, textureArray
-	);
+    deviceContext->Unmap(m_matrixBuffer, 0);
 
-	// 조명 버퍼 갱신
-	if (FAILED(deviceContext->Map(
-		m_lightBuffer,
-		0,
-		D3D11_MAP_WRITE_DISCARD,
-		0,
-		&mappedResource)))
-	{
-		return false;
-	}
+    deviceContext->VSSetConstantBuffers(
+        0, 1, &m_matrixBuffer
+    );
 
-	LightBufferType* lightDataPtr =
-		static_cast<LightBufferType*>(mappedResource.pData);
+    // ==========================================
+    // VS b1: CameraBuffer
+    // ==========================================
 
-	lightDataPtr->diffuseColor = diffuseColor;
-	lightDataPtr->lightDirection = lightDirection;
-	lightDataPtr->specularPower = specularPower;
+    result = deviceContext->Map(
+        m_cameraBuffer,
+        0,
+        D3D11_MAP_WRITE_DISCARD,
+        0,
+        &mappedResource
+    );
 
-	lightDataPtr->ambientColor = ambientColor;
-	lightDataPtr->specularColor = specularColor;
+    if (FAILED(result))
+        return false;
 
-	lightDataPtr->cameraPosition = cameraPosition;
-	lightDataPtr->padding = 0.0f;
+    CameraBufferType* cameraPtr =
+        static_cast<CameraBufferType*>(
+            mappedResource.pData
+            );
 
-	deviceContext->Unmap(m_lightBuffer, 0);
+    cameraPtr->cameraPosition = cameraPosition;
+    cameraPtr->padding = 0.0f;
 
-	// 픽셀 셰이더에 조명 버퍼 연결
-	deviceContext->PSSetConstantBuffers(
-		0, 1, &m_lightBuffer
-	);
+    deviceContext->Unmap(m_cameraBuffer, 0);
 
-	return true;
+    deviceContext->VSSetConstantBuffers(
+        1, 1, &m_cameraBuffer
+    );
+
+    // ==========================================
+    // PS t0, t1: Color Texture + Normal Map
+    // ==========================================
+
+    deviceContext->PSSetShaderResources(
+        0, 2, textureArray
+    );
+
+    // ==========================================
+    // PS b0: Material Lighting
+    // ==========================================
+
+    result = deviceContext->Map(
+        m_lightBuffer,
+        0,
+        D3D11_MAP_WRITE_DISCARD,
+        0,
+        &mappedResource
+    );
+
+    if (FAILED(result))
+        return false;
+
+    LightBufferType* lightPtr =
+        static_cast<LightBufferType*>(
+            mappedResource.pData
+            );
+
+    lightPtr->ambientColor = ambientColor;
+    lightPtr->specularColor = specularColor;
+    lightPtr->specularPower = specularPower;
+
+    lightPtr->padding[0] = 0.0f;
+    lightPtr->padding[1] = 0.0f;
+    lightPtr->padding[2] = 0.0f;
+
+    lightPtr->emissiveColor = emissiveColor;
+    lightPtr->emissiveIntensity =
+        emissiveIntensity;
+
+    lightPtr->emissivePadding[0] = 0.0f;
+    lightPtr->emissivePadding[1] = 0.0f;
+    lightPtr->emissivePadding[2] = 0.0f;
+
+    deviceContext->Unmap(m_lightBuffer, 0);
+
+    deviceContext->PSSetConstantBuffers(
+        0, 1, &m_lightBuffer
+    );
+
+    // ==========================================
+    // PS b1: Scene LightData
+    // ==========================================
+
+    result = deviceContext->Map(
+        m_lightDataBuffer,
+        0,
+        D3D11_MAP_WRITE_DISCARD,
+        0,
+        &mappedResource
+    );
+
+    if (FAILED(result))
+        return false;
+
+    LightData* lightDataPtr =
+        static_cast<LightData*>(
+            mappedResource.pData
+            );
+
+    *lightDataPtr = lightData;
+
+    deviceContext->Unmap(m_lightDataBuffer, 0);
+
+    deviceContext->PSSetConstantBuffers(
+        1, 1, &m_lightDataBuffer
+    );
+
+    return true;
 }
 
-
-void BumpMapShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
+void BumpMapShaderClass::RenderShader(
+    ID3D11DeviceContext* deviceContext,
+    int indexCount)
 {
-	// 정점 입력 레이아웃을 설정합니다.
-	deviceContext->IASetInputLayout(m_layout);
+    deviceContext->IASetInputLayout(m_layout);
 
-	// 삼각형을 그릴 정점 셰이더와 픽셀 셰이더를 설정합니다.
-	deviceContext->VSSetShader(m_vertexShader, NULL, 0);
-	deviceContext->PSSetShader(m_pixelShader, NULL, 0);
+    deviceContext->VSSetShader(
+        m_vertexShader, nullptr, 0
+    );
 
-	// 픽셀 쉐이더에서 샘플러 상태를 설정합니다.
-	deviceContext->PSSetSamplers(0, 1, &m_sampleState);
+    deviceContext->PSSetShader(
+        m_pixelShader, nullptr, 0
+    );
 
-	// 삼각형을 그립니다.
-	deviceContext->DrawIndexed(indexCount, 0, 0);
+    deviceContext->PSSetSamplers(
+        0, 1, &m_sampleState
+    );
+
+    deviceContext->DrawIndexed(
+        indexCount, 0, 0
+    );
 }

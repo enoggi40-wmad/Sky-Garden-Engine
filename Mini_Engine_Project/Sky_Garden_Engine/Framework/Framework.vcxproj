@@ -256,6 +256,7 @@
     <ClInclude Include="UIRenderer.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="data\LightingCommon.hlsli" />
     <None Include="data\textureShader.hlsl">
       <FileType>Document</FileType>
     </None>

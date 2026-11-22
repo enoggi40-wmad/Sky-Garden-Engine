@@ -1,80 +1,114 @@
+
 #pragma once
+
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <directxmath.h>
+#include "LightData.h"
 
 using namespace DirectX;
 
 class BumpMapShaderClass
 {
 private:
-	struct MatrixBufferType
-	{
-		XMMATRIX world;
-		XMMATRIX view;
-		XMMATRIX projection;
-	};
+    // Vertex Shader b0
+    struct MatrixBufferType
+    {
+        XMMATRIX world;
+        XMMATRIX view;
+        XMMATRIX projection;
+    };
 
-	struct LightBufferType
-	{
-		XMFLOAT4 diffuseColor;
-		XMFLOAT3 lightDirection;
-		float specularPower;
+    // Vertex Shader b1
+    struct CameraBufferType
+    {
+        XMFLOAT3 cameraPosition;
+        float padding;
+    };
 
-		XMFLOAT4 ambientColor;
-		XMFLOAT4 specularColor;
+    // Pixel Shader b0
+    // PhongShaderClass와 동일한 구조
+    struct LightBufferType
+    {
+        XMFLOAT4 ambientColor;
+        XMFLOAT4 specularColor;
 
-		XMFLOAT3 cameraPosition;
-		float padding;
-	};
+        float specularPower;
+        float padding[3];
+
+        XMFLOAT4 emissiveColor;
+        float emissiveIntensity;
+        float emissivePadding[3];
+    };
 
 public:
-	BumpMapShaderClass();
-	BumpMapShaderClass(const BumpMapShaderClass&);
-	~BumpMapShaderClass();
+    BumpMapShaderClass();
+    BumpMapShaderClass(const BumpMapShaderClass&);
+    ~BumpMapShaderClass();
 
-	bool Initialize(ID3D11Device*, HWND);
-	void Shutdown();
-	bool Render(
-		ID3D11DeviceContext* deviceContext,
-		int indexCount,
-		XMMATRIX worldMatrix,
-		XMMATRIX viewMatrix,
-		XMMATRIX projectionMatrix,
-		ID3D11ShaderResourceView** textureArray,
-		XMFLOAT3 lightDirection,
-		XMFLOAT4 diffuseColor,
-		XMFLOAT4 ambientColor,
-		XMFLOAT3 cameraPosition,
-		XMFLOAT4 specularColor,
-		float specularPower
-	);
+    bool Initialize(ID3D11Device*, HWND);
+    void Shutdown();
 
-private:
-	bool InitializeShader(ID3D11Device*, HWND, const WCHAR*);
-	void ShutdownShader();
-	void OutputShaderErrorMessage(ID3D10Blob*, HWND, const WCHAR*);
-
-	bool SetShaderParameters(
-		ID3D11DeviceContext* deviceContext,
-		XMMATRIX worldMatrix,
-		XMMATRIX viewMatrix,
-		XMMATRIX projectionMatrix,
-		ID3D11ShaderResourceView** textureArray,
-		XMFLOAT3 lightDirection,
-		XMFLOAT4 diffuseColor,
-		XMFLOAT4 ambientColor,
-		XMFLOAT3 cameraPosition,
-		XMFLOAT4 specularColor,
-		float specularPower
-	);
-	void RenderShader(ID3D11DeviceContext*, int);
+    bool Render(
+        ID3D11DeviceContext* deviceContext,
+        int indexCount,
+        XMMATRIX worldMatrix,
+        XMMATRIX viewMatrix,
+        XMMATRIX projectionMatrix,
+        ID3D11ShaderResourceView** textureArray,
+        XMFLOAT3 cameraPosition,
+        XMFLOAT4 ambientColor,
+        XMFLOAT4 specularColor,
+        float specularPower,
+        XMFLOAT4 emissiveColor,
+        float emissiveIntensity,
+        const LightData& lightData
+    );
 
 private:
-	ID3D11VertexShader* m_vertexShader = nullptr;
-	ID3D11PixelShader* m_pixelShader = nullptr;
-	ID3D11InputLayout* m_layout = nullptr;
-	ID3D11Buffer* m_matrixBuffer = nullptr;
-	ID3D11SamplerState* m_sampleState = nullptr;
-	ID3D11Buffer* m_lightBuffer = nullptr;
+    bool InitializeShader(
+        ID3D11Device*,
+        HWND,
+        const WCHAR*
+    );
+
+    void ShutdownShader();
+
+    void OutputShaderErrorMessage(
+        ID3D10Blob*,
+        HWND,
+        const WCHAR*
+    );
+
+    bool SetShaderParameters(
+        ID3D11DeviceContext* deviceContext,
+        XMMATRIX worldMatrix,
+        XMMATRIX viewMatrix,
+        XMMATRIX projectionMatrix,
+        ID3D11ShaderResourceView** textureArray,
+        XMFLOAT3 cameraPosition,
+        XMFLOAT4 ambientColor,
+        XMFLOAT4 specularColor,
+        float specularPower,
+        XMFLOAT4 emissiveColor,
+        float emissiveIntensity,
+        const LightData& lightData
+    );
+
+    void RenderShader(
+        ID3D11DeviceContext*,
+        int
+    );
+
+private:
+    ID3D11VertexShader* m_vertexShader = nullptr;
+    ID3D11PixelShader* m_pixelShader = nullptr;
+
+    ID3D11InputLayout* m_layout = nullptr;
+    ID3D11SamplerState* m_sampleState = nullptr;
+
+    ID3D11Buffer* m_matrixBuffer = nullptr;
+    ID3D11Buffer* m_cameraBuffer = nullptr;
+    ID3D11Buffer* m_lightBuffer = nullptr;
+    ID3D11Buffer* m_lightDataBuffer = nullptr;
 };

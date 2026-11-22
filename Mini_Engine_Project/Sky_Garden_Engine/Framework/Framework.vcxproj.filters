@@ -408,5 +408,8 @@
     <None Include="data\bumpmapShader.hlsl">
       <Filter>_리소스 파일</Filter>
     </None>
+    <None Include="data\LightingCommon.hlsli">
+      <Filter>_리소스 파일</Filter>
+    </None>
   </ItemGroup>
 </Project>

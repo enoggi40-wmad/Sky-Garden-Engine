@@ -208,18 +208,20 @@ bool ModelRenderer::Render(
 
 
     }
+
     else if (shaderType == ShaderType::BumpMap)
     {
-        // 사용할 셰이더 가져오기
         BumpMapShaderClass* shader =
             context.shaderManager->GetBumpMapShader();
 
         if (!shader)
         {
+            OutputDebugStringA("[BumpMap] Shader is null\n");
             return false;
         }
 
-        // HLSL의 shaderTextures[0], shaderTextures[1]에 대응
+        // t0: Diffuse Texture
+        // t1: Normal Map
         ID3D11ShaderResourceView* textures[2] =
         {
             diffuseTexture,
@@ -228,29 +230,33 @@ bool ModelRenderer::Render(
 
         if (!textures[0] || !textures[1])
         {
+            OutputDebugStringA(
+                "[BumpMap] Diffuse texture or Normal Map is null\n"
+            );
             return false;
         }
 
-        // 기존 Phong 분기와 같은 조명 설정
-        XMFLOAT3 lightDirection =
-        {
-            0.0f, -1.0f, 1.0f
-        };
+        // Scene 전체 광원 데이터
+        const LightData& lightData = context.lightData;
 
-        XMFLOAT4 diffuseColor =
-        {
-            0.2f, 0.2f, 0.2f, 1.0f
-        };
-
+        // Scene Ambient
         XMFLOAT4 ambientColor = context.ambientColor;
 
+        // Material Specular
         XMFLOAT4 specularColor =
             m_Material->GetSpecularColor();
 
         float specularPower =
             m_Material->GetSpecularPower();
 
-        // 노멀맵 + Phong 조명으로 렌더링
+        // Material Emissive
+        XMFLOAT4 emissiveColor =
+            m_Material->GetEmissiveColor();
+
+        float emissiveIntensity =
+            m_Material->GetEmissiveIntensity();
+
+        // Normal Mapping + 공통 Phong Lighting
         result = shader->Render(
             context.deviceContext,
             m_Model->GetIndexCount(),
@@ -258,14 +264,16 @@ bool ModelRenderer::Render(
             context.viewMatrix,
             context.projectionMatrix,
             textures,
-            lightDirection,
-            diffuseColor,
-            ambientColor,
             context.cameraPosition,
+            ambientColor,
             specularColor,
-            specularPower
+            specularPower,
+            emissiveColor,
+            emissiveIntensity,
+            lightData
         );
-    }
+        }
+
 
     // Shader 렌더링에 실패한 경우
     if (!result)

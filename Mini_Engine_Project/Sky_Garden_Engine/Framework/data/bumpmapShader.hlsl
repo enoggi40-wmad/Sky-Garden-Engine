@@ -1,30 +1,37 @@
-// GLOBALS //
-cbuffer MatrixBuffer
+
+#include "LightingCommon.hlsli"
+
+// ==========================================
+// Vertex Shader Constant Buffers
+// ==========================================
+
+cbuffer MatrixBuffer : register(b0)
 {
     matrix worldMatrix;
     matrix viewMatrix;
     matrix projectionMatrix;
 };
 
-cbuffer LightBuffer
+cbuffer CameraBuffer : register(b1)
 {
-    float4 diffuseColor;
-    float3 lightDirection;
-    float specularPower;
-
-    float4 ambientColor;
-    float4 specularColor;
-
     float3 cameraPosition;
-    float padding;
+    float cameraPadding;
 };
 
-// [0]: 색상 텍스처, [1]: 노멀맵
-Texture2D shaderTextures[2];
-SamplerState SampleType;
+// ==========================================
+// Textures
+// ==========================================
 
+// t0: Diffuse Texture
+// t1: Normal Map
+Texture2D shaderTextures[2] : register(t0);
 
-// TYPEDEFS //
+SamplerState SampleType : register(s0);
+
+// ==========================================
+// Vertex Input / Pixel Input
+// ==========================================
+
 struct VertexInputType
 {
     float4 position : POSITION;
@@ -38,31 +45,39 @@ struct PixelInputType
 {
     float4 position : SV_POSITION;
     float2 tex : TEXCOORD0;
+
     float3 normal : NORMAL;
     float3 tangent : TANGENT;
     float3 binormal : BINORMAL;
+
     float3 worldPosition : TEXCOORD1;
+    float3 viewDirection : TEXCOORD2;
 };
 
-
+// ==========================================
 // Vertex Shader
-PixelInputType BumpMapVertexShader(VertexInputType input)
+// ==========================================
+
+PixelInputType BumpMapVertexShader(
+    VertexInputType input)
 {
     PixelInputType output;
 
     input.position.w = 1.0f;
 
-    // 월드 위치와 화면에 표시할 위치 계산
-    float4 worldPosition = mul(input.position, worldMatrix);
+    float4 worldPos =
+        mul(input.position, worldMatrix);
 
-    output.worldPosition = worldPosition.xyz;
-    output.position = mul(worldPosition, viewMatrix);
-    output.position = mul(output.position, projectionMatrix);
+    output.position =
+        mul(worldPos, viewMatrix);
 
+    output.position =
+        mul(output.position, projectionMatrix);
+
+    output.worldPosition = worldPos.xyz;
     output.tex = input.tex;
 
-    // 방향 벡터를 월드 공간으로 변환
-    // 양수 균일 스케일을 사용하는 모델 기준
+    // 기존 World Space TBN 변환 방식 유지
     output.normal = normalize(
         mul(input.normal, (float3x3) worldMatrix)
     );
@@ -75,75 +90,71 @@ PixelInputType BumpMapVertexShader(VertexInputType input)
         mul(input.binormal, (float3x3) worldMatrix)
     );
 
+    output.viewDirection =
+        cameraPosition - worldPos.xyz;
+
     return output;
 }
 
+// ==========================================
+// Normal Mapping
+// ==========================================
 
-// Pixel Shader
-float4 BumpMapPixelShader(PixelInputType input) : SV_TARGET
+float3 CalculateBumpNormal(PixelInputType input)
 {
-    float4 textureColor;
-    float4 bumpMap;
-    float3 bumpNormal;
-    float3 lightDir;
-    float lightIntensity;
-    float4 color;
+    // Normal Map 샘플링
+    float3 normalMap =
+        shaderTextures[1].Sample(
+            SampleType, input.tex
+        ).rgb;
 
-    float3 viewDirection;
-    float3 reflection;
-    float4 specular;
+    // [0, 1] → [-1, 1]
+    normalMap = normalMap * 2.0f - 1.0f;
 
-    textureColor =
-        shaderTextures[0].Sample(SampleType, input.tex);
+    // World Space TBN
+    float3 N = normalize(input.normal);
+    float3 T = normalize(input.tangent);
+    float3 B = normalize(input.binormal);
 
-    bumpMap =
-        shaderTextures[1].Sample(SampleType, input.tex);
+    // Tangent Space → World Space
+    float3 bumpNormal =
+        normalMap.x * T +
+        normalMap.y * B +
+        normalMap.z * N;
 
-    // 노멀맵 값을 [0, 1]에서 [-1, 1]로 변환
-    bumpMap = (bumpMap * 2.0f) - 1.0f;
+    return normalize(bumpNormal);
+}
 
-    input.normal = normalize(input.normal);
-    input.tangent = normalize(input.tangent);
-    input.binormal = normalize(input.binormal);
+// ==========================================
+// Pixel Shader
+// ==========================================
 
-    // 노멀맵의 방향을 월드 공간의 법선으로 변환
-    bumpNormal =
-        (bumpMap.x * input.tangent) +
-        (bumpMap.y * input.binormal) +
-        (bumpMap.z * input.normal);
-
-    bumpNormal = normalize(bumpNormal);
-
-    lightDir = normalize(-lightDirection);
-
-    // 노멀맵 법선으로 확산광 계산
-    lightIntensity =
-        saturate(dot(bumpNormal, lightDir));
-
-    color = ambientColor + diffuseColor * lightIntensity;
-    color = color * textureColor;
-
-    specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
-
-    // 빛을 받는 면에 Phong 정반사 적용
-    if (lightIntensity > 0.0f)
-    {
-        viewDirection = normalize(
-            cameraPosition - input.worldPosition
+float4 BumpMapPixelShader(
+    PixelInputType input) : SV_TARGET
+{
+    // 1. Diffuse Texture
+    float4 textureColor =
+        shaderTextures[0].Sample(
+            SampleType, input.tex
         );
 
-        reflection = normalize(
-            2.0f * lightIntensity * bumpNormal - lightDir
-        );
+    // 2. Normal Map → World Space Normal
+    float3 normal = CalculateBumpNormal(input);
 
-        specular = specularColor * pow(
-            saturate(dot(reflection, viewDirection)),
-            specularPower
-        );
-    }
+    // 3. 카메라 방향
+    float3 viewDir =
+        normalize(input.viewDirection);
 
-    color.rgb = saturate(color.rgb + specular.rgb);
-    color.a = textureColor.a;
+    // 4. 공통 Lighting 계산
+    LightingResult lighting = CalculateLighting(
+        input.worldPosition,
+        normal,
+        viewDir
+    );
 
-    return color;
+    // 5. 최종 색상
+    return ComposeLitColor(
+        textureColor,
+        lighting
+    );
 }

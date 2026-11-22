@@ -80,34 +80,51 @@ bool PhongShaderClass::InitializeShader(
     ID3D10Blob* vertexShaderBuffer = nullptr;
     ID3D10Blob* pixelShaderBuffer = nullptr;
 
-    // 기존 HLSL 진입점 이름 유지
-    result = D3DCompileFromFile(
-        fileName, nullptr, nullptr,
-        "LightVertexShader", "vs_5_0",
-        D3D10_SHADER_ENABLE_STRICTNESS, 0,
-        &vertexShaderBuffer, &errorMessage);
 
-    if (FAILED(result))
+    // 1. Vertex Shader 컴파일
+    result = D3DCompileFromFile(
+        fileName,
+        nullptr,
+        D3D_COMPILE_STANDARD_FILE_INCLUDE,
+        "LightVertexShader",
+        "vs_5_0",
+        D3D10_SHADER_ENABLE_STRICTNESS,
+        0,
+        &vertexShaderBuffer,
+        &errorMessage
+    );
+
+    if (FAILED(result) || !vertexShaderBuffer)
     {
         if (errorMessage)
             OutputShaderErrorMessage(errorMessage, hwnd, fileName);
         else
-            MessageBox(hwnd, fileName, L"Missing Shader File", MB_OK);
+            MessageBox(hwnd, fileName, L"Vertex Shader Compile Failed", MB_OK);
+
         return false;
     }
 
-    result = D3DCompileFromFile(
-        fileName, nullptr, nullptr,
-        "LightPixelShader", "ps_5_0",
-        D3D10_SHADER_ENABLE_STRICTNESS, 0,
-        &pixelShaderBuffer, &errorMessage);
+    // 2. Pixel Shader 컴파일
+    errorMessage = nullptr;
 
-    if (FAILED(result))
+    result = D3DCompileFromFile(
+        fileName,
+        nullptr,
+        D3D_COMPILE_STANDARD_FILE_INCLUDE,
+        "LightPixelShader",
+        "ps_5_0",
+        D3D10_SHADER_ENABLE_STRICTNESS,
+        0,
+        &pixelShaderBuffer,
+        &errorMessage
+    );
+
+    if (FAILED(result) || !pixelShaderBuffer)
     {
         if (errorMessage)
             OutputShaderErrorMessage(errorMessage, hwnd, fileName);
         else
-            MessageBox(hwnd, fileName, L"Missing Shader File", MB_OK);
+            MessageBox(hwnd, fileName, L"Pixel Shader Compile Failed", MB_OK);
 
         vertexShaderBuffer->Release();
         return false;

@@ -179,6 +179,7 @@
     <ClCompile Include="RendererManager.cpp" />
     <ClCompile Include="ResouceManager.cpp" />
     <ClCompile Include="Rotator.cpp" />
+    <ClCompile Include="SakuraScene.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
@@ -237,6 +238,7 @@
     <ClInclude Include="RendererManager.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Rotator.h" />
+    <ClInclude Include="SakuraScene.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="ShaderManager.h" />

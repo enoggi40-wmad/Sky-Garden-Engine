@@ -12,6 +12,7 @@ enum class SceneType
 {
 	Title,
 	Main,
+	Sakura,
 	//Test,
 	// 다른 Scene 타입 추가 가능
 };

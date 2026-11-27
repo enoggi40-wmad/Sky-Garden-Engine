@@ -215,6 +215,9 @@
     <ClCompile Include="LightManager.cpp">
       <Filter>Lights_소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="SakuraScene.cpp">
+      <Filter>Scenes_소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inputclass.h">
@@ -390,6 +393,9 @@
     </ClInclude>
     <ClInclude Include="LightData.h">
       <Filter>Lights_헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SakuraScene.h">
+      <Filter>Scenes_헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

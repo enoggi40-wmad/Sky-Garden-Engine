@@ -541,6 +541,18 @@ void ResourceManager::Initialize(ID3D11Device* device,
         L"./data/Magic_Orb.dds"
     };
 
+    m_ModelInfos["Sakura_Bridge"] =
+    {
+        L"./data/Sakura/Sakura_Bridge.fbx",
+        L"./data/Sakura/Sakura_Bridge.dds"
+	};
+
+    m_ModelInfos["Sakura_Terrace"] =
+    {
+        L"./data/Sakura/Sakura_Terrace.fbx",
+        L"./data/Sakura/Sakura_Terrace.dds"
+    };
+
     ID3D11ShaderResourceView* skyMap =
         LoadCubeMap(
             "skymap",

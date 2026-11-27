@@ -6,7 +6,8 @@
 
 #include "TitleScene.h"
 #include "MainScene.h"
-#include "TestScene.h"
+
+#include "SakuraScene.h"
 
 #include "ShaderManager.h"
 
@@ -80,8 +81,9 @@ bool SceneManager::Initialize(
 {
     m_ResourceManager = resourceManager;
 	
-    LoadScene(SceneType::Title);
+    //LoadScene(SceneType::Title);
     //LoadScene(SceneType::Test);
+    LoadScene(SceneType::Sakura);
 
     return true;
 }
@@ -103,6 +105,10 @@ void SceneManager::LoadScene(SceneType type)
     case SceneType::Main:
         m_CurrentScene = new MainScene;
         break;
+
+	case SceneType::Sakura:
+        m_CurrentScene = new SakuraScene;
+		break;
     
     }
 

@@ -1,20 +1,19 @@
+
 #include "ModelRenderer.h"
 
 #include "GameObject.h"
 #include "modelclass.h"
 #include "textureshaderclass.h"
-
+#include "PhongShaderClass.h"
 #include "ShaderManager.h"
 #include "Material.h"
 
+using namespace DirectX;
 
-// ModelRenderer 생성자
-//
-// ownerObject:
-// 이 Component가 붙을 GameObject
-//
-// model:
-// 이 GameObject가 사용할 실제 ModelClass
+// =====================================================
+// Constructor
+// =====================================================
+
 ModelRenderer::ModelRenderer(
     GameObject* ownerObject,
     ModelClass* model,
@@ -26,6 +25,10 @@ ModelRenderer::ModelRenderer(
 {
 }
 
+// =====================================================
+// Material
+// =====================================================
+
 void ModelRenderer::SetMaterial(Material* material)
 {
     m_Material = material;
@@ -36,12 +39,18 @@ Material* ModelRenderer::GetMaterial() const
     return m_Material;
 }
 
+// =====================================================
+// Model
+// =====================================================
 
-// 현재 연결되어 있는 ModelClass 반환
 ModelClass* ModelRenderer::GetModel() const
 {
     return m_Model;
 }
+
+// =====================================================
+// Shader Type
+// =====================================================
 
 void ModelRenderer::SetShaderType(ShaderType type)
 {
@@ -65,6 +74,10 @@ ShaderType ModelRenderer::GetShaderType() const
     return m_ShaderType;
 }
 
+// =====================================================
+// Render
+// =====================================================
+
 bool ModelRenderer::Render(
     const RenderContext& context)
 {
@@ -73,43 +86,66 @@ bool ModelRenderer::Render(
         return false;
     }
 
-    // 이 ModelRenderer가 붙어있는 GameObject의
-    // Transform을 이용해서 World Matrix를 만든다.
-    //
-    // position / rotation / scale 값이 모두 여기 반영된다.
+    // =================================================
+    // Transform
+    // =================================================
+
     XMMATRIX worldMatrix =
         gameObject->transform.GetWorldMatrix();
 
-    // Material에 텍스처가 있으면 우선 사용
-    // 없으면 기존 ModelClass의 텍스처 사용
+    // =================================================
+    // Material Textures
+    // =================================================
 
     ID3D11ShaderResourceView* diffuseTexture =
-        m_Material ? m_Material->GetDiffuseTexture() : nullptr;
+        m_Material->GetDiffuseTexture();
 
     ID3D11ShaderResourceView* secondTexture =
-        m_Material ? m_Material->GetSecondTexture() : nullptr;
-        
+        m_Material->GetSecondTexture();
+
     ID3D11ShaderResourceView* alphaMap =
-        m_Material ? m_Material->GetAlphaMap() : nullptr;
-        
+        m_Material->GetAlphaMap();
 
     ID3D11ShaderResourceView* normalMap =
-        m_Material ? m_Material->GetNormalMap() : nullptr;
-        
+        m_Material->GetNormalMap();
 
-    // ModelClass가 가지고 있는 Vertex / Index Buffer를
-    // Direct3D 렌더링 파이프라인에 준비한다.
+    // 기본 텍스처 확인
+    if (!diffuseTexture)
+    {
+        OutputDebugStringA(
+            "[ModelRenderer] Diffuse Texture is null\n"
+        );
+
+        return false;
+    }
+
+    // =================================================
+    // Vertex / Index Buffer
+    // =================================================
+
     m_Model->Render(context.deviceContext);
 
-
-    // Shader를 이용해서 실제 모델을 화면에 그린다.
-    bool result = false;
+    // =================================================
+    // Shader Selection
+    // =================================================
 
     ShaderType shaderType = GetShaderType();
 
+    // =================================================
+    // Texture Shader (Unlit)
+    // =================================================
+
     if (shaderType == ShaderType::Texture)
     {
-        result = context.shaderManager->GetTextureShader()->Render(
+        auto* shader =
+            context.shaderManager->GetTextureShader();
+
+        if (!shader)
+        {
+            return false;
+        }
+
+        return shader->Render(
             context.deviceContext,
             m_Model->GetIndexCount(),
             worldMatrix,
@@ -119,128 +155,32 @@ bool ModelRenderer::Render(
         );
     }
 
+    // =================================================
+    // Phong Shader (Lit)
+    //
+    // Diffuse Texture
+    // Second Texture
+    // Alpha Mapping
+    // Normal Mapping
+    // Emissive
+    // =================================================
+
     else if (shaderType == ShaderType::Phong)
     {
-        // Scene의 LightManager에서 수집한 광원 데이터
-        const LightData& lightData = context.lightData;
+        auto* shader =
+            context.shaderManager->GetPhongShader();
 
-        // 임시 Scene 공통 Ambient
+        if (!shader)
+        {
+            return false;
+        }
+
+        // Scene Lighting
+        const LightData& lightData =
+            context.lightData;
+
         XMFLOAT4 ambientColor =
             context.ambientColor;
-
-        // Material의 Specular 속성은 그대로 유지
-        XMFLOAT4 specularColor =
-            m_Material->GetSpecularColor();
-
-        float specularPower =
-            m_Material->GetSpecularPower();
-
-        XMFLOAT4 emissiveColor =
-            m_Material->GetEmissiveColor();
-
-        float emissiveIntensity =
-            m_Material->GetEmissiveIntensity();
-
-        result = context.shaderManager->GetPhongShader()->Render(
-            context.deviceContext,
-            m_Model->GetIndexCount(),
-            worldMatrix,
-            context.viewMatrix,
-            context.projectionMatrix,
-            diffuseTexture,
-            context.cameraPosition,
-            ambientColor,
-            specularColor,
-            specularPower,
-            emissiveColor,
-            emissiveIntensity,
-            lightData
-
-        );
-    }
-
-    else if (shaderType == ShaderType::AlphaMap)
-    {
-        // HLSL의 shaderTextures[0], [1], [2] 순서
-        ID3D11ShaderResourceView* textures[3] =
-        {
-            diffuseTexture,       // 풀
-            secondTexture,  // 흙
-            alphaMap       // S자 마스크
-        };
-
-        auto* shader =
-            context.shaderManager->GetAlphaMapShader();
-
-        // 필요한 셰이더와 텍스처가 모두 준비됐는지 확인
-        if (!shader)
-        {
-            OutputDebugStringA("[AlphaMap] Shader is null\n");
-            return false;
-        }
-
-        if (!textures[0])
-        {
-            OutputDebugStringA("[AlphaMap] Grass texture is null\n");
-            return false;
-        }
-
-        if (!textures[1])
-        {
-            OutputDebugStringA("[AlphaMap] Dirt texture is null\n");
-            return false;
-        }
-
-        if (!textures[2])
-        {
-            OutputDebugStringA("[AlphaMap] Alpha map is null\n");
-            return false;
-        }
-
-        result = shader->Render(
-            context.deviceContext,
-            m_Model->GetIndexCount(),
-            worldMatrix,
-            context.viewMatrix,
-            context.projectionMatrix,
-            textures
-        );
-
-
-    }
-
-    else if (shaderType == ShaderType::BumpMap)
-    {
-        BumpMapShaderClass* shader =
-            context.shaderManager->GetBumpMapShader();
-
-        if (!shader)
-        {
-            OutputDebugStringA("[BumpMap] Shader is null\n");
-            return false;
-        }
-
-        // t0: Diffuse Texture
-        // t1: Normal Map
-        ID3D11ShaderResourceView* textures[2] =
-        {
-            diffuseTexture,
-            normalMap
-        };
-
-        if (!textures[0] || !textures[1])
-        {
-            OutputDebugStringA(
-                "[BumpMap] Diffuse texture or Normal Map is null\n"
-            );
-            return false;
-        }
-
-        // Scene 전체 광원 데이터
-        const LightData& lightData = context.lightData;
-
-        // Scene Ambient
-        XMFLOAT4 ambientColor = context.ambientColor;
 
         // Material Specular
         XMFLOAT4 specularColor =
@@ -256,32 +196,37 @@ bool ModelRenderer::Render(
         float emissiveIntensity =
             m_Material->GetEmissiveIntensity();
 
-        // Normal Mapping + 공통 Phong Lighting
-        result = shader->Render(
+        // 통합 Phong Shader
+        return shader->Render(
             context.deviceContext,
             m_Model->GetIndexCount(),
+
             worldMatrix,
             context.viewMatrix,
             context.projectionMatrix,
-            textures,
+
+            // Textures
+            diffuseTexture,
+            secondTexture,
+            alphaMap,
+            normalMap,
+
+            // Camera
             context.cameraPosition,
+
+            // Lighting
             ambientColor,
             specularColor,
             specularPower,
+
+            // Emissive
             emissiveColor,
             emissiveIntensity,
+
+            // Scene Lights
             lightData
         );
-        }
-
-
-    // Shader 렌더링에 실패한 경우
-    if (!result)
-    {
-        return false;
     }
 
-
-    // 정상적으로 렌더링 완료
-    return true;
+    return false;
 }

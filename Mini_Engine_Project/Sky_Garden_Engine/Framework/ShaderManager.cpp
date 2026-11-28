@@ -1,132 +1,76 @@
+
 #include "ShaderManager.h"
 
+// =====================================================
+// Constructor / Destructor
+// =====================================================
 
 ShaderManager::ShaderManager()
+    : m_TextureShader(nullptr),
+    m_PhongShader(nullptr),
+    m_SkyMapShader(nullptr)
 {
-    m_TextureShader = nullptr;
-    m_PhongShader = nullptr;
-    m_SkyMapShader = 0;
-    m_BumpMapShader = nullptr;
 }
-
 
 ShaderManager::~ShaderManager()
 {
 }
 
+// =====================================================
+// Initialize
+// =====================================================
 
 bool ShaderManager::Initialize(
     ID3D11Device* device,
     HWND hwnd)
 {
-    // Texture Shader 생성
-    m_TextureShader =
-        new TextureShaderClass;
+    // =================================================
+    // Texture Shader
+    // =================================================
 
-    if (!m_TextureShader)
+    m_TextureShader = new TextureShaderClass;
+
+    if (!m_TextureShader->Initialize(device, hwnd))
     {
+        Shutdown();
         return false;
     }
 
+    // =================================================
+    // Phong Shader
+    //
+    // Phong Lighting
+    // Alpha Mapping
+    // Normal Mapping
+    // Emissive
+    // =================================================
 
-    // Texture Shader 초기화
-    bool result =
-        m_TextureShader->Initialize(
-            device,
-            hwnd
-        );
-
-    if (!result)
-    {
-        delete m_TextureShader;
-        m_TextureShader = nullptr;
-
-        return false;
-    }
-
-
-	// Phong Light Shader 생성
     m_PhongShader = new PhongShaderClass;
-    if (!m_PhongShader)
+
+    if (!m_PhongShader->Initialize(device, hwnd))
     {
+        Shutdown();
         return false;
     }
 
-	// Phong Light Shader 초기화
-    result = m_PhongShader->Initialize(device, hwnd);
-    if (!result)
-    {
-        delete m_PhongShader;
-        m_PhongShader = nullptr;
+    // =================================================
+    // Sky Map Shader
+    // =================================================
 
-        return false;
-    }
-
-    
-
-    // Sky Map Shader 생성
     m_SkyMapShader = new SkyMapShaderClass;
 
-    if (!m_SkyMapShader)
+    if (!m_SkyMapShader->Initialize(device, hwnd))
     {
-        return false;
-    }
-
-    // Sky Map Shader 초기화
-    result = m_SkyMapShader->Initialize(
-        device,
-        hwnd
-    );
-
-    if (!result)
-    {
-        return false;
-    }
-
-    // AlphaMap 셰이더 생성
-    m_AlphaMapShader = new AlphaMapShaderClass;
-
-    // AlphaMap 셰이더 초기화
-    result = m_AlphaMapShader->Initialize(device, hwnd);
-
-    if (!result)
-    {
-        m_AlphaMapShader->Shutdown();
-        delete m_AlphaMapShader;
-        m_AlphaMapShader = nullptr;
-
-        MessageBoxW(
-            hwnd,
-            L"AlphaMap Shader 초기화 실패",
-            L"Shader Error",
-            MB_OK
-        );
-
-        return false;
-    }
-
-    // Bump Map Shader 생성
-    m_BumpMapShader = new BumpMapShaderClass;
-
-    // Bump Map Shader 초기화
-    result = m_BumpMapShader->Initialize(device, hwnd);
-
-    if (!result)
-    {
-        m_BumpMapShader->Shutdown();
-
-        delete m_BumpMapShader;
-        m_BumpMapShader = nullptr;
-
+        Shutdown();
         return false;
     }
 
     return true;
 }
 
-    
-
-
+// =====================================================
+// Get Shader
+// =====================================================
 
 TextureShaderClass* ShaderManager::GetTextureShader()
 {
@@ -143,37 +87,24 @@ SkyMapShaderClass* ShaderManager::GetSkyMapShader()
     return m_SkyMapShader;
 }
 
-AlphaMapShaderClass* ShaderManager::GetAlphaMapShader()
-{
-    return m_AlphaMapShader;
-}
-
-BumpMapShaderClass* ShaderManager::GetBumpMapShader()
-{
-    return m_BumpMapShader;
-}
+// =====================================================
+// Shutdown
+// =====================================================
 
 void ShaderManager::Shutdown()
 {
-    if (m_BumpMapShader)
-    {
-        m_BumpMapShader->Shutdown();
-
-        delete m_BumpMapShader;
-        m_BumpMapShader = nullptr;
-    }
-
     if (m_SkyMapShader)
     {
         m_SkyMapShader->Shutdown();
 
         delete m_SkyMapShader;
-        m_SkyMapShader = 0;
+        m_SkyMapShader = nullptr;
     }
 
     if (m_PhongShader)
     {
         m_PhongShader->Shutdown();
+
         delete m_PhongShader;
         m_PhongShader = nullptr;
     }

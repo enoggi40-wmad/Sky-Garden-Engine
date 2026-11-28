@@ -1,32 +1,34 @@
+
 #include "PhongShaderClass.h"
 
-PhongShaderClass::PhongShaderClass()
-    : m_vertexShader(nullptr),
-    m_pixelShader(nullptr),
-    m_layout(nullptr),
-    m_sampleState(nullptr),
-    m_matrixBuffer(nullptr),
-    m_lightBuffer(nullptr),
-    m_cameraBuffer(nullptr),
-    m_lightDataBuffer(nullptr)
-{
-}
+using namespace DirectX;
+using namespace std;
 
-PhongShaderClass::PhongShaderClass(const PhongShaderClass& other)
-    : PhongShaderClass()
+// ==========================================
+// Constructor / Destructor
+// ==========================================
+
+PhongShaderClass::PhongShaderClass()
 {
-    // 기존 헤더의 복사 생성자 선언에 대응.
-    // GPU 리소스를 소유하는 클래스이므로 실제 복사는 사용하지 않는 것이 안전함.
 }
 
 PhongShaderClass::~PhongShaderClass()
 {
-    // 기존 엔진과 동일하게 ShaderManager에서 Shutdown()을 호출하는 구조.
 }
 
-bool PhongShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+// ==========================================
+// Initialize / Shutdown
+// ==========================================
+
+bool PhongShaderClass::Initialize(
+    ID3D11Device* device,
+    HWND hwnd)
 {
-    return InitializeShader(device, hwnd, L"./data/phongShader.hlsl");
+    return InitializeShader(
+        device,
+        hwnd,
+        L"./data/phongShader.hlsl"
+    );
 }
 
 void PhongShaderClass::Shutdown()
@@ -34,19 +36,31 @@ void PhongShaderClass::Shutdown()
     ShutdownShader();
 }
 
+// ==========================================
+// Render
+// ==========================================
+
 bool PhongShaderClass::Render(
     ID3D11DeviceContext* deviceContext,
     int indexCount,
+
     XMMATRIX worldMatrix,
     XMMATRIX viewMatrix,
     XMMATRIX projectionMatrix,
-    ID3D11ShaderResourceView* texture,
+
+    ID3D11ShaderResourceView* diffuseTexture,
+    ID3D11ShaderResourceView* secondTexture,
+    ID3D11ShaderResourceView* alphaMap,
+    ID3D11ShaderResourceView* normalMap,
+
     XMFLOAT3 cameraPosition,
     XMFLOAT4 ambientColor,
     XMFLOAT4 specularColor,
     float specularPower,
+
     XMFLOAT4 emissiveColor,
     float emissiveIntensity,
+
     const LightData& lightData)
 {
     if (!SetShaderParameters(
@@ -54,7 +68,10 @@ bool PhongShaderClass::Render(
         worldMatrix,
         viewMatrix,
         projectionMatrix,
-        texture,
+        diffuseTexture,
+        secondTexture,
+        alphaMap,
+        normalMap,
         cameraPosition,
         ambientColor,
         specularColor,
@@ -67,8 +84,13 @@ bool PhongShaderClass::Render(
     }
 
     RenderShader(deviceContext, indexCount);
+
     return true;
 }
+
+// ==========================================
+// Initialize Shader
+// ==========================================
 
 bool PhongShaderClass::InitializeShader(
     ID3D11Device* device,
@@ -76,12 +98,15 @@ bool PhongShaderClass::InitializeShader(
     const WCHAR* fileName)
 {
     HRESULT result;
+
     ID3D10Blob* errorMessage = nullptr;
     ID3D10Blob* vertexShaderBuffer = nullptr;
     ID3D10Blob* pixelShaderBuffer = nullptr;
 
+    // ======================================
+    // 1. Vertex Shader Compile
+    // ======================================
 
-    // 1. Vertex Shader 컴파일
     result = D3DCompileFromFile(
         fileName,
         nullptr,
@@ -97,15 +122,33 @@ bool PhongShaderClass::InitializeShader(
     if (FAILED(result) || !vertexShaderBuffer)
     {
         if (errorMessage)
-            OutputShaderErrorMessage(errorMessage, hwnd, fileName);
+        {
+            OutputShaderErrorMessage(
+                errorMessage, hwnd, fileName
+            );
+        }
         else
-            MessageBox(hwnd, fileName, L"Vertex Shader Compile Failed", MB_OK);
+        {
+            MessageBox(
+                hwnd,
+                fileName,
+                L"Vertex Shader Compile Failed",
+                MB_OK
+            );
+        }
 
         return false;
     }
 
-    // 2. Pixel Shader 컴파일
-    errorMessage = nullptr;
+    if (errorMessage)
+    {
+        errorMessage->Release();
+        errorMessage = nullptr;
+    }
+
+    // ======================================
+    // 2. Pixel Shader Compile
+    // ======================================
 
     result = D3DCompileFromFile(
         fileName,
@@ -122,68 +165,143 @@ bool PhongShaderClass::InitializeShader(
     if (FAILED(result) || !pixelShaderBuffer)
     {
         if (errorMessage)
-            OutputShaderErrorMessage(errorMessage, hwnd, fileName);
+        {
+            OutputShaderErrorMessage(
+                errorMessage, hwnd, fileName
+            );
+        }
         else
-            MessageBox(hwnd, fileName, L"Pixel Shader Compile Failed", MB_OK);
+        {
+            MessageBox(
+                hwnd,
+                fileName,
+                L"Pixel Shader Compile Failed",
+                MB_OK
+            );
+        }
 
         vertexShaderBuffer->Release();
+
         return false;
     }
+
+    if (errorMessage)
+    {
+        errorMessage->Release();
+        errorMessage = nullptr;
+    }
+
+    // ======================================
+    // 3. Create Vertex Shader
+    // ======================================
 
     result = device->CreateVertexShader(
         vertexShaderBuffer->GetBufferPointer(),
         vertexShaderBuffer->GetBufferSize(),
-        nullptr, &m_vertexShader);
+        nullptr,
+        &m_vertexShader
+    );
 
     if (FAILED(result))
     {
         vertexShaderBuffer->Release();
         pixelShaderBuffer->Release();
-        return false;
-    }
 
-    result = device->CreatePixelShader(
-        pixelShaderBuffer->GetBufferPointer(),
-        pixelShaderBuffer->GetBufferSize(),
-        nullptr, &m_pixelShader);
-
-    if (FAILED(result))
-    {
-        vertexShaderBuffer->Release();
-        pixelShaderBuffer->Release();
         ShutdownShader();
         return false;
     }
 
-    // ModelClass의 VertexType: POSITION, TEXCOORD, NORMAL
-    D3D11_INPUT_ELEMENT_DESC polygonLayout[3] = {};
+    // ======================================
+    // 4. Create Pixel Shader
+    // ======================================
 
+    result = device->CreatePixelShader(
+        pixelShaderBuffer->GetBufferPointer(),
+        pixelShaderBuffer->GetBufferSize(),
+        nullptr,
+        &m_pixelShader
+    );
+
+    if (FAILED(result))
+    {
+        vertexShaderBuffer->Release();
+        pixelShaderBuffer->Release();
+
+        ShutdownShader();
+        return false;
+    }
+
+    // ======================================
+    // 5. Input Layout
+    //
+    // ModelClass::VertexType:
+    // Position / Texcoord / Normal /
+    // Tangent / Binormal
+    // ======================================
+
+    D3D11_INPUT_ELEMENT_DESC polygonLayout[5] = {};
+
+    // POSITION
     polygonLayout[0].SemanticName = "POSITION";
     polygonLayout[0].SemanticIndex = 0;
-    polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+    polygonLayout[0].Format =
+        DXGI_FORMAT_R32G32B32_FLOAT;
     polygonLayout[0].InputSlot = 0;
     polygonLayout[0].AlignedByteOffset = 0;
-    polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+    polygonLayout[0].InputSlotClass =
+        D3D11_INPUT_PER_VERTEX_DATA;
 
+    // TEXCOORD
     polygonLayout[1].SemanticName = "TEXCOORD";
     polygonLayout[1].SemanticIndex = 0;
-    polygonLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+    polygonLayout[1].Format =
+        DXGI_FORMAT_R32G32_FLOAT;
     polygonLayout[1].InputSlot = 0;
-    polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-    polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+    polygonLayout[1].AlignedByteOffset =
+        D3D11_APPEND_ALIGNED_ELEMENT;
+    polygonLayout[1].InputSlotClass =
+        D3D11_INPUT_PER_VERTEX_DATA;
 
+    // NORMAL
     polygonLayout[2].SemanticName = "NORMAL";
     polygonLayout[2].SemanticIndex = 0;
-    polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+    polygonLayout[2].Format =
+        DXGI_FORMAT_R32G32B32_FLOAT;
     polygonLayout[2].InputSlot = 0;
-    polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-    polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+    polygonLayout[2].AlignedByteOffset =
+        D3D11_APPEND_ALIGNED_ELEMENT;
+    polygonLayout[2].InputSlotClass =
+        D3D11_INPUT_PER_VERTEX_DATA;
+
+    // TANGENT
+    polygonLayout[3].SemanticName = "TANGENT";
+    polygonLayout[3].SemanticIndex = 0;
+    polygonLayout[3].Format =
+        DXGI_FORMAT_R32G32B32_FLOAT;
+    polygonLayout[3].InputSlot = 0;
+    polygonLayout[3].AlignedByteOffset =
+        D3D11_APPEND_ALIGNED_ELEMENT;
+    polygonLayout[3].InputSlotClass =
+        D3D11_INPUT_PER_VERTEX_DATA;
+
+    // BINORMAL
+    polygonLayout[4].SemanticName = "BINORMAL";
+    polygonLayout[4].SemanticIndex = 0;
+    polygonLayout[4].Format =
+        DXGI_FORMAT_R32G32B32_FLOAT;
+    polygonLayout[4].InputSlot = 0;
+    polygonLayout[4].AlignedByteOffset =
+        D3D11_APPEND_ALIGNED_ELEMENT;
+    polygonLayout[4].InputSlotClass =
+        D3D11_INPUT_PER_VERTEX_DATA;
 
     result = device->CreateInputLayout(
-        polygonLayout, 3,
+        polygonLayout,
+        5,
         vertexShaderBuffer->GetBufferPointer(),
         vertexShaderBuffer->GetBufferSize(),
-        &m_layout);
+        &m_layout
+    );
 
     vertexShaderBuffer->Release();
     pixelShaderBuffer->Release();
@@ -194,41 +312,98 @@ bool PhongShaderClass::InitializeShader(
         return false;
     }
 
+    // ======================================
+    // 6. Sampler State
+    // ======================================
+
     D3D11_SAMPLER_DESC samplerDesc = {};
-    samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-    samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-    samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-    samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+
+    samplerDesc.Filter =
+        D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+
+    samplerDesc.AddressU =
+        D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressV =
+        D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressW =
+        D3D11_TEXTURE_ADDRESS_WRAP;
+
+    samplerDesc.ComparisonFunc =
+        D3D11_COMPARISON_ALWAYS;
+
     samplerDesc.MinLOD = 0;
     samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
     samplerDesc.MaxAnisotropy = 1;
 
-    result = device->CreateSamplerState(&samplerDesc, &m_sampleState);
+    result = device->CreateSamplerState(
+        &samplerDesc,
+        &m_sampleState
+    );
+
     if (FAILED(result))
     {
         ShutdownShader();
         return false;
     }
 
+    // ======================================
+    // 7. Constant Buffers
+    //
     // VS b0: MatrixBuffer
     // VS b1: CameraBuffer
-    // PS b0: LightBuffer (Ambient + Material Specular)
-    // PS b1: LightDataBuffer (Directional + Point + Spot)
-    auto createDynamicBuffer = [device](UINT byteWidth, ID3D11Buffer** buffer) -> bool
+    //
+    // PS b0: LightBuffer
+    // PS b1: LightDataBuffer
+    // PS b2: TextureOptionBuffer
+    // ======================================
+
+    auto createDynamicBuffer =
+        [device](
+            UINT byteWidth,
+            ID3D11Buffer** buffer) -> bool
         {
             D3D11_BUFFER_DESC desc = {};
+
             desc.Usage = D3D11_USAGE_DYNAMIC;
             desc.ByteWidth = byteWidth;
-            desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-            desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-            return SUCCEEDED(device->CreateBuffer(&desc, nullptr, buffer));
+            desc.BindFlags =
+                D3D11_BIND_CONSTANT_BUFFER;
+            desc.CPUAccessFlags =
+                D3D11_CPU_ACCESS_WRITE;
+
+            return SUCCEEDED(
+                device->CreateBuffer(
+                    &desc,
+                    nullptr,
+                    buffer
+                )
+            );
         };
 
-    if (!createDynamicBuffer(sizeof(MatrixBufferType), &m_matrixBuffer) ||
-        !createDynamicBuffer(sizeof(CameraBufferType), &m_cameraBuffer) ||
-        !createDynamicBuffer(sizeof(LightBufferType), &m_lightBuffer) ||
-        !createDynamicBuffer(sizeof(LightData), &m_lightDataBuffer))
+    static_assert(
+        sizeof(TextureOptionBufferType) % 16 == 0,
+        "TextureOptionBuffer must be 16-byte aligned in size"
+        );
+
+    if (!createDynamicBuffer(
+        sizeof(MatrixBufferType),
+        &m_matrixBuffer) ||
+
+        !createDynamicBuffer(
+            sizeof(CameraBufferType),
+            &m_cameraBuffer) ||
+
+        !createDynamicBuffer(
+            sizeof(LightBufferType),
+            &m_lightBuffer) ||
+
+        !createDynamicBuffer(
+            sizeof(LightData),
+            &m_lightDataBuffer) ||
+
+        !createDynamicBuffer(
+            sizeof(TextureOptionBufferType),
+            &m_textureOptionBuffer))
     {
         ShutdownShader();
         return false;
@@ -237,8 +412,18 @@ bool PhongShaderClass::InitializeShader(
     return true;
 }
 
+// ==========================================
+// Shutdown Shader
+// ==========================================
+
 void PhongShaderClass::ShutdownShader()
 {
+    if (m_textureOptionBuffer)
+    {
+        m_textureOptionBuffer->Release();
+        m_textureOptionBuffer = nullptr;
+    }
+
     if (m_lightDataBuffer)
     {
         m_lightDataBuffer->Release();
@@ -288,127 +473,311 @@ void PhongShaderClass::ShutdownShader()
     }
 }
 
+// ==========================================
+// Shader Error
+// ==========================================
+
 void PhongShaderClass::OutputShaderErrorMessage(
     ID3D10Blob* errorMessage,
     HWND hwnd,
     const WCHAR* shaderFilename)
 {
-    char* compileErrors = static_cast<char*>(errorMessage->GetBufferPointer());
-    unsigned long bufferSize = static_cast<unsigned long>(errorMessage->GetBufferSize());
+    char* compileErrors =
+        static_cast<char*>(
+            errorMessage->GetBufferPointer()
+            );
 
-    ofstream fout;
-    fout.open("shader-error.txt");
-    for (unsigned long i = 0; i < bufferSize; ++i)
+    unsigned long bufferSize =
+        static_cast<unsigned long>(
+            errorMessage->GetBufferSize()
+            );
+
+    ofstream fout("shader-error.txt");
+
+    if (fout.is_open())
     {
-        fout << compileErrors[i];
+        for (unsigned long i = 0; i < bufferSize; ++i)
+        {
+            fout << compileErrors[i];
+        }
+
+        fout.close();
     }
-    fout.close();
 
     errorMessage->Release();
-    MessageBox(hwnd,
-        L"Error compiling shader. Check shader-error.txt for message.",
-        shaderFilename, MB_OK);
+
+    MessageBox(
+        hwnd,
+        L"Error compiling shader. Check shader-error.txt.",
+        shaderFilename,
+        MB_OK
+    );
 }
+
+// ==========================================
+// Set Shader Parameters
+// ==========================================
 
 bool PhongShaderClass::SetShaderParameters(
     ID3D11DeviceContext* deviceContext,
+
     XMMATRIX worldMatrix,
     XMMATRIX viewMatrix,
     XMMATRIX projectionMatrix,
-    ID3D11ShaderResourceView* texture,
+
+    ID3D11ShaderResourceView* diffuseTexture,
+    ID3D11ShaderResourceView* secondTexture,
+    ID3D11ShaderResourceView* alphaMap,
+    ID3D11ShaderResourceView* normalMap,
+
     XMFLOAT3 cameraPosition,
     XMFLOAT4 ambientColor,
     XMFLOAT4 specularColor,
     float specularPower,
+
     XMFLOAT4 emissiveColor,
     float emissiveIntensity,
+
     const LightData& lightData)
 {
     HRESULT result;
     D3D11_MAPPED_SUBRESOURCE mappedResource = {};
 
-    // 기존 엔진의 행벡터 World * View * Projection 규약 유지
+    // ======================================
+    // 1. MatrixBuffer : VS b0
+    //
+    // 기존 행벡터 규약 유지
+    // World * View * Projection
+    // ======================================
+
     worldMatrix = XMMatrixTranspose(worldMatrix);
     viewMatrix = XMMatrixTranspose(viewMatrix);
-    projectionMatrix = XMMatrixTranspose(projectionMatrix);
+    projectionMatrix =
+        XMMatrixTranspose(projectionMatrix);
 
-    // VS b0: 행렬
     result = deviceContext->Map(
-        m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+        m_matrixBuffer,
+        0,
+        D3D11_MAP_WRITE_DISCARD,
+        0,
+        &mappedResource
+    );
+
     if (FAILED(result))
         return false;
 
     MatrixBufferType* matrixPtr =
-        static_cast<MatrixBufferType*>(mappedResource.pData);
+        static_cast<MatrixBufferType*>(
+            mappedResource.pData
+            );
+
     matrixPtr->world = worldMatrix;
     matrixPtr->view = viewMatrix;
     matrixPtr->projection = projectionMatrix;
+
     deviceContext->Unmap(m_matrixBuffer, 0);
-    deviceContext->VSSetConstantBuffers(0, 1, &m_matrixBuffer);
 
-    // PS t0: Diffuse Texture
-    deviceContext->PSSetShaderResources(0, 1, &texture);
+    deviceContext->VSSetConstantBuffers(
+        0, 1, &m_matrixBuffer
+    );
 
-    // VS b1: 카메라 위치
+    // ======================================
+    // 2. Texture Resources : PS t0 ~ t3
+    // ======================================
+
+    ID3D11ShaderResourceView* textures[4] =
+    {
+        diffuseTexture,
+        secondTexture,
+        alphaMap,
+        normalMap
+    };
+
+    deviceContext->PSSetShaderResources(
+        0,
+        4,
+        textures
+    );
+
+    // ======================================
+    // 3. CameraBuffer : VS b1
+    // ======================================
+
     result = deviceContext->Map(
-        m_cameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+        m_cameraBuffer,
+        0,
+        D3D11_MAP_WRITE_DISCARD,
+        0,
+        &mappedResource
+    );
+
     if (FAILED(result))
         return false;
 
     CameraBufferType* cameraPtr =
-        static_cast<CameraBufferType*>(mappedResource.pData);
+        static_cast<CameraBufferType*>(
+            mappedResource.pData
+            );
+
     cameraPtr->cameraPosition = cameraPosition;
     cameraPtr->padding = 0.0f;
-    deviceContext->Unmap(m_cameraBuffer, 0);
-    deviceContext->VSSetConstantBuffers(1, 1, &m_cameraBuffer);
 
-    // PS b0: Ambient 및 Material의 Specular 속성
+    deviceContext->Unmap(m_cameraBuffer, 0);
+
+    deviceContext->VSSetConstantBuffers(
+        1, 1, &m_cameraBuffer
+    );
+
+    // ======================================
+    // 4. LightBuffer : PS b0
+    // ======================================
+
     result = deviceContext->Map(
-        m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+        m_lightBuffer,
+        0,
+        D3D11_MAP_WRITE_DISCARD,
+        0,
+        &mappedResource
+    );
+
     if (FAILED(result))
         return false;
 
     LightBufferType* lightPtr =
-        static_cast<LightBufferType*>(mappedResource.pData);
+        static_cast<LightBufferType*>(
+            mappedResource.pData
+            );
+
     lightPtr->ambientColor = ambientColor;
     lightPtr->specularColor = specularColor;
     lightPtr->specularPower = specularPower;
+
     lightPtr->padding[0] = 0.0f;
     lightPtr->padding[1] = 0.0f;
     lightPtr->padding[2] = 0.0f;
 
-    // Material별 Emissive 속성을 PS b0에 함께 전달
     lightPtr->emissiveColor = emissiveColor;
     lightPtr->emissiveIntensity = emissiveIntensity;
+
     lightPtr->emissivePadding[0] = 0.0f;
     lightPtr->emissivePadding[1] = 0.0f;
     lightPtr->emissivePadding[2] = 0.0f;
 
     deviceContext->Unmap(m_lightBuffer, 0);
-    deviceContext->PSSetConstantBuffers(0, 1, &m_lightBuffer);
 
-    // PS b1: Scene에 등록된 모든 광원 데이터
+    deviceContext->PSSetConstantBuffers(
+        0, 1, &m_lightBuffer
+    );
+
+    // ======================================
+    // 5. LightDataBuffer : PS b1
+    // ======================================
+
     result = deviceContext->Map(
-        m_lightDataBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+        m_lightDataBuffer,
+        0,
+        D3D11_MAP_WRITE_DISCARD,
+        0,
+        &mappedResource
+    );
+
     if (FAILED(result))
         return false;
 
     LightData* lightDataPtr =
-        static_cast<LightData*>(mappedResource.pData);
+        static_cast<LightData*>(
+            mappedResource.pData
+            );
+
     *lightDataPtr = lightData;
+
     deviceContext->Unmap(m_lightDataBuffer, 0);
-    deviceContext->PSSetConstantBuffers(1, 1, &m_lightDataBuffer);
+
+    deviceContext->PSSetConstantBuffers(
+        1, 1, &m_lightDataBuffer
+    );
+
+    // ======================================
+    // 6. TextureOptionBuffer : PS b2
+    // ======================================
+
+    const bool useAlphaMap =
+        secondTexture != nullptr &&
+        alphaMap != nullptr;
+
+    const bool useNormalMap =
+        normalMap != nullptr;
+
+    result = deviceContext->Map(
+        m_textureOptionBuffer,
+        0,
+        D3D11_MAP_WRITE_DISCARD,
+        0,
+        &mappedResource
+    );
+
+    if (FAILED(result))
+        return false;
+
+    TextureOptionBufferType* optionPtr =
+        static_cast<TextureOptionBufferType*>(
+            mappedResource.pData
+            );
+
+    optionPtr->useAlphaMap =
+        useAlphaMap ? 1 : 0;
+
+    optionPtr->useNormalMap =
+        useNormalMap ? 1 : 0;
+
+    optionPtr->padding[0] = 0.0f;
+    optionPtr->padding[1] = 0.0f;
+
+    deviceContext->Unmap(
+        m_textureOptionBuffer,
+        0
+    );
+
+    deviceContext->PSSetConstantBuffers(
+        2,
+        1,
+        &m_textureOptionBuffer
+    );
 
     return true;
 }
+
+// ==========================================
+// Render Shader
+// ==========================================
 
 void PhongShaderClass::RenderShader(
     ID3D11DeviceContext* deviceContext,
     int indexCount)
 {
     deviceContext->IASetInputLayout(m_layout);
-    deviceContext->VSSetShader(m_vertexShader, nullptr, 0);
-    deviceContext->PSSetShader(m_pixelShader, nullptr, 0);
-    deviceContext->PSSetSamplers(0, 1, &m_sampleState);
-    deviceContext->DrawIndexed(indexCount, 0, 0);
+
+    deviceContext->VSSetShader(
+        m_vertexShader,
+        nullptr,
+        0
+    );
+
+    deviceContext->PSSetShader(
+        m_pixelShader,
+        nullptr,
+        0
+    );
+
+    deviceContext->PSSetSamplers(
+        0,
+        1,
+        &m_sampleState
+    );
+
+    deviceContext->DrawIndexed(
+        indexCount,
+        0,
+        0
+    );
 }

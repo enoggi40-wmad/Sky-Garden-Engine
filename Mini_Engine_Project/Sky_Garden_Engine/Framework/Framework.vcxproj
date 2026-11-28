@@ -142,10 +142,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AlphaMapShaderClass.cpp" />
     <ClCompile Include="BillboardRenderer.cpp" />
     <ClCompile Include="bitmapclass.cpp" />
-    <ClCompile Include="BumpMapShaderClass.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="cpuclass.cpp" />
@@ -198,10 +196,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlignedAllocationPolicy.h" />
-    <ClInclude Include="AlphaMapShaderClass.h" />
     <ClInclude Include="BillboardRenderer.h" />
     <ClInclude Include="bitmapclass.h" />
-    <ClInclude Include="BumpMapShaderClass.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="cpuclass.h" />
@@ -274,16 +270,6 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <FileType>Document</FileType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="data\alphaMapShader.hlsl">
-      <FileType>Document</FileType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="data\bumpmapShader.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

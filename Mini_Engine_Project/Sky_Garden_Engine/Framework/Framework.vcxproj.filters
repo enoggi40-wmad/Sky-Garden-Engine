@@ -167,12 +167,6 @@
     <ClCompile Include="SkyBoxRenderer.cpp">
       <Filter>Renderers_소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="AlphaMapShaderClass.cpp">
-      <Filter>Shaders_소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="BumpMapShaderClass.cpp">
-      <Filter>Shaders_소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="PerformanceMonitor.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -331,14 +325,8 @@
     <ClInclude Include="SkyBoxRenderer.h">
       <Filter>Renderers_헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="AlphaMapShaderClass.h">
-      <Filter>Shaders_헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="TestScene.h">
       <Filter>Scenes_헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="BumpMapShaderClass.h">
-      <Filter>Shaders_헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="PerformanceMonitor.h">
       <Filter>헤더 파일</Filter>
@@ -406,12 +394,6 @@
       <Filter>_리소스 파일</Filter>
     </None>
     <None Include="skyMapShader.hlsl">
-      <Filter>_리소스 파일</Filter>
-    </None>
-    <None Include="data\alphaMapShader.hlsl">
-      <Filter>_리소스 파일</Filter>
-    </None>
-    <None Include="data\bumpmapShader.hlsl">
       <Filter>_리소스 파일</Filter>
     </None>
     <None Include="data\LightingCommon.hlsli">

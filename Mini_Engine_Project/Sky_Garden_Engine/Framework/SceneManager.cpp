@@ -82,8 +82,8 @@ bool SceneManager::Initialize(
     m_ResourceManager = resourceManager;
 	
     //LoadScene(SceneType::Title);
-    //LoadScene(SceneType::Test);
-    LoadScene(SceneType::Sakura);
+    LoadScene(SceneType::Main);
+    //LoadScene(SceneType::Sakura);
 
     return true;
 }
